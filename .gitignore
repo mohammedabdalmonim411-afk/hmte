@@ -1,0 +1,52 @@
+# Phase Control Runtime Files
+.phase_control/state.json
+.phase_control/run.lock
+.phase_control/current_phase
+.phase_control/state.lock
+.phase_control/state.json.tmp
+.phase_control/state.json.corrupted*
+.phase_control/evidence/*.json
+.phase_control/verdicts/*.txt
+.phase_control/logs/*.jsonl
+.phase_control/pids/*.pid
+.phase_control/traces/*
+
+# Keep directory structure
+!.phase_control/evidence/.gitkeep
+!.phase_control/verdicts/.gitkeep
+!.phase_control/logs/.gitkeep
+!.phase_control/pids/.gitkeep
+!.phase_control/traces/.gitkeep
+
+# Worktrees
+.claude/worktrees/
+
+# OS Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+*.log
