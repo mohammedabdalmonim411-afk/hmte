@@ -1,6 +1,6 @@
 # Team Engine Policy
 
-This project uses the Mavis Team Engine for structured development.
+This project uses the HMTE for structured development.
 
 ## Core Rules
 

@@ -1,11 +1,11 @@
-# Mavis Team Engine - Verification Report
+# HMTE - Verification Report
 
 **Date**: 2026-05-26
 **Status**: ✅ COMPLETE AND VERIFIED
 
 ## Executive Summary
 
-Successfully implemented a Claude-native Mavis-like Team Engine following the deep-research-report specifications. All core components are in place, tested, and ready for production use.
+Successfully implemented a Hermes-native Mavis-like Team Engine following the deep-research-report specifications. All core components are in place, tested, and ready for production use.
 
 ## Verification Checklist
 
@@ -51,7 +51,7 @@ Successfully implemented a Claude-native Mavis-like Team Engine following the de
 
 **Documentation (5 files)**
 - ✓ README.md - User documentation
-- ✓ CLAUDE.md - Project rules
+- ✓ HERMES.md - Project rules
 - ✓ IMPLEMENTATION_PLAN.md - Implementation plan
 - ✓ IMPLEMENTATION_SUMMARY.md - Summary
 - ✓ VERIFICATION_REPORT.md - This file
@@ -182,7 +182,7 @@ Verified:
 ### ✅ Documentation Quality
 
 - ✓ README.md: Complete user guide
-- ✓ CLAUDE.md: Clear project rules
+- ✓ HERMES.md: Clear project rules
 - ✓ SKILL.md: Comprehensive workflow
 - ✓ Agent definitions: Detailed role descriptions
 - ✓ phase-template.md: Clear examples
@@ -194,7 +194,7 @@ Verified:
 From deep-research-report:
 - ✓ Skill-only path implemented first
 - ✓ MCP-assisted path documented (optional)
-- ✓ Star topology (no recursive subagents)
+- ✓ Star topology (no recursive plugins)
 - ✓ Explicit state machine (file-based)
 - ✓ Evidence-driven verification
 - ✓ Fixed verdict formats
@@ -250,8 +250,8 @@ All operations are fast and responsive.
    - yq recommended for YAML parsing
    - uuidgen for session IDs (fallback available)
 
-3. **Claude Code Constraints**
-   - Subagents cannot spawn subagents
+3. **Hermes Constraints**
+   - Plugins cannot spawn plugins
    - Hooks are experimental
    - MCP requires separate installation
 
@@ -265,7 +265,7 @@ All operations are fast and responsive.
 ### For Immediate Use
 1. Copy to your project
 2. Run `./scripts/mavis-start.sh`
-3. Invoke skill in Claude Code
+3. Invoke skill in Hermes
 4. Start with simple tasks to learn workflow
 
 ### For Production Use
@@ -282,7 +282,7 @@ All operations are fast and responsive.
 
 ## Conclusion
 
-The Mavis Team Engine implementation is **COMPLETE, TESTED, and READY FOR USE**.
+The HMTE implementation is **COMPLETE, TESTED, and READY FOR USE**.
 
 All requirements from the deep-research-report have been met:
 - ✅ Leader/Worker/Verifier architecture

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Start Team Engine session with atomic lock
+# Start HMTE session with atomic lock
 
 set -e
 
@@ -9,7 +9,7 @@ cd "$PROJECT_ROOT"
 STATE_FILE=".phase_control/state.json"
 LOCK_FILE=".phase_control/run.lock"
 
-echo "Starting Mavis Team Engine..."
+echo "Starting HMTE..."
 
 # Atomic lock creation using noclobber
 set -C
@@ -19,7 +19,7 @@ if ! echo $$ > "$LOCK_FILE" 2>/dev/null; then
     if [ -f "$LOCK_FILE" ]; then
         OLD_PID=$(cat "$LOCK_FILE" 2>/dev/null || echo "")
         if [ -n "$OLD_PID" ] && kill -0 "$OLD_PID" 2>/dev/null; then
-            echo "ERROR: Team Engine is already running (PID: $OLD_PID)"
+            echo "ERROR: HMTE is already running (PID: $OLD_PID)"
             exit 1
         else
             echo "WARNING: Stale lock file found (PID $OLD_PID not running)"
@@ -98,9 +98,9 @@ PYTHON_EOF
     echo "Initialized new session: $SESSION_ID"
 fi
 
-echo "Team Engine started successfully"
+echo "HMTE started successfully"
 echo "Project root: $PROJECT_ROOT"
 echo "State file: $STATE_FILE"
 echo "Lock file: $LOCK_FILE (PID: $$)"
 echo ""
-echo "To use Team Engine, invoke the 'mavis-team-engine' skill in Claude Code"
+echo "To use HMTE, invoke the 'mavis-team-engine' skill in Hermes"

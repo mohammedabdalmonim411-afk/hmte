@@ -1,0 +1,116 @@
+=== Phase 3: Directory Restructuring - COMPLETED ===
+
+Date: 2026-05-27
+Worker: phase-executor (subagent)
+Status: SUCCESS
+
+## Deliverables Created
+
+1. PLATFORM_HISTORY.md (6.0 KB)
+   - Comprehensive migration history from Claude Code to Hermes
+   - Platform architecture comparison
+   - File path mapping table
+   - Migration checklist
+   - Technical notes on differences
+
+2. install-to-hermes.sh (5.8 KB, executable)
+   - Automated installation to Hermes profile
+   - Target: ~/.hermes/profiles/default/skills/hmte/
+   - Backup existing installations
+   - Comprehensive verification (12 checks)
+   - Colored output and error handling
+   - Profile detection via HERMES_PROFILE env var
+
+3. .claude/README.md (4.8 KB)
+   - DEPRECATED notice for Hermes users
+   - Legacy directory explanation
+   - Migration instructions
+   - Platform comparison table
+   - Backward compatibility notes
+
+4. README.md (updated)
+   - Installation split: Hermes (recommended) vs Claude Code (legacy)
+   - Project Structure: Added Hermes installation structure
+   - Configuration: Platform-specific paths for model changes
+   - Troubleshooting: Platform-specific paths for write_state.py
+   - Documentation: Added 3 new files to index
+
+## Acceptance Criteria Status
+
+✅ PLATFORM_HISTORY.md created (detailed migration history)
+✅ install-to-hermes.sh created (executable installation script)
+✅ README.md installation section updated (Hermes instructions)
+✅ .claude/README.md created (deprecation notice)
+✅ All .claude/ path references have Hermes equivalents
+
+## Key Features
+
+### Dual-Platform Support
+- Hermes: Primary platform, global profile-based
+- Claude Code: Legacy support, project-local
+- Backward compatibility maintained
+- Clear migration path documented
+
+### Installation Script Features
+- Automatic profile detection
+- Backup before overwrite
+- Copy skills, agents, hooks
+- Set executable permissions
+- 12-point verification checklist
+- Colored output (red/green/yellow/blue)
+- Error counting and reporting
+
+### Documentation Quality
+- Clear platform separation
+- Comprehensive path mapping
+- Migration guidance
+- Troubleshooting for both platforms
+- Historical context preserved
+
+## File Changes Summary
+
+Created:
+- PLATFORM_HISTORY.md
+- install-to-hermes.sh
+- .claude/README.md
+
+Modified:
+- README.md (5 sections updated)
+
+Evidence:
+- .phase_control/evidence/phase_directory_restructure_attempt_1.json
+
+## Verification
+
+All files created successfully:
+- PLATFORM_HISTORY.md: 6096 bytes
+- install-to-hermes.sh: 5925 bytes (executable)
+- .claude/README.md: 4891 bytes
+- Evidence bundle: 6215 bytes (valid JSON)
+
+## Notes
+
+1. .claude/ directory preserved for:
+   - Historical reference
+   - Backward compatibility
+   - Complete implementation visibility
+   - Git history preservation
+
+2. Runtime state (.phase_control/) remains project-local on both platforms
+
+3. Hermes users must run ./install-to-hermes.sh before first use
+
+4. Claude Code users can continue using .claude/ directory as-is
+
+## Unresolved Items
+
+- install-to-hermes.sh not tested in live Hermes environment (no Hermes available in test env)
+- Historical documentation files (IMPLEMENTATION_SUMMARY.md, etc.) retain .claude/ references as-is
+
+## Next Steps
+
+1. Test install-to-hermes.sh in actual Hermes environment
+2. Verify skill discovery after installation
+3. Confirm agent definitions work in Hermes profile
+
+=== Phase 3 Complete ===

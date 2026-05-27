@@ -1,13 +1,23 @@
-# Mavis Team Engine
+# HMTE (Hermes Mavis Team Engine)
 
-> A Claude-native multi-agent development system implementing the Leader/Worker/Verifier pattern for rigorous, phase-based software development.
+> A Hermes-native multi-agent development system implementing the Leader/Worker/Verifier pattern for rigorous, phase-based software development.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-green.svg)]()
 
-## 🎯 What is Mavis Team Engine?
+## ⚠️ Disclaimer
 
-Mavis Team Engine is a **production-ready framework** that brings structured, multi-agent collaboration to Claude Code. Inspired by MiniMax's Mavis architecture, it enforces a rigorous "plan → execute → verify → release" cycle with:
+This project is an independent open-source implementation.
+
+- **"Mavis"** refers to the architectural pattern inspired by MiniMax's research, not an official MiniMax product
+- **"Hermes"** is developed by Nous Research. This project is a third-party tool and is not affiliated with, endorsed by, or sponsored by Nous Research
+- This project is provided "as-is" under the MIT License with no warranties
+
+All trademarks are the property of their respective owners.
+
+## 🎯 What is HMTE?
+
+HMTE is a **production-ready framework** that brings structured, multi-agent collaboration to Hermes. Inspired by MiniMax's Mavis architecture, it enforces a rigorous "plan → execute → verify → release" cycle with:
 
 - **Phase-based workflow** with explicit quality gates
 - **Evidence-driven verification** - all decisions backed by structured proof
@@ -24,7 +34,7 @@ Traditional AI-assisted development often suffers from:
 - ❌ Context pollution - all agents see everything
 - ❌ No audit trail - can't trace decisions
 
-Mavis Team Engine solves these with:
+HMTE solves these with:
 - ✅ **Mandatory verification** - nothing proceeds without PASS verdict
 - ✅ **Adversarial review** - Verifier actively looks for problems
 - ✅ **Context isolation** - each role sees only what it needs
@@ -103,18 +113,57 @@ User Goal
 
 ### Prerequisites
 
-- **Claude Code** (CLI, Desktop, or Web)
+- **Hermes** (CLI, Desktop, or Web)
 - **Python 3.8+**
 - **Git**
 - **Bash** (Unix-like shell)
 
 ### Installation
 
-1. **Clone or copy this repository to your project:**
+#### For Hermes Users (Recommended)
+
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/mohammedabdalmonim411-afk/mavis-team-engine.git
+cd mavis-team-engine
+```
+
+2. **Install to Hermes profile:**
+
+```bash
+./install-to-hermes.sh
+```
+
+This installs the skill to `~/.hermes/profiles/default/skills/hmte/` where Hermes can discover it globally.
+
+3. **Copy runtime structure to your project:**
+
+```bash
+# In your project directory
+cp -r /path/to/mavis-team-engine/.phase_control .
+cp -r /path/to/mavis-team-engine/scripts .
+```
+
+4. **Initialize the session:**
+
+```bash
+./scripts/mavis-start.sh
+```
+
+5. **Use in Hermes:**
+
+```
+Please use the hmte skill to implement user authentication.
+```
+
+#### For Claude Code Users (Legacy)
+
+1. **Clone or copy to your project:**
 
 ```bash
 # Option 1: Clone as a submodule
-git submodule add https://github.com/yourusername/mavis-team-engine .mavis
+git submodule add https://github.com/mohammedabdalmonim411-afk/mavis-team-engine .mavis
 
 # Option 2: Copy directly
 cp -r /path/to/mavis-team-engine/.claude .
@@ -133,6 +182,8 @@ cp -r /path/to/mavis-team-engine/scripts .
 ```
 Please use the mavis-team-engine skill to implement user authentication.
 ```
+
+> **Note**: See [PLATFORM_HISTORY.md](PLATFORM_HISTORY.md) for details on platform differences.
 
 ### Verification
 
@@ -164,7 +215,7 @@ Verified:
 ./scripts/mavis-start.sh
 ```
 
-2. **Invoke the skill in Claude Code:**
+2. **Invoke the skill in Hermes:**
 ```
 Please use the mavis-team-engine skill to implement a login API with JWT authentication.
 ```
@@ -324,9 +375,11 @@ NEXT_ACTION: ESCALATE_TO_LEADER
 
 ## 📁 Project Structure
 
+### Repository Structure
+
 ```
 .
-├── .claude/
+├── .claude/                            # Legacy Claude Code structure (see .claude/README.md)
 │   ├── skills/mavis-team-engine/
 │   │   ├── SKILL.md                    # Main skill definition
 │   │   ├── phase-template.md           # Phase definition template
@@ -344,7 +397,7 @@ NEXT_ACTION: ESCALATE_TO_LEADER
 │       ├── stop_gate.sh                # Prevents stopping with incomplete work
 │       ├── pretool_guard.sh            # Blocks dangerous commands
 │       └── task_naming.sh              # Enforces task naming conventions
-├── .phase_control/
+├── .phase_control/                     # Runtime state (project-local)
 │   ├── phases.yaml                     # Phase definitions
 │   ├── state.json                      # State machine (Leader-only)
 │   ├── current_phase                   # Current phase ID
@@ -359,11 +412,39 @@ NEXT_ACTION: ESCALATE_TO_LEADER
 │   ├── mavis-stop.sh                   # Stop session
 │   ├── mavis-status.sh                 # Show status
 │   └── mavis-e2e.sh                    # End-to-end test
-├── CLAUDE.md                           # Project rules
+├── install-to-hermes.sh                # Hermes installation script
+├── PLATFORM_HISTORY.md                 # Platform migration history
+├── HERMES.md                           # Project rules
 ├── README.md                           # This file
 ├── LICENSE                             # MIT License
 └── .gitignore                          # Git ignore rules
 ```
+
+### Hermes Installation Structure
+
+After running `./install-to-hermes.sh`, skills are installed to:
+
+```
+~/.hermes/profiles/default/skills/hmte/
+├── SKILL.md                            # Main skill definition
+├── agents/
+│   ├── master-planner.md
+│   ├── phase-executor.md
+│   └── verifier.md
+├── hooks/
+│   ├── stop_gate.sh
+│   ├── pretool_guard.sh
+│   └── task_naming.sh
+├── scripts/
+│   ├── write_state.py
+│   ├── collect_evidence.sh
+│   └── phase_gate.sh
+├── phase-template.md
+├── evidence-schema.json
+└── audit-checklist.md
+```
+
+> **Note**: `.phase_control/` remains **project-local** on both platforms. Only skill definitions move to the Hermes profile.
 
 ## 🔒 Security Features
 
@@ -404,8 +485,21 @@ Default model assignments (configurable in agent frontmatter):
 - **Worker**: Sonnet (execution is well-scoped)
 - **Verifier**: Opus (verification requires skepticism)
 
-To change models, edit `.claude/agents/<agent-name>.md`:
+To change models, edit the agent definition files:
 
+**For Hermes users:**
+```bash
+# Edit in your Hermes profile
+nano ~/.hermes/profiles/default/skills/hmte/agents/phase-executor.md
+```
+
+**For Claude Code users:**
+```bash
+# Edit in project directory
+nano .claude/agents/phase-executor.md
+```
+
+Agent frontmatter example:
 ```yaml
 ---
 name: phase-executor
@@ -454,9 +548,9 @@ Tests verify:
 
 ### Manual Testing
 
-1. Start session: `./scripts/mavis-start.sh`
+3. Start session: `./scripts/mavis-start.sh`
 2. Create test phase in `.phase_control/phases.yaml`
-3. Invoke skill in Claude Code
+3. Invoke skill in Hermes
 4. Check status: `./scripts/mavis-status.sh`
 5. Verify evidence in `.phase_control/evidence/`
 6. Verify verdicts in `.phase_control/verdicts/`
@@ -536,7 +630,12 @@ rm .phase_control/run.lock
 # Check phase status in state.json
 cat .phase_control/state.json | jq '.phase_status'
 
-# If stuck, manually update state
+# If stuck, manually update state using write_state.py
+# For Hermes users:
+python3 ~/.hermes/profiles/default/skills/hmte/scripts/write_state.py \
+  .phase_control/state.json phase_status=passed
+
+# For Claude Code users:
 python3 .claude/skills/mavis-team-engine/scripts/write_state.py \
   .phase_control/state.json phase_status=passed
 
@@ -550,17 +649,20 @@ rm .phase_control/run.lock
 |----------|------|------|----------|
 | **Single Agent** | Simple, fast, cheap | No verification, no gates | Simple tasks, prototyping |
 | **Prompt-only Multi-Agent** | Easy to set up | No enforcement, roles blur | Experimentation |
-| **Mavis Team Engine** | Enforced gates, audit trail, isolation | Higher token cost, slower | Production code, critical features |
+| **HMTE** | Enforced gates, audit trail, isolation | Higher token cost, slower | Production code, critical features |
 | **External Orchestrator** | Maximum control | Complex setup, maintenance | Platform-level automation |
 
 ## 📚 Documentation
 
+- **[PLATFORM_HISTORY.md](PLATFORM_HISTORY.md)** - Platform migration history (Claude Code → Hermes)
+- **[install-to-hermes.sh](install-to-hermes.sh)** - Hermes installation script
+- **[.claude/README.md](.claude/README.md)** - Legacy directory explanation
 - **[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)** - Detailed design document
 - **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Build summary
 - **[FINAL_REPORT.md](FINAL_REPORT.md)** - Project completion report
 - **[SECURITY_FIXES.md](SECURITY_FIXES.md)** - Security improvements
 - **[VERIFICATION_REPORT.md](VERIFICATION_REPORT.md)** - Test results
-- **[CLAUDE.md](CLAUDE.md)** - Project rules for Claude Code
+- **[HERMES.md](HERMES.md)** - Project rules for Hermes
 
 ## 🤝 Contributing
 
@@ -576,7 +678,7 @@ Contributions welcome! Please:
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/mavis-team-engine.git
+git clone https://github.com/mohammedabdalmonim411-afk/mavis-team-engine.git
 cd mavis-team-engine
 
 # Run tests
@@ -587,7 +689,7 @@ cd mavis-team-engine
 
 # Test changes
 ./scripts/mavis-start.sh
-# Use in Claude Code
+# Use in Hermes
 ./scripts/mavis-stop.sh
 ```
 
@@ -597,16 +699,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **MiniMax** - Inspiration from Mavis architecture
-- **Anthropic** - Claude Code platform and MCP protocol
+- **MiniMax** - Inspiration from Mavis architecture research paper
+- **Nous Research** - Creators of Hermes AI platform. This project is a third-party tool built for Hermes and is not an official Nous Research product
 - **TeamBench** - Research on multi-agent system failures
 - **Community** - Feedback and contributions
 
+This project is an independent open-source implementation and is not affiliated with, endorsed by, or sponsored by MiniMax or Nous Research.
+
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/mavis-team-engine/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/mavis-team-engine/discussions)
-- **Documentation**: [Project Wiki](https://github.com/yourusername/mavis-team-engine/wiki)
+- **Issues**: [GitHub Issues](https://github.com/mohammedabdalmonim411-afk/mavis-team-engine/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/mohammedabdalmonim411-afk/mavis-team-engine/discussions)
+- **Documentation**: [Project Wiki](https://github.com/mohammedabdalmonim411-afk/mavis-team-engine/wiki)
 
 ## 🗺️ Roadmap
 
@@ -630,15 +734,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📈 Project Stats
 
-- **Lines of Code**: ~4,500+
-- **Files**: 26
+- **Lines of Code**: ~5,700+ (1,148 scripts + 4,524 docs)
+- **Files**: 39 (scripts, docs, configs)
 - **Test Coverage**: E2E suite passing
 - **Security Issues Fixed**: 5 critical
-- **Development Time**: ~2 hours
 - **Status**: Production Ready ✅
 
 ---
 
-**Built with ❤️ by the Mavis Team Engine community**
+**Built with ❤️ by the HMTE community**
 
 **Star ⭐ this repo if you find it useful!**

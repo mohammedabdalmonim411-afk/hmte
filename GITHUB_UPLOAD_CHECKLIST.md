@@ -22,7 +22,7 @@
 
 ### Documentation
 - [x] README.md covers:
-  - What is Mavis Team Engine
+  - What is HMTE
   - Architecture diagram
   - Quick start guide
   - Usage examples
@@ -35,7 +35,7 @@
   - FINAL_REPORT.md
   - SECURITY_FIXES.md
   - VERIFICATION_REPORT.md
-  - CLAUDE.md
+  - HERMES.md
 
 ### Project Structure
 ```
@@ -46,7 +46,7 @@ mavis-team-engine/
 ├── .gitignore                  ✅ Git ignore rules
 ├── LICENSE                     ✅ MIT License
 ├── README.md                   ✅ Main documentation
-├── CLAUDE.md                   ✅ Project rules
+├── HERMES.md                   ✅ Project rules
 ├── IMPLEMENTATION_PLAN.md      ✅ Design document
 ├── IMPLEMENTATION_SUMMARY.md   ✅ Build summary
 ├── FINAL_REPORT.md             ✅ Completion report
@@ -60,7 +60,7 @@ mavis-team-engine/
 
 1. Go to https://github.com/new
 2. Repository name: `mavis-team-engine`
-3. Description: `A Claude-native multi-agent development system implementing the Leader/Worker/Verifier pattern`
+3. Description: `A Hermes-native multi-agent development system implementing the Leader/Worker/Verifier pattern`
 4. Visibility: **Public** (recommended) or Private
 5. **DO NOT** initialize with README, .gitignore, or license (we have them)
 6. Click "Create repository"
@@ -77,7 +77,7 @@ git init
 git add .
 
 # Create initial commit
-git commit -m "Initial commit: Mavis Team Engine v1.0
+git commit -m "Initial commit: HMTE v1.0
 
 - Complete Leader/Worker/Verifier architecture
 - 26 files, ~4,500 lines of code
@@ -96,9 +96,9 @@ git push -u origin main
 ### Step 3: Configure Repository Settings
 
 1. **About section** (top right):
-   - Description: `A Claude-native multi-agent development system implementing the Leader/Worker/Verifier pattern`
+   - Description: `A Hermes-native multi-agent development system implementing the Leader/Worker/Verifier pattern`
    - Website: (optional)
-   - Topics: `claude-code`, `multi-agent`, `ai`, `development-tools`, `quality-assurance`, `mcp`, `team-engine`
+   - Topics: `hermes`, `multi-agent`, `ai`, `development-tools`, `quality-assurance`, `mcp`, `team-engine`
 
 2. **README** should auto-display
 
@@ -110,12 +110,12 @@ git push -u origin main
 
 1. Go to "Releases" → "Create a new release"
 2. Tag version: `v1.0.0`
-3. Release title: `Mavis Team Engine v1.0.0 - Production Ready`
+3. Release title: `HMTE v1.0.0 - Production Ready`
 4. Description:
 ```markdown
 ## 🎉 First Production Release
 
-Mavis Team Engine is now production-ready!
+HMTE is now production-ready!
 
 ### Features
 - ✅ Complete Leader/Worker/Verifier architecture
@@ -163,8 +163,8 @@ After pushing to GitHub, verify:
 - Last commit
 
 ### Share on
-- Reddit: r/ClaudeAI, r/programming
-- Twitter/X: #ClaudeCode #MultiAgent
+- Reddit: r/HermesAI, r/programming
+- Twitter/X: #Hermes #MultiAgent
 - Hacker News
 - Dev.to blog post
 

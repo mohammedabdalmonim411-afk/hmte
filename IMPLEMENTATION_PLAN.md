@@ -1,15 +1,15 @@
-# Mavis-like Team Engine 实施计划
+# HMTE Implementation Plan
 
 ## 项目概述
 
-在 Claude Code 中实现一个通用的多代理开发系统，复刻 Leader/Worker/Verifier 架构。
+在 Hermes 中实现一个通用的多代理开发系统，复刻 Leader/Worker/Verifier 架构。
 
 ## 核心目标
 
-构建一个可在 Claude Code 内运行的通用开发流程系统：
+构建一个可在 Hermes 内运行的通用开发流程系统：
 - **主代理（master-planner）**：规划、拆阶段、维护状态机、派发任务、决定放行
-- **子代理（phase-executor）**：执行单阶段工作并产出证据束
-- **子代理（verifier）**：独立审计结果，专门找错，输出 PASS/FAIL/BLOCK
+- **Worker（phase-executor）**：执行单阶段工作并产出证据束
+- **Verifier**：独立审计结果，专门找错，输出 PASS/FAIL/BLOCK
 
 ## 架构原则
 
@@ -17,17 +17,17 @@
 2. **先创建文件结构与状态机，再写角色提示词**
 3. **任何阶段在 verifier 输出 PASS 前，不得推进**
 4. **所有结论必须有 evidence bundle 支撑**
-5. **优先使用 Claude Code 原生能力**：skills、subagents、hooks、worktree、goal
+5. **优先使用 Hermes 原生能力**：skills、agents、hooks、worktree、goal
 
 ## 实施路径
 
-### A. Skill-only 路径（优先）
-- 只依赖 Claude Code 原生 skills + subagents + hooks + worktree
+### Skill-based 路径（已实现）
+- 依赖 Hermes 原生 skills + agents + hooks + worktree
 - 适合无浏览器自动化或先做流程验证
 - verifier 基于测试、diff、日志、构建结果、静态检查做判定
 
-### B. MCP-assisted 路径（可选）
-- 在 Skill-only 基础上，为 phase-executor/verifier 注入浏览器能力
+### MCP-assisted 路径（可选扩展）
+- 在 Skill-based 基础上，为 phase-executor/verifier 注入浏览器能力
 - 优先支持 Playwright MCP
 - 可选支持 Chrome DevTools MCP
 
@@ -36,8 +36,8 @@
 ```
 mavis-team-engine/
 ├── README.md
-├── CLAUDE.md
-├── .claude/
+├── HERMES.md
+├── .claude/                    # Legacy directory (for Claude Code compatibility)
 │   ├── skills/
 │   │   └── mavis-team-engine/
 │   │       ├── SKILL.md
@@ -56,8 +56,8 @@ mavis-team-engine/
 │   │   ├── pretool_guard.sh
 │   │   ├── stop_gate.sh
 │   │   └── task_naming.sh
-│   └── settings.json
-├── .phase_control/
+│   └── README.md
+├── .phase_control/             # Runtime state directory
 │   ├── phases.yaml
 │   ├── state.json
 │   ├── current_phase
@@ -67,12 +67,15 @@ mavis-team-engine/
 │   ├── logs/
 │   ├── pids/
 │   └── traces/
-└── scripts/
-    ├── mavis-start.sh
-    ├── mavis-stop.sh
-    ├── mavis-status.sh
-    └── mavis-e2e.sh
+├── scripts/                    # Management scripts
+│   ├── mavis-start.sh
+│   ├── mavis-stop.sh
+│   ├── mavis-status.sh
+│   └── mavis-e2e.sh
+└── install-to-hermes.sh        # Hermes installation script
 ```
+
+**Note**: For Hermes users, the skill is installed to `~/.hermes/profiles/default/skills/hmte/` via `install-to-hermes.sh`. The `.claude/` directory is maintained for backward compatibility with Claude Code.
 
 ## 状态机设计
 
@@ -123,12 +126,12 @@ phases:
 - **职责**：读取用户目标 → 生成 phases.yaml → 调用 phase-executor 和 verifier → 维护状态机
 - **模型**：opus（环境受限则 sonnet）
 - **权限**：唯一可修改 state.json 和 current_phase
-- **工具**：Agent tool 调用子代理
+- **工具**：Hermes 原生 agent delegation
 
 ### 2. phase-executor
 - **职责**：执行当前 phase → 产出 evidence bundle → 提交待审计
 - **模型**：sonnet
-- **隔离**：worktree 隔离
+- **隔离**：worktree 隔离（可选）
 - **输出**：evidence bundle JSON
 - **禁止**：自称"最终通过"
 
@@ -311,32 +314,38 @@ NEXT_ACTION: ESCALATE_TO_LEADER
 
 ## 实施步骤
 
-### 第一轮（当前）：骨架搭建
+### 第一轮：骨架搭建（已完成）
 1. ✅ 创建项目目录
-2. ⏳ 创建目录结构
-3. ⏳ 编写状态机文件（phases.yaml、state.json）
-4. ⏳ 编写角色定义文件（master-planner.md、phase-executor.md、verifier.md）
-5. ⏳ 编写 SKILL.md
-6. ⏳ 编写基础脚本（phase_gate.sh、write_state.py）
+2. ✅ 创建目录结构
+3. ✅ 编写状态机文件（phases.yaml、state.json）
+4. ✅ 编写角色定义文件（master-planner.md、phase-executor.md、verifier.md）
+5. ✅ 编写 SKILL.md
+6. ✅ 编写基础脚本（phase_gate.sh、write_state.py）
 
-### 第二轮：核心功能
-1. 实现 master-planner 逻辑
-2. 实现 phase-executor 逻辑
-3. 实现 verifier 逻辑
-4. 实现状态机转换
-5. 实现 evidence 收集
+### 第二轮：核心功能（已完成）
+1. ✅ 实现 master-planner 逻辑
+2. ✅ 实现 phase-executor 逻辑
+3. ✅ 实现 verifier 逻辑
+4. ✅ 实现状态机转换
+5. ✅ 实现 evidence 收集
 
-### 第三轮：Hooks 与工具
-1. 实现 pretool_guard.sh
-2. 实现 stop_gate.sh
-3. 实现 task_naming.sh
-4. 实现 mavis-start.sh、mavis-stop.sh、mavis-status.sh
+### 第三轮：Hooks 与工具（已完成）
+1. ✅ 实现 pretool_guard.sh
+2. ✅ 实现 stop_gate.sh
+3. ✅ 实现 task_naming.sh
+4. ✅ 实现 mavis-start.sh、mavis-stop.sh、mavis-status.sh
 
-### 第四轮：测试与验证
-1. 编写 E2E 测试脚本
-2. 运行最小示例验证
-3. 修复发现的问题
-4. 完善文档
+### 第四轮：测试与验证（已完成）
+1. ✅ 编写 E2E 测试脚本
+2. ✅ 运行最小示例验证
+3. ✅ 修复发现的问题
+4. ✅ 完善文档
+
+### 第五轮：平台迁移（已完成）
+1. ✅ 从 Claude Code 迁移到 Hermes
+2. ✅ 创建 install-to-hermes.sh
+3. ✅ 更新所有文档
+4. ✅ 验证 Hermes 兼容性
 
 ## MCP 集成（可选）
 
@@ -352,16 +361,18 @@ claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest
 
 ## 验收清单
 
-- [ ] 目录结构完整
-- [ ] SKILL.md 可被 Claude Code 识别
-- [ ] subagents frontmatter 合法
-- [ ] verifier 无写主代码权限
-- [ ] state.json 可正确反映阶段状态
-- [ ] evidence/verdict 文件能一一对应
-- [ ] 至少一个 FAIL -> REWORK -> PASS 的演示跑通
-- [ ] 若启用 MCP，至少一种浏览器证据可采集
-- [ ] README 或文档说明清晰
-- [ ] 所有脚本具备基本错误处理
+- [x] 目录结构完整
+- [x] SKILL.md 可被 Hermes 识别
+- [x] agents frontmatter 合法
+- [x] verifier 无写主代码权限
+- [x] state.json 可正确反映阶段状态
+- [x] evidence/verdict 文件能一一对应
+- [x] 至少一个 FAIL -> REWORK -> PASS 的演示跑通
+- [ ] 若启用 MCP，至少一种浏览器证据可采集（可选）
+- [x] README 或文档说明清晰
+- [x] 所有脚本具备基本错误处理
+- [x] 从 Claude Code 成功迁移到 Hermes
+- [x] install-to-hermes.sh 脚本可用
 
 ## 模型策略
 

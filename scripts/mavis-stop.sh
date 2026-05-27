@@ -1,5 +1,5 @@
 #!/bin/bash
-# Stop Team Engine session
+# Stop HMTE session
 
 set -e
 
@@ -9,7 +9,7 @@ cd "$PROJECT_ROOT"
 LOCK_FILE=".phase_control/run.lock"
 PIDS_DIR=".phase_control/pids"
 
-echo "Stopping Mavis Team Engine..."
+echo "Stopping HMTE..."
 
 # Stop all background services
 if [ -d "$PIDS_DIR" ]; then
@@ -41,4 +41,7 @@ if [ -f "$LOCK_FILE" ]; then
     echo "Lock file removed"
 fi
 
-echo "Team Engine stopped"
+echo "HMTE stopped successfully"
+echo ""
+echo "To restart, run: ./scripts/mavis-start.sh"
+echo "Then invoke the 'mavis-team-engine' skill in Hermes"

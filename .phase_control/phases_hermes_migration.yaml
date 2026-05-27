@@ -1,0 +1,121 @@
+session_id: hermes_migration_20260527
+goal: "将 Mavis Team Engine 完整迁移到 Hermes 平台并改名为 HMTE"
+
+phases:
+  - id: phase_rename_project
+    objective: "项目改名：Mavis Team Engine → HMTE (Hermes Mavis Team Engine)"
+    acceptance_criteria:
+      - 所有文件中的 "Mavis Team Engine" 替换为 "HMTE"
+      - LICENSE 更新 copyright
+      - README.md 标题和描述更新
+      - GitHub 仓库名称建议文档
+    required_evidence:
+      - changed_files: 列出所有修改的文件
+      - diff_summary: 显示关键变更
+      - grep 验证：确认无遗漏的 "Mavis Team Engine"
+    timeout_minutes: 30
+    max_retries: 2
+
+  - id: phase_platform_migration
+    objective: "平台迁移：Claude Code → Hermes"
+    acceptance_criteria:
+      - 全局替换 "Claude Code" → "Hermes" (104处)
+      - 全局替换 "Claude-native" → "Hermes-native" (8处)
+      - 全局替换 "Anthropic" → "Nous Research"
+      - 术语替换 "agents" → "plugins" (适当上下文)
+      - 术语替换 "subagents" → "plugins"
+      - 文件重命名：CLAUDE.md → HERMES.md
+    required_evidence:
+      - changed_files: 所有修改的文件列表
+      - grep 验证：确认替换完整性
+      - diff_summary: 关键变更摘要
+    timeout_minutes: 45
+    max_retries: 2
+
+  - id: phase_directory_restructure
+    objective: "目录重构：.claude/ → Hermes 架构"
+    acceptance_criteria:
+      - 创建 PLATFORM_HISTORY.md 记录迁移历史
+      - 更新所有 .claude/ 路径引用为 Hermes 路径
+      - 创建 Hermes 安装脚本 (install-to-hermes.sh)
+      - 更新 README.md 安装说明
+      - 保留 .claude/ 目录但添加弃用说明
+    required_evidence:
+      - PLATFORM_HISTORY.md 内容
+      - install-to-hermes.sh 脚本
+      - 路径引用更新列表
+      - README.md 安装部分 diff
+    timeout_minutes: 60
+    max_retries: 2
+
+  - id: phase_documentation_rewrite
+    objective: "文档重写：完整更新所有文档"
+    acceptance_criteria:
+      - README.md 完全重写（架构、安装、使用）
+      - HERMES.md 创建（Hermes 特定说明）
+      - IMPLEMENTATION_PLAN.md 更新
+      - IMPLEMENTATION_SUMMARY.md 更新
+      - 所有脚本输出消息更新
+      - 修复 GitHub URL 占位符
+      - 修复统计数据（文件数、代码行数）
+    required_evidence:
+      - 每个文档的 before/after diff
+      - grep 验证无 "Claude Code" 残留
+      - 统计数据验证（实际文件数、行数）
+    timeout_minutes: 90
+    max_retries: 2
+
+  - id: phase_legal_compliance
+    objective: "法律合规：添加所有必要声明"
+    acceptance_criteria:
+      - 添加商标免责声明到 README.md
+      - 更新 LICENSE copyright 为 "HMTE Contributors"
+      - 添加平台归属声明（Hermes by Nous Research）
+      - 更新 LEGAL_REVIEW.md 反映 HMTE 和 Hermes
+      - 确认无敏感信息泄露
+    required_evidence:
+      - 免责声明文本
+      - LICENSE diff
+      - LEGAL_REVIEW.md 更新内容
+      - 敏感信息扫描结果
+    timeout_minutes: 30
+    max_retries: 1
+
+  - id: phase_verification
+    objective: "验证测试：确保迁移完整性"
+    acceptance_criteria:
+      - grep 扫描：无 "Claude Code" 残留（除历史文档）
+      - grep 扫描：无 "Anthropic" 残留（除致谢）
+      - grep 扫描：无 "yourusername" 占位符
+      - 文件完整性检查：所有引用的文件存在
+      - 路径一致性检查：所有路径引用正确
+      - 统计数据准确性验证
+    required_evidence:
+      - grep 扫描结果（每个关键词）
+      - 文件存在性检查结果
+      - 路径验证结果
+      - 最终项目统计
+    timeout_minutes: 30
+    max_retries: 1
+
+  - id: phase_github_preparation
+    objective: "GitHub 准备：推送前最终检查"
+    acceptance_criteria:
+      - 所有变更已提交
+      - commit message 清晰描述迁移
+      - .gitignore 正确配置
+      - README.md 在 GitHub 上可读性良好
+      - 所有链接有效
+    required_evidence:
+      - git status 输出
+      - git log 最近 commits
+      - commit message 内容
+      - README.md 预览检查
+    timeout_minutes: 20
+    max_retries: 1
+
+metadata:
+  estimated_total_time: "5-6 hours"
+  risk_level: "high"
+  requires_user_approval: true
+  rollback_plan: "git reset --hard to commit before migration"

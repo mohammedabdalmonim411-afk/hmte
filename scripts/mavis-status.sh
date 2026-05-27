@@ -1,5 +1,5 @@
 #!/bin/bash
-# Show Team Engine status
+# Show HMTE status
 
 set -e
 
@@ -10,7 +10,7 @@ STATE_FILE=".phase_control/state.json"
 LOCK_FILE=".phase_control/run.lock"
 PHASES_FILE=".phase_control/phases.yaml"
 
-echo "=== Mavis Team Engine Status ==="
+echo "=== HMTE Status ==="
 echo ""
 
 # Check if running

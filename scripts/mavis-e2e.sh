@@ -1,12 +1,12 @@
 #!/bin/bash
-# End-to-End test for Mavis Team Engine
+# End-to-End test for HMTE
 
 set -e
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-echo "=== Mavis Team Engine E2E Test ==="
+echo "=== HMTE E2E Test ==="
 echo ""
 
 # Cleanup previous test
@@ -32,7 +32,7 @@ cat > .phase_control/phases.yaml << 'PHASES_EOF'
 phases:
   - id: phase_test
     name: "Test Phase"
-    objective: "Verify Team Engine works"
+    objective: "Verify HMTE works"
     inputs:
       - "Test input"
     outputs:
@@ -191,4 +191,5 @@ echo "  ✓ Verdict format"
 echo "  ✓ State management"
 echo "  ✓ Stop gate enforcement"
 echo ""
-echo "Team Engine is ready to use!"
+echo "HMTE is ready to use!"
+echo "Invoke the 'mavis-team-engine' skill in Hermes to get started."

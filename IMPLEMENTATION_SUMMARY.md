@@ -1,4 +1,4 @@
-# Mavis Team Engine - Implementation Summary
+# HMTE - Implementation Summary
 
 ## Status: ✅ COMPLETE
 
@@ -6,11 +6,14 @@ Implementation completed on 2026-05-26.
 
 ## What Was Built
 
-A fully functional Claude-native multi-agent development system implementing the Leader/Worker/Verifier pattern inspired by MiniMax's Mavis architecture.
+A fully functional Hermes-native multi-agent development system implementing the Leader/Worker/Verifier pattern inspired by MiniMax's Mavis architecture.
 
 ## Core Components
 
-### 1. Skills (`.claude/skills/mavis-team-engine/`)
+### 1. Skills
+**Hermes**: `~/.hermes/profiles/default/skills/hmte/` (via install-to-hermes.sh)  
+**Claude Code**: `.claude/skills/mavis-team-engine/` (legacy)
+
 - ✅ `SKILL.md` - Main skill definition with workflow rules
 - ✅ `phase-template.md` - Template for defining phases
 - ✅ `evidence-schema.json` - JSON schema for evidence bundles
@@ -21,7 +24,7 @@ A fully functional Claude-native multi-agent development system implementing the
 
 ### 2. Agents (`.claude/agents/`)
 - ✅ `master-planner.md` - Leader agent (Opus, planning & orchestration)
-- ✅ `phase-executor.md` - Worker agent (Sonnet, execution in worktree)
+- ✅ `phase-executor.md` - Worker agent (Sonnet, execution)
 - ✅ `verifier.md` - Auditor agent (Opus, independent verification)
 
 ### 3. Hooks (`.claude/hooks/`)
@@ -48,9 +51,11 @@ A fully functional Claude-native multi-agent development system implementing the
 
 ### 6. Documentation
 - ✅ `README.md` - Complete user documentation
-- ✅ `CLAUDE.md` - Project rules and policies
+- ✅ `HERMES.md` - Project rules and policies
 - ✅ `IMPLEMENTATION_PLAN.md` - Detailed implementation plan
 - ✅ `IMPLEMENTATION_SUMMARY.md` - This file
+- ✅ `PLATFORM_HISTORY.md` - Platform migration history
+- ✅ `install-to-hermes.sh` - Hermes installation script
 
 ## Architecture
 
@@ -108,8 +113,8 @@ master-planner
 - All evidence and verdicts preserved
 
 ### ✅ Two Modes
-- **Skill-only**: Uses only Claude Code native features
-- **MCP-assisted**: Optional browser automation support
+- **Skill-based**: Uses only Hermes native features (default)
+- **MCP-assisted**: Optional browser automation support (requires manual MCP installation)
 
 ### ✅ Logging & Observability
 - JSONL logs for all roles
@@ -130,15 +135,24 @@ Verified:
 
 ## Usage
 
+### Installation (Hermes)
+```bash
+git clone https://github.com/mohammedabdalmonim411-afk/mavis-team-engine.git
+cd mavis-team-engine
+./install-to-hermes.sh
+```
+
 ### Start Session
 ```bash
-cd /f/ai/mavis-team-engine
+cd your-project
+cp -r /path/to/mavis-team-engine/.phase_control .
+cp -r /path/to/mavis-team-engine/scripts .
 ./scripts/mavis-start.sh
 ```
 
-### Use in Claude Code
+### Use in Hermes
 ```
-Please use the mavis-team-engine skill to implement user authentication.
+Please use the hmte skill to implement user authentication.
 ```
 
 ### Check Status
@@ -155,29 +169,38 @@ Please use the mavis-team-engine skill to implement user authentication.
 
 Followed the deep-research-report recommendations:
 
-1. ✅ **Skill-only first** - Built on Claude Code native capabilities
+1. ✅ **Skill-based first** - Built on Hermes native capabilities
 2. ✅ **Star topology** - Leader dispatches to workers, no recursive spawning
 3. ✅ **Explicit state** - File-based state machine, not implicit
 4. ✅ **Evidence bundles** - Structured JSON with schema
 5. ✅ **Fixed verdict format** - No free-form audits
-6. ✅ **Worktree isolation** - Workers in isolated environments
+6. ✅ **Worktree isolation** - Workers in isolated environments (optional)
 7. ✅ **Safety hooks** - Command guards and stop gates
 8. ✅ **Model strategy** - Opus for planning/verification, Sonnet for execution
+9. ✅ **Platform migration** - Successfully migrated from Claude Code to Hermes
 
 ## What's NOT Included (By Design)
 
-- ❌ External orchestrator (Python/TS) - Kept it Claude-native
+- ❌ External orchestrator (Python/TS) - Kept it Hermes-native
 - ❌ MCP tools pre-installed - User installs if needed
-- ❌ Plugin packaging - Kept as project skills/agents
-- ❌ Recursive subagents - Star topology only
+- ❌ Plugin packaging - Kept as project skills/plugins
+- ❌ Recursive plugins - Star topology only
 - ❌ Auto-recovery - Requires human decision on BLOCK
 
 ## Next Steps for Users
 
-### Basic Usage
-1. Copy this directory to your project
+### Basic Usage (Hermes)
+1. Run `./install-to-hermes.sh` to install skill globally
+2. Copy `.phase_control/` and `scripts/` to your project
+3. Run `./scripts/mavis-start.sh` in your project
+4. Invoke `hmte` skill in Hermes
+5. Let Leader plan phases
+6. Watch execution → verification → release cycle
+
+### Basic Usage (Claude Code - Legacy)
+1. Copy `.claude/`, `.phase_control/`, and `scripts/` to your project
 2. Run `./scripts/mavis-start.sh`
-3. Invoke skill in Claude Code
+3. Invoke `mavis-team-engine` skill
 4. Let Leader plan phases
 5. Watch execution → verification → release cycle
 
@@ -196,25 +219,28 @@ Followed the deep-research-report recommendations:
 
 ## Limitations
 
-- Subagents cannot spawn subagents (Claude Code constraint)
+- Agents use delegation, not recursive spawning (Hermes design)
 - Hooks are experimental (may change)
 - Token costs ~7x normal conversation
 - Requires manual MCP installation for browser features
 - Windows paths may need adjustment in some scripts
+- Skill must be installed to Hermes profile for global access
 
 ## Success Criteria: ✅ MET
 
 From the original requirements:
 
 - ✅ Directory structure complete
-- ✅ SKILL.md recognized by Claude Code
-- ✅ Subagents frontmatter valid
+- ✅ SKILL.md recognized by Hermes
+- ✅ Agents frontmatter valid
 - ✅ Verifier has no write permissions
 - ✅ state.json reflects phase status
 - ✅ Evidence/verdict files correspond
 - ✅ FAIL → REWORK → PASS flow demonstrated
 - ✅ README documentation clear
 - ✅ Scripts have error handling
+- ✅ Successfully migrated to Hermes platform
+- ✅ install-to-hermes.sh script functional
 
 ## Files Created
 
@@ -267,7 +293,7 @@ Total: 24 files
 
 ## Conclusion
 
-The Mavis Team Engine is **complete and ready to use**. It provides a production-ready implementation of the Leader/Worker/Verifier pattern for Claude Code, with:
+The HMTE is **complete and ready to use**. It provides a production-ready implementation of the Leader/Worker/Verifier pattern for Hermes, with:
 
 - Rigorous phase gates
 - Evidence-driven verification

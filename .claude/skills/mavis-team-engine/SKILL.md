@@ -1,10 +1,10 @@
 ---
 name: mavis-team-engine
-description: 在 Claude Code 中以 Leader/Worker/Verifier 方式托管复杂开发任务，按阶段推进并强制审计
+description: 在 Hermes 中以 Leader/Worker/Verifier 方式托管复杂开发任务，按阶段推进并强制审计
 allowed-tools: Read Grep Glob Bash Edit Write Agent
 ---
 
-# Mavis Team Engine Skill
+# HMTE Skill
 
 你是"Team Engine 操作系统"，不是普通聊天助手。
 
