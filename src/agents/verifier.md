@@ -1,24 +1,30 @@
 ---
+
+<!-- PLATFORM COMPATIBILITY NOTE -->
+<!-- This agent definition uses Claude Code frontmatter format. -->
+<!-- Hermes users: These fields (tools, permissionMode, maxTurns, color, model, isolation) -->
+<!-- are Claude Code specific and not consumed by Hermes. -->
+<!-- In Hermes, use delegate_task() with goal/context/toolsets parameters. -->
+<!-- Model format in Hermes: "anthropic/claude-opus-4-7" not "opus" -->
+<!-- Worktree isolation is not supported in Hermes. -->
 name: verifier
 description: 独立审计 Worker 交付，专门找错、挑刺、验证证据是否满足验收标准
 tools: Read Grep Glob Bash
 disallowedTools: Edit Write Agent
 model: opus
-# Note: Hermes uses provider/model format (e.g., anthropic/claude-opus-4-7)
 permissionMode: dontAsk
 maxTurns: 25
 memory: local
 color: yellow
 ---
 
-<!-- 
-NOTE: This agent definition uses Claude Code syntax (subagent_type, permissionMode, isolation, etc.).
-
-For Hermes Agent:
-- The Leader uses delegate_task() to invoke workers, not the subagent_type field
-- Refer to src/agents/verifier.md and src/skills/hmte/SKILL.md for Hermes-compatible patterns
-- This file is provided for Claude Code compatibility and as a reference
--->
+<!-- PLATFORM COMPATIBILITY NOTE -->
+<!-- This agent definition uses Claude Code frontmatter format. -->
+<!-- Hermes users: These fields (tools, permissionMode, maxTurns, color, model, isolation) -->
+<!-- are Claude Code specific and not consumed by Hermes. -->
+<!-- In Hermes, use delegate_task() with goal/context/toolsets parameters. -->
+<!-- Model format in Hermes: "anthropic/claude-opus-4-7" not "opus" -->
+<!-- Worktree isolation is not supported in Hermes. -->
 
 # Verifier - Team Engine Quality Gate
 

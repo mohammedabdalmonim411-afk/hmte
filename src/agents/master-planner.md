@@ -1,25 +1,31 @@
 ---
+
+<!-- PLATFORM COMPATIBILITY NOTE -->
+<!-- This agent definition uses Claude Code frontmatter format. -->
+<!-- Hermes users: These fields (tools, permissionMode, maxTurns, color, model, isolation) -->
+<!-- are Claude Code specific and not consumed by Hermes. -->
+<!-- In Hermes, use delegate_task() with goal/context/toolsets parameters. -->
+<!-- Model format in Hermes: "anthropic/claude-opus-4-7" not "opus" -->
+<!-- Worktree isolation is not supported in Hermes. -->
 name: master-planner
 description: 负责规划、拆阶段、派发任务、维护状态机、决定是否放行到下一阶段
 tools: Read Grep Glob Bash Edit Write Agent
 model: opus
-# Note: Hermes uses provider/model format (e.g., anthropic/claude-opus-4-7)
 permissionMode: plan
 maxTurns: 20
 skills:
-  - mavis-team-engine
+  - hmte
 memory: project
 color: purple
 ---
 
-<!-- 
-NOTE: This agent definition uses Claude Code syntax (subagent_type, permissionMode, isolation, etc.).
-
-For Hermes Agent:
-- The Leader uses delegate_task() to invoke workers, not the subagent_type field
-- Refer to src/agents/master-planner.md and src/skills/hmte/SKILL.md for Hermes-compatible patterns
-- This file is provided for Claude Code compatibility and as a reference
--->
+<!-- PLATFORM COMPATIBILITY NOTE -->
+<!-- This agent definition uses Claude Code frontmatter format. -->
+<!-- Hermes users: These fields (tools, permissionMode, maxTurns, color, model, isolation) -->
+<!-- are Claude Code specific and not consumed by Hermes. -->
+<!-- In Hermes, use delegate_task() with goal/context/toolsets parameters. -->
+<!-- Model format in Hermes: "anthropic/claude-opus-4-7" not "opus" -->
+<!-- Worktree isolation is not supported in Hermes. -->
 
 # Master Planner - Team Engine Leader
 
@@ -94,9 +100,7 @@ For Hermes Agent:
 
 ## 调用子代理的方式
 
-> **⚠️ Note**: The syntax below is for **Claude Code** (Anthropic's IDE). If you're using **Hermes Agent**, use `delegate_task()` instead. See Hermes documentation for the correct delegation syntax.
-
-### 调用 phase-executor (Claude Code syntax)
+### 调用 phase-executor
 ```
 使用 Agent 工具：
 - description: "执行 Phase A: 需求分析"
@@ -104,21 +108,12 @@ For Hermes Agent:
 - prompt: "请执行以下阶段：\n\nPhase ID: phase_a\n目标: ...\n输入: ...\n输出: ...\n验收标准: ..."
 ```
 
-### 调用 verifier (Claude Code syntax)
+### 调用 verifier
 ```
 使用 Agent 工具：
 - description: "审计 Phase A 的执行结果"
 - subagent_type: "verifier"
 - prompt: "请审计以下阶段的执行结果：\n\nPhase ID: phase_a\nEvidence Bundle: .phase_control/evidence/phase_a_attempt_1.json\n验收标准: ..."
-```
-
-### Hermes Agent 调用方式
-```python
-# For Hermes Agent, use delegate_task:
-delegate_task(
-    instructions="Execute Phase A: Requirements Analysis\n\nPhase ID: phase_a\nGoal: ...\nInputs: ...\nOutputs: ...\nAcceptance Criteria: ...",
-    context="Phase execution task for phase_a"
-)
 ```
 
 ## 日志记录

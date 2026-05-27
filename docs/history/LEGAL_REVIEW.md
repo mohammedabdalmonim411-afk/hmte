@@ -1,4 +1,4 @@
-# HMTE - 开源前法律合规审查报告
+# HTE - 开源前法律合规审查报告
 
 **审查日期**: 2026-05-27  
 **审查范围**: F:/AI/mavis-team-engine 全部文件  
@@ -11,7 +11,7 @@
 
 ### 1. 许可证 ✅
 - **状态**: 已有 MIT License
-- **Copyright**: "HMTE Contributors"（通用，无个人信息）
+- **Copyright**: "HTE Contributors"（通用，无个人信息）
 - **评估**: MIT 是最宽松的开源许可证，允许商业使用、修改、分发
 - **风险**: 无
 
@@ -20,7 +20,7 @@
 - **Tokens**: 未发现
 - **密码**: 未发现（仅示例代码中提到 JWT/bcrypt）
 - **个人信息**: 未发现邮箱、电话、真实姓名
-- **GitHub 用户名**: "mohammedabdalmonim411-afk" 仅出现在 remote URL，不在代码中
+- **GitHub 用户名**: "YOUR_USERNAME" 仅出现在 remote URL，不在代码中
 - **风险**: 无
 
 ### 3. 第三方代码 ✅
@@ -67,7 +67,7 @@
 
 ### 3. LICENSE Copyright ✅
 
-**当前状态**: "HMTE Contributors"
+**当前状态**: "HTE Contributors"
 **评估**: 通用 copyright holder 是开源项目的标准做法，无需修改
 **风险**: 无
 
@@ -78,18 +78,26 @@
 ### 1. "Mavis" 商标 - 风险已缓解 ✅
 
 **现状**:
-- 项目名称: "HMTE (Hermes Mavis Team Engine)"
+- 项目名称: "HTE (Hermes Team Engine)"
 - 来源: 灵感来自 MiniMax 的 Mavis 架构
-- 已添加免责声明说明是架构模式，非官方产品
+- 已添加强化免责声明，明确说明 Mavis 是 MiniMax Technology Limited 注册商标
 
 **风险评估**:
 - **原始风险等级**: 中等
 - **当前风险等级**: 低
 - **缓解措施**: 
-  - ✅ 添加明确免责声明
-  - ✅ 说明是"灵感来自"研究论文
-  - ✅ 明确不是官方产品
+  - ✅ 添加明确免责声明，说明 "Mavis" 是 MiniMax Technology Limited 注册商标
+  - ✅ 明确说明**仅用于描述架构灵感**（Leader/Worker/Verifier 模式），非官方产品
+  - ✅ 明确声明**无 MiniMax 背书或关联**
+  - ✅ 添加"仅用于描述和教育目的，不暗示背书、关联或赞助"声明
   - ✅ 在致谢中再次声明独立实现
+  - ✅ 强调 "Mavis" 指的是**架构概念**，而非商标本身
+
+**最新更新 (2026-05-27)**:
+- 强化了 README.md 中的商标免责声明
+- 明确标注 "Mavis" 为 MiniMax Technology Limited 注册商标
+- 添加更强的非背书、非关联、非赞助声明
+- 明确区分架构概念与商标使用
 
 ### 2. "Hermes" 商标 - 合理使用 ✅
 
@@ -146,7 +154,7 @@ This project is an independent open-source implementation and is not affiliated 
 
 #### 3. ✅ LICENSE Copyright
 
-**当前**: `Copyright (c) 2026 HMTE Contributors`
+**当前**: `Copyright (c) 2026 HTE Contributors`
 **决定**: 保持不变（通用 copyright holder 是开源项目标准做法）
 
 ---
@@ -182,7 +190,7 @@ This project is an independent open-source implementation and is not affiliated 
 
 ### ✅ 已采用方案：平衡方案（推荐）
 
-1. ✅ **保留 "HMTE" 名称**
+1. ✅ **保留 "HTE" 名称**
    - 名称清晰、专业
    - 避免大规模重命名工作
    
@@ -215,7 +223,7 @@ This project is an independent open-source implementation and is not affiliated 
 - [x] 更新 LEGAL_REVIEW.md
 
 ### 建议完成
-- [x] LICENSE copyright 保持通用（HMTE Contributors）
+- [x] LICENSE copyright 保持通用（HTE Contributors）
 - [ ] 添加 CONTRIBUTING.md（可选）
 - [ ] 添加 CODE_OF_CONDUCT.md（可选）
 - [ ] 设置 GitHub Issues 模板（可选）

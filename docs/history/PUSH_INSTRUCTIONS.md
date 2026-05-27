@@ -1,9 +1,9 @@
-# Push Instructions for HMTE Migration
+# Push Instructions for HTE Migration
 
 ## Current Status
 
 ✅ All migration changes have been committed locally
-- Commit: `1ac974a` - "feat: migrate to Hermes and rename to HMTE"
+- Commit: `1ac974a` - "feat: migrate to Hermes and rename to HTE"
 - 22 files changed, 1607 insertions(+), 152 deletions(-)
 - Branch: `master`
 
@@ -56,7 +56,7 @@ git push -u origin master
 
 After pushing, rename the repository on GitHub:
 
-1. Go to: https://github.com/mohammedabdalmonim411-afk/mavis-team-engine
+1. Go to: https://github.com/YOUR_USERNAME/mavis-team-engine
 2. Click **Settings** (top right)
 3. In the **General** section, find **Repository name**
 4. Change from: `mavis-team-engine`
@@ -71,9 +71,9 @@ After renaming on GitHub, update your local repository:
 
 ```bash
 cd /f/AI/mavis-team-engine
-git remote set-url origin https://github.com/mohammedabdalmonim411-afk/hmte.git
+git remote set-url origin https://github.com/YOUR_USERNAME/hmte.git
 # Or if you chose the longer name:
-# git remote set-url origin https://github.com/mohammedabdalmonim411-afk/hermes-mavis-team-engine.git
+# git remote set-url origin https://github.com/YOUR_USERNAME/hermes-mavis-team-engine.git
 ```
 
 Verify the change:

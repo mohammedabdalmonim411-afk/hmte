@@ -1,4 +1,4 @@
-# HMTE - Implementation Summary
+# HTE - Implementation Summary
 
 ## Status: ✅ COMPLETE
 
@@ -137,7 +137,7 @@ Verified:
 
 ### Installation (Hermes)
 ```bash
-git clone https://github.com/mohammedabdalmonim411-afk/mavis-team-engine.git
+git clone https://github.com/YOUR_USERNAME/mavis-team-engine.git
 cd mavis-team-engine
 ./install-to-hermes.sh
 ```
@@ -293,7 +293,7 @@ Total: 24 files
 
 ## Conclusion
 
-The HMTE is **complete and ready to use**. It provides a production-ready implementation of the Leader/Worker/Verifier pattern for Hermes, with:
+The HTE is **complete and ready to use**. It provides a production-ready implementation of the Leader/Worker/Verifier pattern for Hermes, with:
 
 - Rigorous phase gates
 - Evidence-driven verification

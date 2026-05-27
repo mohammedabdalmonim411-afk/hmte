@@ -64,8 +64,8 @@ We welcome feature requests! Please open an issue with:
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/mavis-team-engine.git
-cd mavis-team-engine
+git clone https://github.com/mohammedabdalmonim411-afk/hmte.git
+cd hmte
 
 # Install Python dependencies
 pip install -r requirements.txt

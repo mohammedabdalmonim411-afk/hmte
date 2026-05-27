@@ -1,9 +1,16 @@
 ---
+
+<!-- PLATFORM COMPATIBILITY NOTE -->
+<!-- This agent definition uses Claude Code frontmatter format. -->
+<!-- Hermes users: These fields (tools, permissionMode, maxTurns, color, model, isolation) -->
+<!-- are Claude Code specific and not consumed by Hermes. -->
+<!-- In Hermes, use delegate_task() with goal/context/toolsets parameters. -->
+<!-- Model format in Hermes: "anthropic/claude-opus-4-7" not "opus" -->
+<!-- Worktree isolation is not supported in Hermes. -->
 name: phase-executor
 description: 执行单个阶段，实现代码、运行命令、生成证据束，但不负责最终放行
 tools: Read Grep Glob Bash Edit Write
 model: sonnet
-# Note: Hermes uses provider/model format (e.g., anthropic/claude-opus-4-7)
 permissionMode: acceptEdits
 maxTurns: 30
 memory: local
@@ -11,15 +18,13 @@ isolation: worktree
 color: blue
 ---
 
-<!-- 
-NOTE: This agent definition uses Claude Code syntax (subagent_type, permissionMode, isolation, etc.).
-
-For Hermes Agent:
-- The Leader uses delegate_task() to invoke workers, not the subagent_type field
-- The `isolation: worktree` field is a Claude Code feature and is not available in Hermes
-- Refer to src/agents/phase-executor.md and src/skills/hmte/SKILL.md for Hermes-compatible patterns
-- This file is provided for Claude Code compatibility and as a reference
--->
+<!-- PLATFORM COMPATIBILITY NOTE -->
+<!-- This agent definition uses Claude Code frontmatter format. -->
+<!-- Hermes users: These fields (tools, permissionMode, maxTurns, color, model, isolation) -->
+<!-- are Claude Code specific and not consumed by Hermes. -->
+<!-- In Hermes, use delegate_task() with goal/context/toolsets parameters. -->
+<!-- Model format in Hermes: "anthropic/claude-opus-4-7" not "opus" -->
+<!-- Worktree isolation is not supported in Hermes. -->
 
 # Phase Executor - Team Engine Worker
 

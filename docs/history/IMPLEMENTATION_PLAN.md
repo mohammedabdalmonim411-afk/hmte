@@ -1,4 +1,4 @@
-# HMTE Implementation Plan
+# HTE Implementation Plan
 
 ## 项目概述
 

@@ -1,13 +1,18 @@
-# HMTE - Verification Report
+# HTE - Verification Report
 
-**Date**: 2026-05-26
+**Date**: 2026-05-26 (Initial verification)
+**Last Updated**: 2026-05-27 (Statistics refresh)
 **Status**: ✅ COMPLETE AND VERIFIED
+
+> **Note**: Statistics in this report reflect the state at the time of verification. File counts and line counts may change as the project evolves.
 
 ## Executive Summary
 
 Successfully implemented a Hermes-native Mavis-like Team Engine following the deep-research-report specifications. All core components are in place, tested, and ready for production use.
 
 ## Verification Checklist
+
+> **Note**: The following statistics were recorded on 2026-05-26 before the Hermes migration. For current statistics, see README.md.
 
 ### ✅ Directory Structure Complete
 ```
@@ -282,7 +287,7 @@ All operations are fast and responsive.
 
 ## Conclusion
 
-The HMTE implementation is **COMPLETE, TESTED, and READY FOR USE**.
+The HTE implementation is **COMPLETE, TESTED, and READY FOR USE**.
 
 All requirements from the deep-research-report have been met:
 - ✅ Leader/Worker/Verifier architecture

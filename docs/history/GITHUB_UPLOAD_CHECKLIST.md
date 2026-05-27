@@ -22,7 +22,7 @@
 
 ### Documentation
 - [x] README.md covers:
-  - What is HMTE
+  - What is HTE
   - Architecture diagram
   - Quick start guide
   - Usage examples
@@ -68,7 +68,7 @@ mavis-team-engine/
 ### Step 2: Initialize Git and Push
 
 ```bash
-cd /f/AI/mavis-team-engine
+cd /path/to/your/local/clone
 
 # Initialize git repository
 git init
@@ -77,7 +77,7 @@ git init
 git add .
 
 # Create initial commit
-git commit -m "Initial commit: HMTE v1.0
+git commit -m "Initial commit: HTE v1.0
 
 - Complete Leader/Worker/Verifier architecture
 - 26 files, ~4,500 lines of code
@@ -110,12 +110,12 @@ git push -u origin main
 
 1. Go to "Releases" → "Create a new release"
 2. Tag version: `v1.0.0`
-3. Release title: `HMTE v1.0.0 - Production Ready`
+3. Release title: `HTE v1.0.0 - Production Ready`
 4. Description:
 ```markdown
 ## 🎉 First Production Release
 
-HMTE is now production-ready!
+HTE is now production-ready!
 
 ### Features
 - ✅ Complete Leader/Worker/Verifier architecture
@@ -203,7 +203,7 @@ After pushing to GitHub, verify:
 
 All checks passed. The project is ready to be uploaded to GitHub.
 
-**Project Location**: `F:\AI\mavis-team-engine`
+**Project Location**: `/path/to/your/local/clone`
 
 **Status**: ✅ Production Ready
 

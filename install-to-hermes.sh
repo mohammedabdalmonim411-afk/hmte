@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # install-to-hermes.sh
-# Install HMTE skills to Hermes global profile
+# Install HTE skills to Hermes global profile
 
 set -euo pipefail
 
@@ -11,20 +11,51 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Parse command line arguments
+FORCE_INSTALL=false
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --force|-f)
+            FORCE_INSTALL=true
+            shift
+            ;;
+        --help|-h)
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  --force, -f    Skip confirmation and overwrite existing installation"
+            echo "  --help, -h     Show this help message"
+            echo ""
+            echo "Environment variables:"
+            echo "  HERMES_PROFILE    Target profile (default: default)"
+            echo "  HERMES_HOME       Hermes home directory (default: ~/.hermes)"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
 # Configuration
 PROFILE="${HERMES_PROFILE:-default}"
 HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
 SKILL_NAME="hmte"
-SOURCE_DIR=".claude/skills/mavis-team-engine"
+# Note: SOURCE_DIR points to src/skills/hmte (Hermes-native structure)
+# not .claude/ (legacy Claude Code structure). The Hermes-native version
+# is the canonical source for installation.
+SOURCE_DIR="src/skills/hmte"
 TARGET_DIR="$HERMES_HOME/profiles/$PROFILE/skills/$SKILL_NAME"
 
-echo -e "${BLUE}=== HMTE Hermes Installation ===${NC}"
+echo -e "${BLUE}=== HTE Hermes Installation ===${NC}"
 echo ""
 
 # Check if source directory exists
 if [ ! -d "$SOURCE_DIR" ]; then
     echo -e "${RED}ERROR: Source directory not found: $SOURCE_DIR${NC}"
-    echo "Please run this script from the HMTE project root."
+    echo "Please run this script from the HTE project root."
     exit 1
 fi
 
@@ -42,10 +73,25 @@ if [ ! -d "$HERMES_HOME/profiles/$PROFILE" ]; then
     mkdir -p "$HERMES_HOME/profiles/$PROFILE/skills"
 fi
 
-# Backup existing installation if present
+# Check for existing installation and prompt for confirmation
 if [ -d "$TARGET_DIR" ]; then
+    if [ "$FORCE_INSTALL" = false ]; then
+        echo -e "${YELLOW}Existing installation found at:${NC}"
+        echo "  $TARGET_DIR"
+        echo ""
+        echo -e "${YELLOW}This will backup the existing installation and install the new version.${NC}"
+        echo -n "Continue? [y/N] "
+        read -r response
+        if [[ ! "$response" =~ ^[Yy]$ ]]; then
+            echo ""
+            echo -e "${BLUE}Installation cancelled.${NC}"
+            echo "Use --force to skip this confirmation."
+            exit 0
+        fi
+    fi
+    
     BACKUP_DIR="$TARGET_DIR.backup.$(date +%Y%m%d_%H%M%S)"
-    echo -e "${YELLOW}Existing installation found. Backing up to:${NC}"
+    echo -e "${YELLOW}Backing up existing installation to:${NC}"
     echo "  $BACKUP_DIR"
     mv "$TARGET_DIR" "$BACKUP_DIR"
 fi
@@ -59,17 +105,17 @@ echo -e "${BLUE}Copying skill files...${NC}"
 cp -r "$SOURCE_DIR"/* "$TARGET_DIR/"
 
 # Copy agents directory
-if [ -d ".claude/agents" ]; then
+if [ -d "src/agents" ]; then
     echo -e "${BLUE}Copying agent definitions...${NC}"
     mkdir -p "$TARGET_DIR/agents"
-    cp -r .claude/agents/* "$TARGET_DIR/agents/"
+    cp -r src/agents/* "$TARGET_DIR/agents/"
 fi
 
-# Copy hooks directory
-if [ -d ".claude/hooks" ]; then
+# Copy hooks directory (now part of skill structure)
+if [ -d "$SOURCE_DIR/hooks" ]; then
     echo -e "${BLUE}Copying hooks...${NC}"
     mkdir -p "$TARGET_DIR/hooks"
-    cp -r .claude/hooks/* "$TARGET_DIR/hooks/"
+    cp -r "$SOURCE_DIR/hooks"/* "$TARGET_DIR/hooks/"
 fi
 
 # Make scripts executable
@@ -168,7 +214,7 @@ echo ""
 if [ $ERRORS -eq 0 ]; then
     echo -e "${GREEN}=== Installation Successful ===${NC}"
     echo ""
-    echo "HMTE has been installed to:"
+    echo "HTE has been installed to:"
     echo -e "  ${BLUE}$TARGET_DIR${NC}"
     echo ""
     echo "To use in Hermes, simply invoke:"

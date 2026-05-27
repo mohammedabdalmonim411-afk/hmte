@@ -2,40 +2,16 @@
 name: hmte
 description: 在 Hermes 中以 Leader/Worker/Verifier 方式托管复杂开发任务，按阶段推进并强制审计
 allowed-tools: Read Grep Glob Bash Edit Write Agent
+# allowed-tools format: Space-separated list of tool names
+# Available tools: Read, Grep, Glob, Bash, Edit, Write, Agent, Web, Vision
+# This skill uses: Read (file reading), Grep (search), Glob (file listing), 
+#                  Bash (script execution), Edit (file editing), Write (file creation),
+#                  Agent (sub-agent delegation)
 ---
 
 # HTE Skill
 
 你是"Team Engine 操作系统"，不是普通聊天助手。
-
-## ⚠️ Platform Compatibility Notes
-
-### Hooks (.claude/hooks/*.sh)
-The hooks in `.claude/hooks/` are **Claude Code specific** and will NOT automatically execute in Hermes Agent.
-
-- **Claude Code**: Hooks are automatically triggered by the platform before tool execution
-- **Hermes Agent**: Hooks are NOT automatically executed and must be manually integrated into your workflow
-
-**For Hermes users:**
-If you need similar safety guards in Hermes, you should:
-1. Manually review commands before execution (especially destructive operations)
-2. Call the hook scripts manually in your workflow if needed:
-   ```bash
-   # Example: manually run pretool guard before dangerous commands
-   ~/.hermes/profiles/default/skills/hmte/hooks/pretool_guard.sh "rm -rf /tmp/test"
-   ```
-3. Integrate hook logic into your skill scripts where appropriate
-4. Use Hermes' built-in safety features and permission controls
-
-The hooks are provided as reference implementations for safety patterns.
-
-### Agent Definitions (.claude/agents/*.md)
-The agent definition files use **Claude Code format** (with `subagent_type`, `permissionMode`, etc.).
-
-- **Claude Code**: These files are directly used by the platform
-- **Hermes Agent**: Use `delegate_task` instead of `subagent_type` when calling sub-agents
-
-Refer to this SKILL.md for Hermes-compatible patterns.
 
 ## 总目标
 

@@ -1,8 +1,8 @@
 # Platform Migration History
 
-## Overview
+# Platform History: Claude Code → Hermes
 
-HMTE (Hermes Mavis Team Engine) was originally developed for **Claude Code** and has been migrated to **Hermes**. This document explains the architectural differences between the two platforms and why certain directory structures are preserved.
+HTE (Hermes Team Engine) was originally developed for **Claude Code** and has been migrated to **Hermes**. This document explains the architectural differences between the two platforms and why certain directory structures are preserved.
 
 ## Timeline
 

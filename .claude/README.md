@@ -4,7 +4,7 @@
 
 ## What is this directory?
 
-This directory contains the **original Claude Code project structure** for HMTE (Hermes Mavis Team Engine). It is preserved for:
+This directory contains the **original Claude Code project structure** for HTE (Hermes Team Engine). It is preserved for:
 
 1. **Historical reference** - Shows the original implementation
 2. **Backward compatibility** - Claude Code users can still use this structure
@@ -90,6 +90,8 @@ Safety and enforcement hooks:
 - **pretool_guard.sh** - Blocks dangerous commands
 - **stop_gate.sh** - Prevents stopping with incomplete work
 - **task_naming.sh** - Enforces task naming conventions
+
+⚠️ **Note**: These hooks are **only executed by Claude Code**. Hermes does not automatically execute project-level hooks. For Hermes, safety enforcement is handled through the skill's instructions and agent definitions.
 
 ## Platform Differences
 

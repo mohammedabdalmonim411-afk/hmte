@@ -1,6 +1,6 @@
 # Team Engine Policy
 
-This project uses the HMTE for structured development.
+This project uses the HTE for structured development.
 
 ## Core Rules
 
@@ -64,6 +64,35 @@ For each phase:
 - Stop gate prevents incomplete termination
 - Worktree isolation for phase-executor
 - Read-only by default for verifier
+
+### Hook Registration (Manual Setup Required)
+
+> **⚠️ Important**: Hermes does not automatically register hooks from `.claude/hooks/`. You must manually configure them in your Hermes profile.
+
+The project includes three safety hooks:
+- `pretool_guard.sh` - Blocks dangerous commands (rm -rf, dd, etc.)
+- `stop_gate.sh` - Prevents premature session termination
+- `task_naming.sh` - Enforces task naming conventions
+
+**To enable hooks in Hermes:**
+
+1. Copy hooks to your Hermes profile:
+```bash
+cp .claude/hooks/*.sh ~/.hermes/profiles/default/hooks/
+```
+
+2. Configure in your Hermes profile settings (if supported), or
+
+3. Manually invoke hooks in agent prompts:
+```bash
+# Before executing commands, run:
+bash .claude/hooks/pretool_guard.sh "command_to_check"
+
+# Before stopping session, run:
+bash .claude/hooks/stop_gate.sh
+```
+
+**Note**: Hook integration depends on your Hermes setup. Consult Hermes documentation for the correct hook registration method for your version.
 
 ## Models
 

@@ -39,7 +39,7 @@ TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
 export PHASE_ID ATTEMPT TIMESTAMP EVIDENCE_FILE
 
 # Use Python to generate JSON safely (no injection risk)
-python3 << 'PYTHON_EOF'
+python << 'PYTHON_EOF'
 import json
 import sys
 import os

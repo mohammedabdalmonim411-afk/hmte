@@ -59,18 +59,18 @@ If you prefer to keep the repository name as `mavis-team-engine`:
 - Simpler migration path
 
 ### Cons
-- Repository name doesn't match project name (HMTE)
+- Repository name doesn't match project name (HTE)
 - May cause confusion for new users
 
 ### If Keeping Current Name
 
-The project code and documentation already use "HMTE" internally. The repository name is just a URL identifier and doesn't affect functionality.
+The project code and documentation already use "HTE" internally. The repository name is just a URL identifier and doesn't affect functionality.
 
 You can add a note in the README:
 
 ```markdown
 > **Note**: This repository is named `mavis-team-engine` for historical reasons. 
-> The project is now called **HMTE (Hermes Mavis Team Engine)**.
+> The project is now called **HTE (Hermes Team Engine)**.
 ```
 
 ## Recommended Approach
@@ -79,14 +79,14 @@ You can add a note in the README:
 
 1. **Consistency**: Repository name matches project name
 2. **Clarity**: New users won't be confused by the old name
-3. **Branding**: Establishes HMTE as the official name
+3. **Branding**: Establishes HTE as the official name
 4. **SEO**: Better search engine optimization with consistent naming
 
 The redirect feature means old links will continue to work, minimizing disruption.
 
 ## Timeline
 
-- **Immediate**: All code and documentation already use "HMTE"
+- **Immediate**: All code and documentation already use "HTE"
 - **After GitHub rename**: Update local git remotes (5 minutes)
 - **Within 1 week**: Update any external documentation
 - **Ongoing**: GitHub handles redirects automatically

@@ -7,9 +7,9 @@
 
 > **📝 Platform Migration Note**: This project was originally developed for Claude Code and has been migrated to Hermes Agent. References to "Claude Code" throughout the documentation are for legacy support and format compatibility. New users should follow the Hermes installation instructions. See [PLATFORM_HISTORY.md](docs/history/PLATFORM_HISTORY.md) for migration details.
 
-> **📝 Repository Name Note**: This repository is currently named `mavis-team-engine` for historical reasons. The recommended name is `hmte` (Hermes Team Engine). If you're forking or cloning, consider renaming it to `hmte` for consistency with the project's current branding.
+> **Note**: This repository is currently named `mavis-team-engine` on GitHub. We recommend renaming it to `hmte` for consistency. See [GITHUB_RENAME.md](docs/history/GITHUB_RENAME.md) for instructions.
 
-> **📝 Note**: This README contains template GitHub URLs (github.com/YOUR_USERNAME/mavis-team-engine). When using this project, replace `YOUR_USERNAME` with your actual GitHub username or remove references if not publishing to GitHub.
+> **📝 Note**: This README previously contained template GitHub URLs (github.com/YOUR_USERNAME/hmte). All URLs have been updated to point to the official repository at github.com/mohammedabdalmonim411-afk/hmte.
 
 ## ⚠️ Disclaimer
 
@@ -129,30 +129,26 @@ User Goal
 > - Git Bash or WSL for shell scripts
 > - Python `filelock` library: `pip install filelock`
 > - Some features may have limited functionality on Windows
+> 
+> The core Hermes skill works cross-platform, but shell scripts assume a Unix environment.
 
 - **Hermes** (CLI, Desktop, or Web)
 - **Python 3.8+**
 - **Git**
 - **Bash** (Unix-like shell)
 
-> **⚠️ Platform Compatibility**: This project is designed for Unix-like systems (Linux, macOS). Windows users can use WSL (Windows Subsystem for Linux) or Git Bash, though some scripts may require adjustments. The core Hermes skill works cross-platform, but shell scripts assume a Unix environment.
-
 ### Installation
 
-## 🚀 Quick Start
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/mohammedabdalmonim411-afk/hmte.git
+   cd hmte
+   ```
 
-```bash
-git clone https://github.com/YOUR_USERNAME/mavis-team-engine.git
-cd mavis-team-engine
-```
-
-> **📝 Note**: The GitHub URL above is a template. If you're using a fork or different repository, replace it with your actual repository URL.
-
-2. **Install to Hermes profile:**
-
-```bash
-./install-to-hermes.sh
-```
+2. **Run the installation script**:
+   ```bash
+   ./install-to-hermes.sh
+   ```
 
 This installs the skill to `~/.hermes/profiles/default/skills/hmte/` where Hermes can discover it globally.
 
@@ -163,15 +159,15 @@ This installs the skill to `~/.hermes/profiles/default/skills/hmte/` where Herme
 cd /path/to/your/project
 
 # Copy the runtime structure from the cloned repository
-# If you cloned to ~/mavis-team-engine:
-cp -r ~/mavis-team-engine/.phase_control .
-cp -r ~/mavis-team-engine/scripts .
+# If you cloned to ~/hmte:
+cp -r ~/hmte/.phase_control .
+cp -r ~/hmte/scripts .
 ```
 
-> **📝 Note**: Replace `~/mavis-team-engine` with the actual path where you cloned the repository. Common examples:
-> - Linux/macOS: `~/projects/mavis-team-engine`
-> - Windows (Git Bash): `/c/Users/YourName/mavis-team-engine`
-> - Or use absolute paths like `/home/username/mavis-team-engine`
+> **📝 Note**: Replace `~/hmte` with the actual path where you cloned the repository. Common examples:
+> - Linux/macOS: `~/projects/hmte`
+> - Windows (Git Bash): `/c/Users/YourName/hmte`
+> - Or use absolute paths like `/home/username/hmte`
 
 4. **Initialize the session:**
 
@@ -191,12 +187,12 @@ Please use the hmte skill to implement user authentication.
 
 ```bash
 # Option 1: Clone as a submodule
-git submodule add https://github.com/YOUR_USERNAME/mavis-team-engine .mavis
+git submodule add https://github.com/YOUR_USERNAME/hmte .mavis
 
 # Option 2: Copy directly
-cp -r /path/to/mavis-team-engine/.claude .
-cp -r /path/to/mavis-team-engine/.phase_control .
-cp -r /path/to/mavis-team-engine/scripts .
+cp -r /path/to/hmte/.claude .
+cp -r /path/to/hmte/.phase_control .
+cp -r /path/to/hmte/scripts .
 ```
 
 2. **Initialize the session:**
@@ -211,7 +207,7 @@ cp -r /path/to/mavis-team-engine/scripts .
 Please use the mavis-team-engine skill to implement user authentication.
 ```
 
-> **Note**: See [PLATFORM_HISTORY.md](PLATFORM_HISTORY.md) for details on platform differences.
+> **Note**: See [PLATFORM_HISTORY.md](docs/history/PLATFORM_HISTORY.md) for details on platform differences.
 
 ### ⚠️ Platform Compatibility
 
@@ -764,9 +760,9 @@ This project is an independent open-source implementation and is not affiliated 
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/mavis-team-engine/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/YOUR_USERNAME/mavis-team-engine/discussions)
-- **Documentation**: [Project Wiki](https://github.com/YOUR_USERNAME/mavis-team-engine/wiki)
+- **Issues**: [GitHub Issues](https://github.com/mohammedabdalmonim411-afk/hmte/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/mohammedabdalmonim411-afk/hmte/discussions)
+- **Documentation**: [Project Wiki](https://github.com/mohammedabdalmonim411-afk/hmte/wiki)
 
 ## 🗺️ Roadmap
 
@@ -792,8 +788,8 @@ This project is an independent open-source implementation and is not affiliated 
 
 > **Note**: Statistics as of 2026-05-27. Run `find . -type f \( -name "*.sh" -o -name "*.py" -o -name "*.md" -o -name "*.json" -o -name "*.yaml" \) ! -path "./.git/*" ! -path "./.phase_control/*" | wc -l` to get current counts.
 
-- **Lines of Code**: ~11,408 total (1,384 shell + 226 Python + 9,371 docs + 354 JSON + 73 other) *(Statistics as of 2026-05-27)*
-- **Files**: 65 (20 shell, 2 Python, 39 Markdown, 2 JSON, 2 other)
+- **Files**: 67 (including migration artifacts)
+- **Lines of Code**: ~13,235 total
 - **Test Coverage**: E2E suite passing
 - **Security Issues Fixed**: 5 critical
 - **Status**: Production Ready ✅
