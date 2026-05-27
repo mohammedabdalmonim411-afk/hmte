@@ -139,8 +139,6 @@ User Goal
 
 ### Installation
 
-### Installation
-
 ## 🚀 Quick Start
 
 ```bash
@@ -712,14 +710,14 @@ rm .phase_control/run.lock
 
 ## 📚 Documentation
 
-- **[PLATFORM_HISTORY.md](PLATFORM_HISTORY.md)** - Platform migration history (Claude Code → Hermes)
+- **[PLATFORM_HISTORY.md](docs/history/PLATFORM_HISTORY.md)** - Platform migration history (Claude Code → Hermes)
 - **[install-to-hermes.sh](install-to-hermes.sh)** - Hermes installation script
 - **[.claude/README.md](.claude/README.md)** - Legacy directory explanation
-- **[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)** - Detailed design document
-- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Build summary
-- **[FINAL_REPORT.md](FINAL_REPORT.md)** - Project completion report
-- **[SECURITY_FIXES.md](SECURITY_FIXES.md)** - Security improvements
-- **[VERIFICATION_REPORT.md](VERIFICATION_REPORT.md)** - Test results
+- **[IMPLEMENTATION_PLAN.md](docs/history/IMPLEMENTATION_PLAN.md)** - Detailed design document
+- **[IMPLEMENTATION_SUMMARY.md](docs/history/IMPLEMENTATION_SUMMARY.md)** - Build summary
+- **[FINAL_REPORT.md](docs/history/FINAL_REPORT.md)** - Project completion report
+- **[SECURITY_FIXES.md](docs/history/SECURITY_FIXES.md)** - Security improvements
+- **[VERIFICATION_REPORT.md](docs/history/VERIFICATION_REPORT.md)** - Test results
 - **[HERMES.md](HERMES.md)** - Project rules for Hermes
 
 ## 🤝 Contributing
