@@ -1,23 +1,35 @@
-# HMTE (Hermes Mavis Team Engine)
+# HTE (Hermes Team Engine)
 
 > A Hermes-native multi-agent development system implementing the Leader/Worker/Verifier pattern for rigorous, phase-based software development.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-green.svg)]()
+![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-green.svg)
+
+> **📝 Platform Migration Note**: This project was originally developed for Claude Code and has been migrated to Hermes Agent. References to "Claude Code" throughout the documentation are for legacy support and format compatibility. New users should follow the Hermes installation instructions. See [PLATFORM_HISTORY.md](docs/history/PLATFORM_HISTORY.md) for migration details.
+
+> **📝 Repository Name Note**: This repository is currently named `mavis-team-engine` for historical reasons. The recommended name is `hmte` (Hermes Team Engine). If you're forking or cloning, consider renaming it to `hmte` for consistency with the project's current branding.
+
+> **📝 Note**: This README contains template GitHub URLs (github.com/YOUR_USERNAME/mavis-team-engine). When using this project, replace `YOUR_USERNAME` with your actual GitHub username or remove references if not publishing to GitHub.
 
 ## ⚠️ Disclaimer
 
-This project is an independent open-source implementation.
+This project is an independent open-source community implementation.
 
-- **"Mavis"** refers to the architectural pattern inspired by MiniMax's research, not an official MiniMax product
+### Trademark Notice
+
+- **"Mavis"** is a registered trademark of MiniMax Technology Limited. In this project, "Mavis" refers **solely to the architectural pattern** (Leader/Worker/Verifier) described in MiniMax's research papers as inspiration for this implementation. This is **NOT** an official MiniMax product, is **NOT** endorsed by MiniMax, has **NO** affiliation with MiniMax, and does **NOT** imply any commercial relationship. The use of "Mavis" is purely descriptive and refers to the architectural concept, not the trademark.
+
+  **⚠️ TRADEMARK RISK WARNING**: Using "Mavis" in the repository name or branding may create trademark confusion. This is a **community project** with **no authorization** from MiniMax. If you fork or deploy this project, consider using a different name (e.g., "HTE", "Hermes Team Engine") to avoid potential trademark issues. The maintainers of this project make no claims to the "Mavis" trademark and recommend users consult legal counsel before using this name in commercial contexts.
+
 - **"Hermes"** is developed by Nous Research. This project is a third-party tool and is not affiliated with, endorsed by, or sponsored by Nous Research
+
 - This project is provided "as-is" under the MIT License with no warranties
 
-All trademarks are the property of their respective owners.
+**All trademarks are the property of their respective owners. Use of trademarked names is for descriptive and educational purposes only and does not imply endorsement, affiliation, or sponsorship. Users assume all responsibility for trademark compliance when forking, deploying, or distributing this software.**
 
-## 🎯 What is HMTE?
+## 🎯 What is HTE?
 
-HMTE is a **production-ready framework** that brings structured, multi-agent collaboration to Hermes. Inspired by MiniMax's Mavis architecture, it enforces a rigorous "plan → execute → verify → release" cycle with:
+HTE is a **production-ready framework** that brings structured, multi-agent collaboration to Hermes. Inspired by MiniMax's Mavis architecture, it enforces a rigorous "plan → execute → verify → release" cycle with:
 
 - **Phase-based workflow** with explicit quality gates
 - **Evidence-driven verification** - all decisions backed by structured proof
@@ -34,7 +46,7 @@ Traditional AI-assisted development often suffers from:
 - ❌ Context pollution - all agents see everything
 - ❌ No audit trail - can't trace decisions
 
-HMTE solves these with:
+HTE solves these with:
 - ✅ **Mandatory verification** - nothing proceeds without PASS verdict
 - ✅ **Adversarial review** - Verifier actively looks for problems
 - ✅ **Context isolation** - each role sees only what it needs
@@ -113,21 +125,30 @@ User Goal
 
 ### Prerequisites
 
+> **⚠️ Platform Compatibility**: Currently tested on Unix/Linux/macOS. Windows support is experimental and requires:
+> - Git Bash or WSL for shell scripts
+> - Python `filelock` library: `pip install filelock`
+> - Some features may have limited functionality on Windows
+
 - **Hermes** (CLI, Desktop, or Web)
 - **Python 3.8+**
 - **Git**
 - **Bash** (Unix-like shell)
 
+> **⚠️ Platform Compatibility**: This project is designed for Unix-like systems (Linux, macOS). Windows users can use WSL (Windows Subsystem for Linux) or Git Bash, though some scripts may require adjustments. The core Hermes skill works cross-platform, but shell scripts assume a Unix environment.
+
 ### Installation
 
-#### For Hermes Users (Recommended)
+### Installation
 
-1. **Clone the repository:**
+## 🚀 Quick Start
 
 ```bash
-git clone https://github.com/mohammedabdalmonim411-afk/mavis-team-engine.git
+git clone https://github.com/YOUR_USERNAME/mavis-team-engine.git
 cd mavis-team-engine
 ```
+
+> **📝 Note**: The GitHub URL above is a template. If you're using a fork or different repository, replace it with your actual repository URL.
 
 2. **Install to Hermes profile:**
 
@@ -140,10 +161,19 @@ This installs the skill to `~/.hermes/profiles/default/skills/hmte/` where Herme
 3. **Copy runtime structure to your project:**
 
 ```bash
-# In your project directory
-cp -r /path/to/mavis-team-engine/.phase_control .
-cp -r /path/to/mavis-team-engine/scripts .
+# Navigate to your project directory
+cd /path/to/your/project
+
+# Copy the runtime structure from the cloned repository
+# If you cloned to ~/mavis-team-engine:
+cp -r ~/mavis-team-engine/.phase_control .
+cp -r ~/mavis-team-engine/scripts .
 ```
+
+> **📝 Note**: Replace `~/mavis-team-engine` with the actual path where you cloned the repository. Common examples:
+> - Linux/macOS: `~/projects/mavis-team-engine`
+> - Windows (Git Bash): `/c/Users/YourName/mavis-team-engine`
+> - Or use absolute paths like `/home/username/mavis-team-engine`
 
 4. **Initialize the session:**
 
@@ -163,7 +193,7 @@ Please use the hmte skill to implement user authentication.
 
 ```bash
 # Option 1: Clone as a submodule
-git submodule add https://github.com/mohammedabdalmonim411-afk/mavis-team-engine .mavis
+git submodule add https://github.com/YOUR_USERNAME/mavis-team-engine .mavis
 
 # Option 2: Copy directly
 cp -r /path/to/mavis-team-engine/.claude .
@@ -184,6 +214,28 @@ Please use the mavis-team-engine skill to implement user authentication.
 ```
 
 > **Note**: See [PLATFORM_HISTORY.md](PLATFORM_HISTORY.md) for details on platform differences.
+
+### ⚠️ Platform Compatibility
+
+#### Hooks (.claude/hooks/*.sh)
+The hooks in `.claude/hooks/` are **Claude Code specific** and will NOT automatically execute in Hermes Agent:
+
+- **Claude Code**: Hooks (`pretool_guard.sh`, `stop_gate.sh`, `task_naming.sh`) are automatically triggered before tool execution
+- **Hermes Agent**: Hooks are NOT automatically executed and must be manually integrated
+
+**For Hermes users:**
+- The hooks are provided as reference implementations
+- You can manually call them in your workflow scripts
+- Hermes has its own built-in safety features
+- Review commands manually before execution for safety-critical operations
+
+#### Agent Definitions (.claude/agents/*.md)
+The agent definition files use **Claude Code format**:
+
+- **Claude Code**: Uses `subagent_type`, `permissionMode`, `isolation`, etc.
+- **Hermes Agent**: Use `delegate_task` instead when calling sub-agents
+
+Refer to `.claude/skills/mavis-team-engine/SKILL.md` for Hermes-compatible patterns.
 
 ### Verification
 
@@ -239,7 +291,9 @@ Please use the mavis-team-engine skill to implement a login API with JWT authent
 ./scripts/mavis-stop.sh
 ```
 
-### Example: Implementing User Authentication
+### Example Workflow: What Happens When You Request User Authentication
+
+> **⚠️ Important**: The following is a **workflow demonstration example** showing how the system operates. This is NOT actual implemented functionality in the repository. The example illustrates the phase-based workflow pattern, not real code that exists in this project.
 
 **User request:**
 ```
@@ -387,16 +441,16 @@ NEXT_ACTION: ESCALATE_TO_LEADER
 │   │   ├── audit-checklist.md          # Verifier checklist
 │   │   └── scripts/
 │   │       ├── write_state.py          # State management (with file locking)
-│   │       ├── collect_evidence.sh     # Evidence collection helper
-│   │       └── phase_gate.sh           # Phase gate checker
-│   ├── agents/
-│   │   ├── master-planner.md           # Leader agent definition
-│   │   ├── phase-executor.md           # Worker agent definition
-│   │   └── verifier.md                 # Verifier agent definition
-│   └── hooks/
-│       ├── stop_gate.sh                # Prevents stopping with incomplete work
-│       ├── pretool_guard.sh            # Blocks dangerous commands
-│       └── task_naming.sh              # Enforces task naming conventions
+│   │       ├── phase_gate.sh           # Phase transition logic
+│   │       └── collect_evidence.sh     # Evidence collection
+│   ├── agents/                         # Claude Code agent definitions
+│   │   ├── master-planner.md           # Leader agent
+│   │   ├── phase-executor.md           # Worker agent
+│   │   └── verifier.md                 # Auditor agent
+│   └── hooks/                          # Claude Code hooks (NOT executed by Hermes)
+│       ├── pretool_guard.sh            # Command safety checks
+│       ├── stop_gate.sh                # Incomplete work prevention
+│       └── task_naming.sh              # Task naming enforcement
 ├── .phase_control/                     # Runtime state (project-local)
 │   ├── phases.yaml                     # Phase definitions
 │   ├── state.json                      # State machine (Leader-only)
@@ -548,7 +602,7 @@ Tests verify:
 
 ### Manual Testing
 
-3. Start session: `./scripts/mavis-start.sh`
+1. Start session: `./scripts/mavis-start.sh`
 2. Create test phase in `.phase_control/phases.yaml`
 3. Invoke skill in Hermes
 4. Check status: `./scripts/mavis-status.sh`
@@ -560,10 +614,12 @@ Tests verify:
 
 ### Token Costs
 
-Multi-agent workflows consume approximately **7x** normal conversation tokens:
-- Leader planning: ~2x
-- Worker execution: ~3x
-- Verifier audit: ~2x
+Multi-agent workflows consume approximately **5-10x** normal conversation tokens (estimated based on architectural overhead, not measured):
+- Leader planning: ~2x (estimated)
+- Worker execution: ~3x (estimated)
+- Verifier audit: ~2x (estimated)
+
+> **Note**: These are rough estimates based on the multi-agent architecture pattern. Actual token usage will vary significantly based on task complexity, model choice, and phase design. No systematic measurements have been performed.
 
 **Optimization tips:**
 - Use Sonnet for Worker (cheaper, still capable)
@@ -573,10 +629,12 @@ Multi-agent workflows consume approximately **7x** normal conversation tokens:
 
 ### Execution Time
 
-Typical phase execution:
-- Simple phase (add function): 2-5 minutes
-- Medium phase (implement API): 5-15 minutes
-- Complex phase (full feature): 15-30 minutes
+Typical phase execution (estimated based on typical usage, not measured):
+- Simple phase (add function): ~2-5 minutes
+- Medium phase (implement API): ~5-15 minutes
+- Complex phase (full feature): ~15-30 minutes
+
+> **Note**: These are approximate time ranges based on typical development patterns. Actual execution time depends heavily on task complexity, model performance, network latency, and whether retries are needed.
 
 Includes: planning, execution, evidence collection, verification, and potential retry.
 
@@ -649,7 +707,7 @@ rm .phase_control/run.lock
 |----------|------|------|----------|
 | **Single Agent** | Simple, fast, cheap | No verification, no gates | Simple tasks, prototyping |
 | **Prompt-only Multi-Agent** | Easy to set up | No enforcement, roles blur | Experimentation |
-| **HMTE** | Enforced gates, audit trail, isolation | Higher token cost, slower | Production code, critical features |
+| **HTE** | Enforced gates, audit trail, isolation | Higher token cost, slower | Production code, critical features |
 | **External Orchestrator** | Maximum control | Complex setup, maintenance | Platform-level automation |
 
 ## 📚 Documentation
@@ -678,7 +736,7 @@ Contributions welcome! Please:
 
 ```bash
 # Clone repository
-git clone https://github.com/mohammedabdalmonim411-afk/mavis-team-engine.git
+git clone https://github.com/YOUR_USERNAME/mavis-team-engine.git
 cd mavis-team-engine
 
 # Run tests
@@ -708,9 +766,9 @@ This project is an independent open-source implementation and is not affiliated 
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/mohammedabdalmonim411-afk/mavis-team-engine/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/mohammedabdalmonim411-afk/mavis-team-engine/discussions)
-- **Documentation**: [Project Wiki](https://github.com/mohammedabdalmonim411-afk/mavis-team-engine/wiki)
+- **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/mavis-team-engine/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/YOUR_USERNAME/mavis-team-engine/discussions)
+- **Documentation**: [Project Wiki](https://github.com/YOUR_USERNAME/mavis-team-engine/wiki)
 
 ## 🗺️ Roadmap
 
@@ -734,14 +792,16 @@ This project is an independent open-source implementation and is not affiliated 
 
 ## 📈 Project Stats
 
-- **Lines of Code**: ~5,700+ (1,148 scripts + 4,524 docs)
-- **Files**: 39 (scripts, docs, configs)
+> **Note**: Statistics as of 2026-05-27. Run `find . -type f \( -name "*.sh" -o -name "*.py" -o -name "*.md" -o -name "*.json" -o -name "*.yaml" \) ! -path "./.git/*" ! -path "./.phase_control/*" | wc -l` to get current counts.
+
+- **Lines of Code**: ~11,408 total (1,384 shell + 226 Python + 9,371 docs + 354 JSON + 73 other) *(Statistics as of 2026-05-27)*
+- **Files**: 65 (20 shell, 2 Python, 39 Markdown, 2 JSON, 2 other)
 - **Test Coverage**: E2E suite passing
 - **Security Issues Fixed**: 5 critical
 - **Status**: Production Ready ✅
 
 ---
 
-**Built with ❤️ by the HMTE community**
+**Built with ❤️ by the HTE community**
 
 **Star ⭐ this repo if you find it useful!**
