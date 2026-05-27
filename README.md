@@ -187,7 +187,7 @@ Please use the hmte skill to implement user authentication.
 
 ```bash
 # Option 1: Clone as a submodule
-git submodule add https://github.com/YOUR_USERNAME/hmte .mavis
+git submodule add https://github.com/mohammedabdalmonim411-afk/hmte .mavis
 
 # Option 2: Copy directly
 cp -r /path/to/hmte/.claude .
@@ -730,11 +730,11 @@ Contributions welcome! Please:
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/mavis-team-engine.git
-cd mavis-team-engine
+git clone https://github.com/mohammedabdalmonim411-afk/hmte.git
+cd hmte
 
 # Run tests
-./scripts/mavis-e2e.sh
+./scripts/hmte-e2e.sh
 
 # Make changes
 # ...
