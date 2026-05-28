@@ -7,8 +7,6 @@
 
 > **📝 Platform Migration Note**: This project was originally developed for Claude Code and has been migrated to Hermes Agent. References to "Claude Code" throughout the documentation are for legacy support and format compatibility. New users should follow the Hermes installation instructions. See [PLATFORM_HISTORY.md](docs/history/PLATFORM_HISTORY.md) for migration details.
 
-> **Note**: This repository is currently named `mavis-team-engine` on GitHub. We recommend renaming it to `hmte` for consistency. See [GITHUB_RENAME.md](docs/history/GITHUB_RENAME.md) for instructions.
-
 > **📝 Note**: This README previously contained template GitHub URLs (github.com/YOUR_USERNAME/hmte). All URLs have been updated to point to the official repository at github.com/mohammedabdalmonim411-afk/hmte.
 
 ## ⚠️ Disclaimer
@@ -17,7 +15,7 @@ This project is an independent open-source community implementation.
 
 ### Trademark Notice
 
-- **"Mavis"** is a registered trademark of MiniMax Technology Limited. In this project, "Mavis" refers **solely to the architectural pattern** (Leader/Worker/Verifier) described in MiniMax's research papers as inspiration for this implementation. This is **NOT** an official MiniMax product, is **NOT** endorsed by MiniMax, has **NO** affiliation with MiniMax, and does **NOT** imply any commercial relationship. The use of "Mavis" is purely descriptive and refers to the architectural concept, not the trademark.
+- **"Mavis"** refers to the multi-agent architectural pattern (Leader/Worker/Verifier) publicly described by MiniMax Technology Limited. This is an independent community implementation with no affiliation to or endorsement from MiniMax.
 
   **⚠️ TRADEMARK RISK WARNING**: Using "Mavis" in the repository name or branding may create trademark confusion. This is a **community project** with **no authorization** from MiniMax. If you fork or deploy this project, consider using a different name (e.g., "HTE", "Hermes Team Engine") to avoid potential trademark issues. The maintainers of this project make no claims to the "Mavis" trademark and recommend users consult legal counsel before using this name in commercial contexts.
 
@@ -123,6 +121,28 @@ User Goal
 
 ## 🚀 Quick Start
 
+> **⚠️ CRITICAL: Ensure Mavis is Actually Being Used**
+>
+> AI agents will claim to use HTE but often skip the workflow entirely. Without enforcement, you get:
+> - ❌ No phases.yaml created
+> - ❌ No evidence bundles produced
+> - ❌ No verification verdicts
+> - ❌ Direct implementation without quality gates
+>
+> **Before using HTE, read [MAVIS_ENFORCEMENT.md](MAVIS_ENFORCEMENT.md)** to learn:
+> - How to configure Hermes memory to enforce HTE usage
+> - How to verify the AI is actually using the workflow (not faking it)
+> - Common "fake usage" patterns and how to catch them
+> - Real evidence from this project: Phase 1 took **4 attempts** because the verifier caught incomplete work
+>
+> **Quick enforcement checklist:**
+> - [ ] AI created `.phase_control/phases.yaml` before starting
+> - [ ] Evidence files exist in `.phase_control/evidence/`
+> - [ ] Verdict files exist in `.phase_control/verdicts/`
+> - [ ] You see `delegate_task` calls (not direct implementation)
+>
+> Without enforcement, the AI will say "I'll use HTE" and then write code directly. **Trust, but verify.**
+
 ### Prerequisites
 
 > **⚠️ Platform Compatibility**: Currently tested on Unix/Linux/macOS. Windows support is experimental and requires:
@@ -204,7 +224,7 @@ cp -r /path/to/hmte/scripts .
 3. **Use in Claude Code:**
 
 ```
-Please use the mavis-team-engine skill to implement user authentication.
+Please use the hmte skill to implement user authentication.
 ```
 
 > **Note**: See [PLATFORM_HISTORY.md](docs/history/PLATFORM_HISTORY.md) for details on platform differences.
@@ -229,7 +249,7 @@ The agent definition files use **Claude Code format**:
 - **Claude Code**: Uses `subagent_type`, `permissionMode`, `isolation`, etc.
 - **Hermes Agent**: Use `delegate_task` instead when calling sub-agents
 
-Refer to `.claude/skills/mavis-team-engine/SKILL.md` for Hermes-compatible patterns.
+Refer to `src/skills/hmte/SKILL.md` for Hermes-compatible patterns.
 
 ### Verification
 
@@ -252,6 +272,10 @@ Verified:
   ✓ Stop gate enforcement
 ```
 
+### 🔒 Enforce Mavis Workflow (Recommended)
+
+To ensure AI agents strictly follow the Leader→Worker→Verifier pattern and prevent shortcuts, see [**MAVIS_ENFORCEMENT.md**](./MAVIS_ENFORCEMENT.md) for configuration instructions. This prevents AI from "lying" about using Mavis while actually skipping delegation.
+
 ## 📖 Usage
 
 ### Basic Workflow
@@ -263,7 +287,7 @@ Verified:
 
 2. **Invoke the skill in Hermes:**
 ```
-Please use the mavis-team-engine skill to implement a login API with JWT authentication.
+Please use the hmte skill to implement a login API with JWT authentication.
 ```
 
 3. **The system will:**
@@ -291,7 +315,7 @@ Please use the mavis-team-engine skill to implement a login API with JWT authent
 
 **User request:**
 ```
-Please use the mavis-team-engine skill to implement user authentication with:
+Please use the hmte skill to implement user authentication with:
 - Login API endpoint
 - JWT token generation
 - Password hashing with bcrypt
@@ -688,7 +712,7 @@ python3 ~/.hermes/profiles/default/skills/hmte/scripts/write_state.py \
   .phase_control/state.json phase_status=passed
 
 # For Claude Code users:
-python3 .claude/skills/mavis-team-engine/scripts/write_state.py \
+python3 src/skills/hmte/scripts/write_state.py \
   .phase_control/state.json phase_status=passed
 
 # Or force stop (bypasses gate)

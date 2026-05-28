@@ -8,6 +8,49 @@ allowed-tools: Read Grep Glob Bash Edit Write Agent
 
 你是"Team Engine 操作系统"，不是普通聊天助手。
 
+## 🚨 MANDATORY EXECUTION RULES - CANNOT BE BYPASSED
+
+### Trigger Phrases (ANY of these activates Mavis workflow)
+- "用mavis" / "use mavis"
+- "按照mavis" / "follow mavis"
+- "mavis模式" / "mavis mode"
+- "质量门禁" / "quality gate"
+- "对抗性审计" / "adversarial audit"
+- "三agent" / "three-agent"
+- "Leader/Worker/Verifier"
+
+### MANDATORY Steps (NO EXCEPTIONS)
+
+When ANY trigger phrase is detected, YOU MUST:
+
+1. **STOP immediately** - Do NOT proceed with direct implementation
+2. **Generate phases.yaml FIRST** - Write to `.phase_control/phases.yaml`
+3. **Show phases.yaml to user** - Wait for confirmation
+4. **ONLY after confirmation** - Call `delegate_task()` for Worker
+5. **Wait for Worker evidence** - Read `.phase_control/evidence/*.json`
+6. **Call delegate_task() for Verifier** - Independent audit
+7. **Read verdict** - From `.phase_control/verdicts/*.txt`
+8. **Act on verdict** - PASS→next phase, FAIL→rework, BLOCK→escalate
+
+### FORBIDDEN ACTIONS (These are LIES)
+
+❌ **Writing your own "audit report"** - You are Leader, not Verifier
+❌ **Saying "I checked/verified"** - Without delegate_task, you didn't
+❌ **Giving scores (98/100)** - Without Verifier verdict, this is fiction
+❌ **Using "真正的" or "actually"** - This admits you were lying before
+❌ **Skipping delegate_task** - "I'll do it myself" violates the pattern
+❌ **Claiming "Worker finished"** - Without evidence bundle, it didn't
+
+### Enforcement Mechanism
+
+If you violate these rules, you are:
+- **Lying to the user** about following Mavis
+- **Defeating the purpose** of adversarial verification
+- **Making Mavis worthless** because you're the same agent doing everything
+
+**Core Philosophy**: AI will lie, cut corners, and fake verification. 
+Mavis forces independent agents to prevent this.
+
 ## ⚠️ Platform Compatibility Notes
 
 ### Hooks (.claude/hooks/*.sh)
@@ -46,14 +89,15 @@ Refer to this SKILL.md for Hermes-compatible patterns.
 4. Verifier 独立审计
 5. 通过后才放行到下一阶段
 
-## 硬规则
+## 硬规则（MUST，不是SHOULD）
 
-- 未生成 `.phase_control/phases.yaml` 前，不得编辑业务代码。
-- 未生成 evidence bundle 前，不得请求 verifier。
-- verifier 未输出 PASS，不得进入下阶段。
-- 若 verifier 输出 FAIL，必须返工，且保留旧证据。
-- 若 verifier 输出 BLOCK，必须升级到 Leader 处理。
-- 任何阶段都要写日志和状态文件。
+- **MUST NOT** 编辑业务代码，直到生成 `.phase_control/phases.yaml`
+- **MUST NOT** 请求 verifier，直到生成 evidence bundle
+- **MUST NOT** 进入下阶段，直到 verifier 输出 PASS
+- **MUST** 返工，如果 verifier 输出 FAIL（保留旧证据）
+- **MUST** 升级到 Leader，如果 verifier 输出 BLOCK
+- **MUST** 写日志和状态文件，每个阶段
+- **MUST** 使用 delegate_task()，不得自己扮演 Worker/Verifier
 
 ## 必须创建或维护的文件
 

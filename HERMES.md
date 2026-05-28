@@ -2,39 +2,39 @@
 
 This project uses the HTE for structured development.
 
-## Core Rules
+## Core Rules (MANDATORY - NOT OPTIONAL)
 
-1. **All complex tasks must use Team Engine**
-   - Write phases to `.phase_control/phases.yaml` first
-   - Execute through master-planner → phase-executor → verifier flow
-   - Do not bypass the verification step
+1. **All complex tasks MUST use Team Engine**
+   - MUST write phases to `.phase_control/phases.yaml` first
+   - MUST execute through master-planner → phase-executor → verifier flow
+   - MUST NOT bypass the verification step
 
-2. **Phase Gate Enforcement**
+2. **Phase Gate Enforcement (MANDATORY)**
    - No phase proceeds without verifier PASS
-   - Evidence bundle required for every phase
-   - State machine must be maintained
+   - Evidence bundle REQUIRED for every phase
+   - State machine MUST be maintained
 
-3. **Role Boundaries**
-   - Only master-planner modifies `.phase_control/state.json`
+3. **Role Boundaries (STRICT)**
+   - ONLY master-planner modifies `.phase_control/state.json`
    - phase-executor produces implementation and evidence
-   - verifier only audits, does not modify code
-   - Each role stays in its lane
+   - verifier ONLY audits, does NOT modify code
+   - Each role MUST stay in its lane
 
-4. **Evidence Requirements**
-   - Every phase must produce evidence bundle
-   - Evidence must match required_evidence in phase spec
+4. **Evidence Requirements (MANDATORY)**
+   - Every phase MUST produce evidence bundle
+   - Evidence MUST match required_evidence in phase spec
    - No subjective "looks good" - evidence-based only
 
-5. **Retry and Escalation**
+5. **Retry and Escalation (MANDATORY)**
    - FAIL → rework (up to max_retries)
    - Consecutive FAILs → escalate to Leader
    - BLOCK → immediate escalation
-   - Preserve all evidence and verdicts
+   - MUST preserve all evidence and verdicts
 
-6. **Frontend/UI Changes**
-   - Require browser evidence when possible
+6. **Frontend/UI Changes (MANDATORY)**
+   - MUST require browser evidence when possible
    - Screenshots, console logs, network traces
-   - If no browser available, document limitation
+   - If no browser available, MUST document limitation
 
 ## File Ownership
 

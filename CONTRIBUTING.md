@@ -1,6 +1,6 @@
-# Contributing to Mavis Team Engine
+# Contributing to HTE (Hermes Team Engine)
 
-Thank you for your interest in contributing to Mavis Team Engine! We welcome contributions from the community.
+Thank you for your interest in contributing to HTE (Hermes Team Engine)! We welcome contributions from the community.
 
 ## How to Contribute
 
@@ -85,7 +85,7 @@ pip install -r requirements.txt
 
 # Test individual scripts
 bash -n scripts/mavis-start.sh  # Syntax check
-python -m py_compile .claude/skills/mavis-team-engine/scripts/write_state.py
+python -m py_compile src/skills/hmte/scripts/write_state.py
 
 # Test installation
 ./install-to-hermes.sh --force
@@ -105,4 +105,4 @@ All submissions require review. We use GitHub pull requests for this purpose. Th
 
 Feel free to open an issue for any questions about contributing!
 
-Thank you for contributing to Mavis Team Engine! 🚀
+Thank you for contributing to HTE! 🚀
