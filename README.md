@@ -337,20 +337,16 @@ bash scripts/hmte-e2e-legacy.sh
 
 ## Roadmap
 
-### v0.4 — 核心流程接入
+### v1.2 — GitHub 发布 ✅
 
 - [x] command log 协议统一
 - [x] phase_gate 接入主流程
 - [x] audit-flow 校验
 - [x] core workflow E2E
-
-### v1.2 — GitHub 发布
-
-- [ ] README 重写
-- [ ] HERMES.md 同步
-- [ ] 文档旧口径清理
-- [ ] tar.gz 审计包
-- [ ] GitHub Actions 校验
+- [x] README 重写
+- [x] HERMES.md 同步
+- [x] 文档旧口径清理
+- [x] 反伪造保障（receipt + audit-flow + scorecard）
 
 ### v1.3 — 委派记录增强
 

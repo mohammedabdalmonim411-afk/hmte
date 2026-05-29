@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrated from Claude Code to Hermes Agent platform
 - Renamed from "Mavis Team Engine" to "HTE (Hermes Team Engine)"
 - Updated all agent definitions to Hermes format
-- Consolidated scripts with `hmte-` prefix (with `mavis-` compatibility wrappers)
+- Consolidated all scripts with `hmte-` prefix
 - Improved Windows compatibility (fcntl fallback, python vs python3)
 
 ### Fixed
