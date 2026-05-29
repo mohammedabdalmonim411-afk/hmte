@@ -352,7 +352,7 @@ bash scripts/hmte-e2e-legacy.sh
 - [ ] tar.gz 审计包
 - [ ] GitHub Actions 校验
 
-### v0.6 — 委派记录增强
+### v1.3 — 委派记录增强
 
 - [ ] 接入 Hermes tool-call 日志
 - [ ] 区分 INTENT_ONLY 与 OBSERVED
