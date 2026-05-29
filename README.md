@@ -12,11 +12,11 @@ HTE 将 AI 辅助开发从"单个模型独立完成所有事情"，升级为"多
 - **phase_gate**：检查当前阶段是否满足放行条件。
 - **orchestrator**：管理基于文件协议的阶段流转。
 
-![状态](https://img.shields.io/badge/状态-Alpha%20/%20Internal%20Preview-orange)
+![状态](https://img.shields.io/badge/版本-v1.2.0-green)
 ![定位](https://img.shields.io/badge/定位-多%20Agent%20协作框架-blue)
 ![机制](https://img.shields.io/badge/机制-阶段门禁%20/%20证据链-purple)
 
-> 当前状态：Alpha / Internal Preview
+> 当前状态：Beta
 > 当前重点：统一文件协议、命令日志、阶段门禁、独立审计和核心流程测试。
 
 ## 核心理念
@@ -295,7 +295,7 @@ bash scripts/e2e-anti-fake-test.sh
 
 ## 当前限制
 
-HTE 当前处于 Alpha / Internal Preview 阶段。
+HTE 当前处于 Beta 阶段。
 
 当前版本需要注意：
 
@@ -344,7 +344,7 @@ bash scripts/hmte-e2e-legacy.sh
 - [x] audit-flow 校验
 - [x] core workflow E2E
 
-### v0.5 — GitHub 发布准备
+### v1.2 — GitHub 发布
 
 - [ ] README 重写
 - [ ] HERMES.md 同步

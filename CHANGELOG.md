@@ -39,11 +39,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Command injection prevention in evidence collection
 - Safe file operations with proper escaping
 
-## [0.5.0] - 2026-05-27
+## [1.2.0] - 2026-05-27
 
 ### Added
-- Initial public preview
-- Initial public preview of the HTE multi-agent workflow framework
+- HTE v1.2 release
+- HTE v1.2 multi-agent workflow framework
 - Complete documentation suite
 - MIT License
 
@@ -54,6 +54,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 This project was originally developed as "Mavis Team Engine" for Claude Code and has been migrated to Hermes Agent. Historical documentation and implementation details can be found in `docs/history/`.
 
 For migration details, see:
-- `docs/history/MIGRATION_COMPLETE.md`
 - `docs/history/PLATFORM_HISTORY.md`
-- `docs/history/IMPLEMENTATION_SUMMARY.md`

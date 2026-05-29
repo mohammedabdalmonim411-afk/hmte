@@ -70,11 +70,12 @@ declare -a FILES=(
     "scripts/hmte-start.sh"
     "scripts/hmte-stop.sh"
     "scripts/hmte-status.sh"
-    "scripts/hmte-e2e.sh"
+    "scripts/hmte-e2e-legacy.sh"
     "scripts/hmte-exec.sh"
     "scripts/hmte-init.sh"
     "scripts/hmte-doctor.sh"
     "scripts/hmte-write-receipt.sh"
+    "scripts/e2e-core-workflow-test.sh"
     "scripts/e2e-anti-fake-test.sh"
 
     # === 安装脚本 ===
