@@ -1,6 +1,6 @@
 #!/bin/bash
 # Pre-tool guard hook with improved security
-# Uses whitelist approach instead of blacklist
+# Risk-pattern guard: blocks known dangerous commands
 #
 # KNOWN FALSE POSITIVES:
 # - "cd /f/AI/..." on Windows/MSYS triggers cd-outside-project warning (safe, project-local)

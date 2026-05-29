@@ -1,6 +1,6 @@
 # Phase Template
 
-Use this template when defining phases in `.phase_control/phases.yaml`.
+Use this template when defining phases in `.phase_control/phases.json`.
 
 ## Phase Definition
 

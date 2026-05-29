@@ -1,825 +1,370 @@
-# HTE (Hermes Team Engine)
+# HTE — Hermes Team Engine
 
-> A Hermes-native multi-agent development system implementing the Leader/Worker/Verifier pattern for rigorous, phase-based software development.
+> 面向 Hermes Agent 的多 Agent 协作开发框架。
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-green.svg)
+HTE 将 AI 辅助开发从"单个模型独立完成所有事情"，升级为"多 Agent 分工协作、阶段推进、证据交付、独立审计、门禁放行"的工程化工作流。
 
-> **📝 Platform Migration Note**: This project was originally developed for Claude Code and has been migrated to Hermes Agent. References to "Claude Code" throughout the documentation are for legacy support and format compatibility. New users should follow the Hermes installation instructions. See [PLATFORM_HISTORY.md](docs/history/PLATFORM_HISTORY.md) for migration details.
+它围绕 Leader / Worker / Verifier 三类角色组织任务：
 
-> **📝 Note**: This README previously contained template GitHub URLs (github.com/YOUR_USERNAME/hmte). All URLs have been updated to point to the official repository at github.com/mohammedabdalmonim411-afk/hmte.
+- **Leader**：拆解目标、规划阶段、维护流程状态、控制阶段流转。
+- **Worker**：执行明确范围内的实现任务，并产出证据材料。
+- **Verifier**：基于证据进行独立审计，输出 PASS / FAIL / BLOCK 裁决。
+- **phase_gate**：检查当前阶段是否满足放行条件。
+- **orchestrator**：管理基于文件协议的阶段流转。
 
-## ⚠️ Disclaimer
+![状态](https://img.shields.io/badge/状态-Alpha%20/%20Internal%20Preview-orange)
+![定位](https://img.shields.io/badge/定位-多%20Agent%20协作框架-blue)
+![机制](https://img.shields.io/badge/机制-阶段门禁%20/%20证据链-purple)
 
-This project is an independent open-source community implementation.
+> 当前状态：Alpha / Internal Preview
+> 当前重点：统一文件协议、命令日志、阶段门禁、独立审计和核心流程测试。
 
-### Trademark Notice
+## 核心理念
 
-- **"Mavis"** refers to the multi-agent architectural pattern (Leader/Worker/Verifier) publicly described by MiniMax Technology Limited. This is an independent community implementation with no affiliation to or endorsement from MiniMax.
+HTE 的目标不是让一个模型包办所有事情，而是让多个 AI Agent 像工程团队一样协同工作。
 
-  **⚠️ TRADEMARK RISK WARNING**: Using "Mavis" in the repository name or branding may create trademark confusion. This is a **community project** with **no authorization** from MiniMax. If you fork or deploy this project, consider using a different name (e.g., "HTE", "Hermes Team Engine") to avoid potential trademark issues. The maintainers of this project make no claims to the "Mavis" trademark and recommend users consult legal counsel before using this name in commercial contexts.
+复杂任务应当被拆分为清晰阶段，每个阶段都有明确目标、输入、输出、执行记录、证据材料和审计结果。
+Leader 负责组织，Worker 负责执行，Verifier 负责审查，phase_gate 负责放行。
 
-- **"Hermes"** is developed by Nous Research. This project is a third-party tool and is not affiliated with, endorsed by, or sponsored by Nous Research
+通过这种方式，AI 协作过程可以被检查、复盘、打回和持续改进。
 
-- This project is provided "as-is" under the MIT License with no warranties
+## 设计哲学
 
-**All trademarks are the property of their respective owners. Use of trademarked names is for descriptive and educational purposes only and does not imply endorsement, affiliation, or sponsorship. Users assume all responsibility for trademark compliance when forking, deploying, or distributing this software.**
+HTE 基于一个简单判断：复杂 AI 开发不适合由单个模型同时承担规划、实现、验证和放行。
 
-## 🎯 What is HTE?
+更合理的方式是让不同 Agent 承担不同职责：
 
-HTE is a **production-ready framework** that brings structured, multi-agent collaboration to Hermes. Inspired by MiniMax's Mavis architecture, it enforces a rigorous "plan → execute → verify → release" cycle with:
+- 规划者专注目标拆解和阶段控制；
+- 执行者专注具体实现；
+- 审计者专注证据检查和质量判断；
+- 门禁机制负责阶段是否可以继续。
 
-- **Phase-based workflow** with explicit quality gates
-- **Evidence-driven verification** - all decisions backed by structured proof
-- **Independent quality assurance** - adversarial verification prevents rubber-stamping
-- **Worktree isolation** - workers execute in isolated environments
-- **State machine tracking** - explicit state management, not LLM memory
-- **Safety enforcement** - command guards and permission controls
+HTE 将这些角色连接成一个阶段化工作流，使 AI 协作不只停留在提示词层面，而是沉淀为可运行、可检查、可复盘的工程流程。
 
-### Why Use This?
+## 架构概览
 
-Traditional AI-assisted development often suffers from:
-- ❌ No quality gates - changes go straight to production
-- ❌ No verification - trust but don't verify
-- ❌ Context pollution - all agents see everything
-- ❌ No audit trail - can't trace decisions
-
-HTE solves these with:
-- ✅ **Mandatory verification** - nothing proceeds without PASS verdict
-- ✅ **Adversarial review** - Verifier actively looks for problems
-- ✅ **Context isolation** - each role sees only what it needs
-- ✅ **Complete audit trail** - every decision is documented
-
-## 🏗️ Architecture
-
-```
-User Goal
-    ↓
-┌─────────────────────────────────────┐
-│  Leader (master-planner)            │
-│  - Plans phases                     │
-│  - Maintains state machine          │
-│  - Dispatches work                  │
-│  - Decides PASS/FAIL/BLOCK          │
-└─────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────┐
-│  Phase Plan (phases.yaml)           │
-│  - Objectives & acceptance criteria │
-│  - Required evidence types          │
-│  - Timeout & retry policies         │
-└─────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────┐
-│  Worker (phase-executor)            │
-│  - Executes in isolated worktree   │
-│  - Implements changes               │
-│  - Produces evidence bundle         │
-└─────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────┐
-│  Evidence Bundle (JSON)             │
-│  - Changed files                    │
-│  - Test results                     │
-│  - Build output                     │
-│  - Screenshots (frontend)           │
-└─────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────┐
-│  Verifier (independent auditor)     │
-│  - Read-only access                 │
-│  - Checks acceptance criteria       │
-│  - Outputs PASS/FAIL/BLOCK          │
-└─────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────┐
-│  Verdict (fixed format)             │
-│  - PASS → Next phase                │
-│  - FAIL → Rework (retry)            │
-│  - BLOCK → Escalate                 │
-└─────────────────────────────────────┘
+```text
+用户目标
+  ↓
+Leader
+  - 分析需求
+  - 创建 .phase_control/phases.json
+  - 拆分阶段
+  - 管理流程状态
+  ↓
+Instruction Files
+  - .phase_control/instructions/
+  - 为 Worker / Verifier 提供明确任务说明
+  ↓
+Worker
+  - 执行阶段任务
+  - 通过 hmte exec 运行命令
+  - 产出 command log 和 evidence bundle
+  ↓
+Verifier
+  - 独立审计 evidence
+  - 输出 JSON verdict
+  ↓
+phase_gate
+  - 检查证据、日志、裁决和阶段一致性
+  - 决定当前阶段是否放行
+  ↓
+orchestrator
+  - 管理文件协议工作流
+  - 根据 phase_gate 结果继续、打回或阻断
 ```
 
-### Three Core Roles
+## 核心角色
 
-| Role | Model | Permissions | Responsibility |
-|------|-------|-------------|----------------|
-| **Leader** (master-planner) | Opus | Full | Plans phases, dispatches work, maintains state machine |
-| **Worker** (phase-executor) | Sonnet | Read/Write/Execute | Implements changes in isolated worktree, produces evidence |
-| **Verifier** | Opus | Read-only | Independently audits evidence, outputs verdict |
+| 角色 | 主要职责 | 产物 |
+|------|---------|------|
+| Leader | 阶段规划、任务拆分、状态管理、阶段流转 | phases.json、instruction files、state |
+| Worker | 执行阶段任务、运行命令、提交实现和证据 | command logs、evidence bundle |
+| Verifier | 独立审计证据、检查验收标准、输出裁决 | verdict JSON |
+| phase_gate | 检查阶段是否满足放行条件 | PASS / FAIL / BLOCK |
+| orchestrator | 管理文件协议流程 | 阶段流转结果 |
 
-### Key Mechanisms
+## 工作流保障机制
 
-- **Phase Gates**: No phase proceeds without PASS verdict
-- **Evidence Bundles**: Structured JSON with all execution artifacts
-- **Adversarial Verification**: Verifier actively seeks problems
-- **Context Isolation**: Each role sees minimal necessary context
-- **State Machine**: Explicit state tracking in `.phase_control/state.json`
-- **Worktree Isolation**: Workers execute in separate git worktrees
-- **Automatic Retry**: FAIL triggers rework with attempt counter
-- **Safety Hooks**: Command guards prevent dangerous operations
+HTE 使用项目本地的 `.phase_control/` 目录记录阶段化协作过程。
 
-## 🚀 Quick Start
+每个阶段都围绕一组可检查文件推进：
 
-> **⚠️ CRITICAL: Ensure Mavis is Actually Being Used**
->
-> AI agents will claim to use HTE but often skip the workflow entirely. Without enforcement, you get:
-> - ❌ No phases.yaml created
-> - ❌ No evidence bundles produced
-> - ❌ No verification verdicts
-> - ❌ Direct implementation without quality gates
->
-> **Before using HTE, read [MAVIS_ENFORCEMENT.md](MAVIS_ENFORCEMENT.md)** to learn:
-> - How to configure Hermes memory to enforce HTE usage
-> - How to verify the AI is actually using the workflow (not faking it)
-> - Common "fake usage" patterns and how to catch them
-> - Real evidence from this project: Phase 1 took **4 attempts** because the verifier caught incomplete work
->
-> **Quick enforcement checklist:**
-> - [ ] AI created `.phase_control/phases.yaml` before starting
-> - [ ] Evidence files exist in `.phase_control/evidence/`
-> - [ ] Verdict files exist in `.phase_control/verdicts/`
-> - [ ] You see `delegate_task` calls (not direct implementation)
->
-> Without enforcement, the AI will say "I'll use HTE" and then write code directly. **Trust, but verify.**
+- instruction files：阶段任务说明；
+- command logs：Worker 执行命令的记录；
+- evidence bundles：阶段交付证据；
+- verdicts：Verifier 审计裁决；
+- phase gate results：阶段放行结果。
 
-### Prerequisites
+这些文件共同构成阶段交付记录，使 Leader、Verifier 和用户能够检查：
 
-> **⚠️ Platform Compatibility**: Currently tested on Unix/Linux/macOS. Windows support is experimental and requires:
-> - Git Bash or WSL for shell scripts
-> - Python `filelock` library: `pip install filelock`
-> - Some features may have limited functionality on Windows
-> 
-> The core Hermes skill works cross-platform, but shell scripts assume a Unix environment.
+- 当前阶段做了什么；
+- 由谁执行；
+- 执行了哪些命令；
+- 产生了哪些证据；
+- 为什么 PASS、FAIL 或 BLOCK；
+- 下一步应该继续、返工还是升级处理。
 
-- **Hermes** (CLI, Desktop, or Web)
-- **Python 3.8+**
-- **Git**
-- **Bash** (Unix-like shell)
+## 文件协议
 
-### Installation
+HTE 使用项目本地 `.phase_control/` 目录保存工作流状态和阶段产物。
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/mohammedabdalmonim411-afk/hmte.git
-   cd hmte
-   ```
+```text
+.phase_control/
+├── phases.json
+├── state.json
+├── instructions/
+├── delegations/
+├── evidence/
+├── verdicts/
+├── logs/
+├── errors/
+├── pids/
+└── traces/
+```
 
-2. **Run the installation script**:
-   ```bash
-   ./install-to-hermes.sh
-   ```
+| 路径 | 作用 |
+|------|------|
+| `.phase_control/phases.json` | Leader 创建的阶段计划 |
+| `.phase_control/state.json` | 当前工作流状态 |
+| `.phase_control/instructions/` | Worker / Verifier 的任务说明 |
+| `.phase_control/delegations/` | 委派意图记录 |
+| `.phase_control/logs/{phase}_attempt_{n}.commands.jsonl` | hmte exec 生成的命令日志 |
+| `.phase_control/evidence/{phase}_attempt_{n}.json` | Worker 提交的阶段证据 |
+| `.phase_control/verdicts/{phase}_attempt_{n}.json` | Verifier 输出的阶段裁决 |
+| `.phase_control/errors/` | 阶段错误与阻断信息 |
 
-This installs the skill to `~/.hermes/profiles/default/skills/hmte/` where Hermes can discover it globally.
+## 命令日志
 
-3. **Copy runtime structure to your project:**
+Worker 应通过 `hmte exec` 执行阶段命令。
 
 ```bash
-# Navigate to your project directory
-cd /path/to/your/project
-
-# Copy the runtime structure from the cloned repository
-# If you cloned to ~/hmte:
-cp -r ~/hmte/.phase_control .
-cp -r ~/hmte/scripts .
+bash scripts/hmte-exec.sh phase_a --attempt 1 -- npm test
 ```
 
-> **📝 Note**: Replace `~/hmte` with the actual path where you cloned the repository. Common examples:
-> - Linux/macOS: `~/projects/hmte`
-> - Windows (Git Bash): `/c/Users/YourName/hmte`
-> - Or use absolute paths like `/home/username/hmte`
+命令执行后会生成：
 
-4. **Initialize the session:**
-
-```bash
-./scripts/mavis-start.sh
+```text
+.phase_control/logs/phase_a_attempt_1.commands.jsonl
 ```
 
-5. **Use in Hermes:**
-
-```
-Please use the hmte skill to implement user authentication.
-```
-
-#### For Claude Code Users (Legacy)
-
-1. **Clone or copy to your project:**
-
-```bash
-# Option 1: Clone as a submodule
-git submodule add https://github.com/mohammedabdalmonim411-afk/hmte .mavis
-
-# Option 2: Copy directly
-cp -r /path/to/hmte/.claude .
-cp -r /path/to/hmte/.phase_control .
-cp -r /path/to/hmte/scripts .
-```
-
-2. **Initialize the session:**
-
-```bash
-./scripts/mavis-start.sh
-```
-
-3. **Use in Claude Code:**
-
-```
-Please use the hmte skill to implement user authentication.
-```
-
-> **Note**: See [PLATFORM_HISTORY.md](docs/history/PLATFORM_HISTORY.md) for details on platform differences.
-
-### ⚠️ Platform Compatibility
-
-#### Hooks (.claude/hooks/*.sh)
-The hooks in `.claude/hooks/` are **Claude Code specific** and will NOT automatically execute in Hermes Agent:
-
-- **Claude Code**: Hooks (`pretool_guard.sh`, `stop_gate.sh`, `task_naming.sh`) are automatically triggered before tool execution
-- **Hermes Agent**: Hooks are NOT automatically executed and must be manually integrated
-
-**For Hermes users:**
-- The hooks are provided as reference implementations
-- You can manually call them in your workflow scripts
-- Hermes has its own built-in safety features
-- Review commands manually before execution for safety-critical operations
-
-#### Agent Definitions (.claude/agents/*.md)
-The agent definition files use **Claude Code format**:
-
-- **Claude Code**: Uses `subagent_type`, `permissionMode`, `isolation`, etc.
-- **Hermes Agent**: Use `delegate_task` instead when calling sub-agents
-
-Refer to `src/skills/hmte/SKILL.md` for Hermes-compatible patterns.
-
-### Verification
-
-Run the end-to-end test to verify installation:
-
-```bash
-./scripts/mavis-e2e.sh
-```
-
-Expected output:
-```
-=== E2E Test PASSED ===
-
-Verified:
-  ✓ Session initialization
-  ✓ Phase definition
-  ✓ Evidence bundle creation
-  ✓ Verdict format
-  ✓ State management
-  ✓ Stop gate enforcement
-```
-
-### 🔒 Enforce Mavis Workflow (Recommended)
-
-To ensure AI agents strictly follow the Leader→Worker→Verifier pattern and prevent shortcuts, see [**MAVIS_ENFORCEMENT.md**](./MAVIS_ENFORCEMENT.md) for configuration instructions. This prevents AI from "lying" about using Mavis while actually skipping delegation.
-
-## 📖 Usage
-
-### Basic Workflow
-
-1. **Start a session:**
-```bash
-./scripts/mavis-start.sh
-```
-
-2. **Invoke the skill in Hermes:**
-```
-Please use the hmte skill to implement a login API with JWT authentication.
-```
-
-3. **The system will:**
-   - Leader analyzes requirements and creates phase plan
-   - For each phase:
-     - Worker executes in isolated worktree
-     - Worker produces evidence bundle
-     - Verifier audits evidence
-     - Leader decides: PASS → next phase, FAIL → rework, BLOCK → escalate
-   - Continues until all phases complete
-
-4. **Check status anytime:**
-```bash
-./scripts/mavis-status.sh
-```
-
-5. **Stop when done:**
-```bash
-./scripts/mavis-stop.sh
-```
-
-### Example Workflow: What Happens When You Request User Authentication
-
-> **⚠️ Important**: The following is a **workflow demonstration example** showing how the system operates. This is NOT actual implemented functionality in the repository. The example illustrates the phase-based workflow pattern, not real code that exists in this project.
-
-**User request:**
-```
-Please use the hmte skill to implement user authentication with:
-- Login API endpoint
-- JWT token generation
-- Password hashing with bcrypt
-- Unit tests with >80% coverage
-```
-
-**What happens:**
-
-1. **Leader creates phase plan:**
-   - Phase A: Requirements analysis and API design
-   - Phase B: Backend implementation
-   - Phase C: Test implementation
-   - Phase D: Integration testing
-   - Phase E: Final verification
-
-2. **Phase A execution:**
-   - Worker creates design document
-   - Worker produces evidence bundle
-   - Verifier checks: design complete? requirements clear?
-   - Verdict: PASS → proceed to Phase B
-
-3. **Phase B execution:**
-   - Worker implements login API in isolated worktree
-   - Worker runs tests, collects results
-   - Worker produces evidence bundle with:
-     - Changed files: `src/api/auth.js`
-     - Test results: 5 passed, 0 failed
-     - Build results: success
-   - Verifier checks:
-     - ✓ JWT token generation works
-     - ✓ bcrypt used for passwords
-     - ✓ Tests pass
-     - ✗ Coverage only 65% (needs 80%)
-   - Verdict: FAIL → return to Worker
-
-4. **Phase B retry:**
-   - Worker adds more tests
-   - Coverage now 85%
-   - Verifier checks again
-   - Verdict: PASS → proceed to Phase C
-
-5. **Continues until all phases complete**
-
-### Evidence Bundle Format
-
-Every phase execution produces a structured JSON evidence bundle:
+每一行都是一条 JSON 记录：
 
 ```json
 {
-  "phase_id": "phase_b",
+  "phase_id": "phase_a",
   "attempt": 1,
-  "worker_name": "phase-executor",
-  "goal_summary": "Implement login API",
-  "changed_files": ["src/api/auth.js", "tests/auth.test.js"],
-  "commands_run": ["npm install", "npm test"],
-  "command_exit_codes": [0, 0],
-  "test_results": {
-    "total": 5,
-    "passed": 5,
-    "failed": 0,
-    "skipped": 0
-  },
-  "build_results": {
-    "success": true,
-    "errors": []
-  },
-  "unresolved_risks": ["JWT secret needs production config"],
-  "verification_gaps": ["Concurrent login not tested"],
-  "generated_at": "2026-05-26T12:00:00Z"
+  "command": "npm test",
+  "exit_code": 0,
+  "runner": "hmte exec",
+  "started_at": "2026-05-28T13:00:00Z",
+  "ended_at": "2026-05-28T13:00:02Z",
+  "output_tail": "..."
 }
 ```
 
-### Verdict Format
+这些日志用于阶段审计、错误排查和 phase_gate 判断。
 
-Verifier outputs one of three fixed-format verdicts:
+## Evidence Bundle
 
-**PASS:**
-```
-VERDICT: PASS
-PHASE_ID: phase_b
-CONFIDENCE: high
-ACCEPTANCE_CHECKS:
-- [x] JWT token generation works
-- [x] Password hashing with bcrypt
-- [x] Unit tests pass
-- [x] Coverage > 80%
-RESIDUAL_RISKS:
-- JWT secret needs production configuration
-EVIDENCE_USED:
-- .phase_control/evidence/phase_b_attempt_1.json
-NEXT_ACTION: RELEASE_TO_NEXT_PHASE
-```
+Worker 在每个阶段结束时提交 evidence bundle：
 
-**FAIL:**
-```
-VERDICT: FAIL
-PHASE_ID: phase_b
-CONFIDENCE: high
-FAILED_CHECKS:
-- [ ] Test coverage only 65%, needs 80%
-ROOT_CAUSES:
-- Missing edge case tests
-REQUIRED_REWORK:
-- Add tests for empty password, weak password, special characters
-- Ensure coverage > 80%
-EVIDENCE_USED:
-- .phase_control/evidence/phase_b_attempt_1.json
-NEXT_ACTION: RETURN_TO_EXECUTOR
+```json
+{
+  "phase_id": "phase_a",
+  "attempt": 1,
+  "worker_name": "phase-executor",
+  "goal_summary": "实现登录接口",
+  "changed_files": ["src/api/auth.js", "tests/auth.test.js"],
+  "command_log_path": ".phase_control/logs/phase_a_attempt_1.commands.jsonl",
+  "commands_run": ["npm test"],
+  "command_exit_codes": [0],
+  "test_results": {"total": 12, "passed": 12, "failed": 0},
+  "unresolved_risks": ["生产环境 JWT secret 需要单独配置"],
+  "verification_gaps": [],
+  "generated_at": "2026-05-28T13:03:00Z"
+}
 ```
 
-**BLOCK:**
-```
-VERDICT: BLOCK
-PHASE_ID: phase_b
-CONFIDENCE: high
-BLOCKERS:
-- Missing database configuration
-- Cannot run tests
-MISSING_INPUTS:
-- database.config.js
-- .env file
-SAFE_OPTIONS:
-- Create default database.config.js
-- Provide .env.example template
-EVIDENCE_USED:
-- .phase_control/evidence/phase_b_attempt_1.json
-NEXT_ACTION: ESCALATE_TO_LEADER
+## Verdict Format
+
+Verifier 输出 JSON verdict：
+
+```text
+.phase_control/verdicts/{phase_id}_attempt_{n}.json
 ```
 
-## 📁 Project Structure
+示例：
 
-### Repository Structure
-
-```
-.
-├── .claude/                            # Legacy Claude Code structure (see .claude/README.md)
-│   ├── skills/mavis-team-engine/
-│   │   ├── SKILL.md                    # Main skill definition
-│   │   ├── phase-template.md           # Phase definition template
-│   │   ├── evidence-schema.json        # Evidence bundle JSON schema
-│   │   ├── audit-checklist.md          # Verifier checklist
-│   │   └── scripts/
-│   │       ├── write_state.py          # State management (with file locking)
-│   │       ├── phase_gate.sh           # Phase transition logic
-│   │       └── collect_evidence.sh     # Evidence collection
-│   ├── agents/                         # Claude Code agent definitions
-│   │   ├── master-planner.md           # Leader agent
-│   │   ├── phase-executor.md           # Worker agent
-│   │   └── verifier.md                 # Auditor agent
-│   └── hooks/                          # Claude Code hooks (NOT executed by Hermes)
-│       ├── pretool_guard.sh            # Command safety checks
-│       ├── stop_gate.sh                # Incomplete work prevention
-│       └── task_naming.sh              # Task naming enforcement
-├── .phase_control/                     # Runtime state (project-local)
-│   ├── phases.yaml                     # Phase definitions
-│   ├── state.json                      # State machine (Leader-only)
-│   ├── current_phase                   # Current phase ID
-│   ├── run.lock                        # Session lock file
-│   ├── evidence/                       # Evidence bundles (JSON)
-│   ├── verdicts/                       # Verification verdicts (TXT)
-│   ├── logs/                           # JSONL logs
-│   ├── pids/                           # Process IDs
-│   └── traces/                         # Performance traces
-├── scripts/
-│   ├── mavis-start.sh                  # Initialize session
-│   ├── mavis-stop.sh                   # Stop session
-│   ├── mavis-status.sh                 # Show status
-│   └── mavis-e2e.sh                    # End-to-end test
-├── install-to-hermes.sh                # Hermes installation script
-├── PLATFORM_HISTORY.md                 # Platform migration history
-├── HERMES.md                           # Project rules
-├── README.md                           # This file
-├── LICENSE                             # MIT License
-└── .gitignore                          # Git ignore rules
+```json
+{
+  "status": "PASS",
+  "phase_id": "phase_a",
+  "attempt": 1,
+  "timestamp": "2026-05-28T13:05:00Z",
+  "evidence_sha256": "64-character-sha256",
+  "command_log_sha256": "64-character-sha256",
+  "adversarial_scorecard": {
+    "criteria_passed": [{"criterion": "单元测试通过", "evidence": ".phase_control/logs/phase_a_attempt_1.commands.jsonl"}],
+    "criteria_failed": [],
+    "evidence_paths": [".phase_control/evidence/phase_a_attempt_1.json"],
+    "residual_risks": ["生产配置需要部署时单独确认"],
+    "re_verification_conclusion": "证据支持 PASS"
+  }
+}
 ```
 
-### Hermes Installation Structure
+| 状态 | 含义 |
+|------|------|
+| PASS | 当前阶段满足放行条件 |
+| FAIL | 当前阶段需要返工 |
+| BLOCK | 当前阶段缺少必要条件，需要升级处理 |
 
-After running `./install-to-hermes.sh`, skills are installed to:
+## Phase Gate
 
-```
-~/.hermes/profiles/default/skills/hmte/
-├── SKILL.md                            # Main skill definition
-├── agents/
-│   ├── master-planner.md
-│   ├── phase-executor.md
-│   └── verifier.md
-├── hooks/
-│   ├── stop_gate.sh
-│   ├── pretool_guard.sh
-│   └── task_naming.sh
-├── scripts/
-│   ├── write_state.py
-│   ├── collect_evidence.sh
-│   └── phase_gate.sh
-├── phase-template.md
-├── evidence-schema.json
-└── audit-checklist.md
-```
-
-> **Note**: `.phase_control/` remains **project-local** on both platforms. Only skill definitions move to the Hermes profile.
-
-## 🔒 Security Features
-
-### Implemented Security Fixes
-
-All critical vulnerabilities have been fixed:
-
-1. **✅ State File Race Condition** - Atomic writes with fcntl file locking
-2. **✅ Path Traversal** - Strict regex validation of all path components
-3. **✅ JSON Injection** - Python json.dump() instead of heredoc
-4. **✅ Lock File Race** - Atomic lock creation with bash noclobber
-5. **✅ Command Injection** - Multi-layered pattern detection
-
-### Safety Mechanisms
-
-- **Command Guards**: `pretool_guard.sh` blocks dangerous commands:
-  - `rm -rf` on system paths
-  - Filesystem operations (`mkfs`, `format`)
-  - Privilege escalation (`sudo`, `su`)
-  - Network exfiltration patterns
-  
-- **Stop Gate**: `stop_gate.sh` prevents stopping with incomplete work:
-  - Blocks if phase status != passed
-  - Blocks if background services running
-  - Blocks if evidence without verdict
-
-- **Worktree Isolation**: Workers execute in separate git worktrees
-
-- **Read-only Verifier**: Verifier has no Edit/Write permissions
-
-## ⚙️ Configuration
-
-### Model Strategy
-
-Default model assignments (configurable in agent frontmatter):
-
-- **Leader**: Opus (planning requires deep reasoning)
-- **Worker**: Sonnet (execution is well-scoped)
-- **Verifier**: Opus (verification requires skepticism)
-
-To change models, edit the agent definition files:
-
-**For Hermes users:**
-```bash
-# Edit in your Hermes profile
-nano ~/.hermes/profiles/default/skills/hmte/agents/phase-executor.md
-```
-
-**For Claude Code users:**
-```bash
-# Edit in project directory
-nano .claude/agents/phase-executor.md
-```
-
-Agent frontmatter example:
-```yaml
----
-name: phase-executor
-model: opus  # Change from sonnet to opus
----
-```
-
-### Timeout & Retry Policies
-
-Configure per-phase in `.phase_control/phases.yaml`:
-
-```yaml
-- id: phase_b
-  timeout_soft: 600      # 10 minutes (warning)
-  timeout_hard: 1200     # 20 minutes (force stop)
-  max_retries: 2         # Maximum retry attempts
-  escalation_rule: "连续2次FAIL升级到Leader重规划"
-```
-
-### Permission Mode
-
-Configure in agent frontmatter:
-
-```yaml
----
-name: master-planner
-permissionMode: plan     # plan | acceptEdits | dontAsk
----
-```
-
-## 🧪 Testing
-
-### Run End-to-End Test
+`phase_gate` 负责判断当前阶段是否可以继续。
 
 ```bash
-./scripts/mavis-e2e.sh
+bash src/skills/hmte/scripts/phase_gate.sh phase_a --attempt 1
 ```
 
-Tests verify:
-- Session initialization
-- Phase definition
-- Evidence bundle creation
-- Verdict format
-- State management
-- Stop gate enforcement
+它会检查：
 
-### Manual Testing
+- phase ID 和 attempt 是否一致；
+- command log 是否存在并可解析；
+- evidence bundle 是否存在；
+- verdict JSON 是否存在；
+- verdict status 是否有效；
+- 当前阶段是否满足放行条件。
 
-1. Start session: `./scripts/mavis-start.sh`
-2. Create test phase in `.phase_control/phases.yaml`
-3. Invoke skill in Hermes
-4. Check status: `./scripts/mavis-status.sh`
-5. Verify evidence in `.phase_control/evidence/`
-6. Verify verdicts in `.phase_control/verdicts/`
-7. Stop session: `./scripts/mavis-stop.sh`
+只有 phase_gate 通过后，orchestrator 才能继续推进后续阶段。
 
-## 📊 Performance
+## Quick Start
 
-### Token Costs
-
-Multi-agent workflows consume approximately **5-10x** normal conversation tokens (estimated based on architectural overhead, not measured):
-- Leader planning: ~2x (estimated)
-- Worker execution: ~3x (estimated)
-- Verifier audit: ~2x (estimated)
-
-> **Note**: These are rough estimates based on the multi-agent architecture pattern. Actual token usage will vary significantly based on task complexity, model choice, and phase design. No systematic measurements have been performed.
-
-**Optimization tips:**
-- Use Sonnet for Worker (cheaper, still capable)
-- Keep phases focused and small
-- Provide clear acceptance criteria
-- Use evidence bundles instead of full context
-
-### Execution Time
-
-Typical phase execution (estimated based on typical usage, not measured):
-- Simple phase (add function): ~2-5 minutes
-- Medium phase (implement API): ~5-15 minutes
-- Complex phase (full feature): ~15-30 minutes
-
-> **Note**: These are approximate time ranges based on typical development patterns. Actual execution time depends heavily on task complexity, model performance, network latency, and whether retries are needed.
-
-Includes: planning, execution, evidence collection, verification, and potential retry.
-
-## 🛠️ Troubleshooting
-
-### Session won't start
-
-**Error**: `Team Engine is already running`
-
-**Solution**:
-```bash
-# Check if process is actually running
-ps aux | grep mavis
-
-# If not running, remove stale lock
-rm .phase_control/run.lock
-
-# Try again
-./scripts/mavis-start.sh
-```
-
-### Verifier always outputs FAIL
-
-**Cause**: Acceptance criteria too strict or evidence incomplete
-
-**Solution**:
-1. Check `.phase_control/verdicts/<phase>_attempt_<n>.txt` for FAILED_CHECKS
-2. Review acceptance criteria in `.phase_control/phases.yaml`
-3. Ensure Worker collects all required evidence types
-4. Check if tests are actually passing
-
-### Worker stuck in loop
-
-**Cause**: Retry limit not reached, same error repeating
-
-**Solution**:
-1. Check `.phase_control/state.json` for `retries_used`
-2. Review evidence bundles to see what's failing
-3. Manually intervene or adjust `max_retries`
-4. Consider BLOCK verdict if issue is environmental
-
-### Stop gate blocks stopping
-
-**Cause**: Phase not complete or background services running
-
-**Solution**:
-```bash
-# Check status
-./scripts/mavis-status.sh
-
-# Check phase status in state.json
-cat .phase_control/state.json | jq '.phase_status'
-
-# If stuck, manually update state using write_state.py
-# For Hermes users:
-python3 ~/.hermes/profiles/default/skills/hmte/scripts/write_state.py \
-  .phase_control/state.json phase_status=passed
-
-# For Claude Code users:
-python3 src/skills/hmte/scripts/write_state.py \
-  .phase_control/state.json phase_status=passed
-
-# Or force stop (bypasses gate)
-rm .phase_control/run.lock
-```
-
-## 🔄 Comparison with Other Approaches
-
-| Approach | Pros | Cons | Best For |
-|----------|------|------|----------|
-| **Single Agent** | Simple, fast, cheap | No verification, no gates | Simple tasks, prototyping |
-| **Prompt-only Multi-Agent** | Easy to set up | No enforcement, roles blur | Experimentation |
-| **HTE** | Enforced gates, audit trail, isolation | Higher token cost, slower | Production code, critical features |
-| **External Orchestrator** | Maximum control | Complex setup, maintenance | Platform-level automation |
-
-## 📚 Documentation
-
-- **[PLATFORM_HISTORY.md](docs/history/PLATFORM_HISTORY.md)** - Platform migration history (Claude Code → Hermes)
-- **[install-to-hermes.sh](install-to-hermes.sh)** - Hermes installation script
-- **[.claude/README.md](.claude/README.md)** - Legacy directory explanation
-- **[IMPLEMENTATION_PLAN.md](docs/history/IMPLEMENTATION_PLAN.md)** - Detailed design document
-- **[IMPLEMENTATION_SUMMARY.md](docs/history/IMPLEMENTATION_SUMMARY.md)** - Build summary
-- **[FINAL_REPORT.md](docs/history/FINAL_REPORT.md)** - Project completion report
-- **[SECURITY_FIXES.md](docs/history/SECURITY_FIXES.md)** - Security improvements
-- **[VERIFICATION_REPORT.md](docs/history/VERIFICATION_REPORT.md)** - Test results
-- **[HERMES.md](HERMES.md)** - Project rules for Hermes
-
-## 🤝 Contributing
-
-Contributions welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Setup
+### 1. 克隆项目
 
 ```bash
-# Clone repository
 git clone https://github.com/mohammedabdalmonim411-afk/hmte.git
 cd hmte
-
-# Run tests
-./scripts/hmte-e2e.sh
-
-# Make changes
-# ...
-
-# Test changes
-./scripts/mavis-start.sh
-# Use in Hermes
-./scripts/mavis-stop.sh
 ```
 
-## 📄 License
+### 2. 安装 Hermes Skill
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```bash
+bash install-to-hermes.sh
+```
 
-## 🙏 Acknowledgments
+### 3. 将运行时结构复制到目标项目
 
-- **MiniMax** - Inspiration from Mavis architecture research paper
-- **Nous Research** - Creators of Hermes AI platform. This project is a third-party tool built for Hermes and is not an official Nous Research product
-- **TeamBench** - Research on multi-agent system failures
-- **Community** - Feedback and contributions
+```bash
+cp -r scripts .phase_control /path/to/your/project/
+cd /path/to/your/project
+```
 
-This project is an independent open-source implementation and is not affiliated with, endorsed by, or sponsored by MiniMax or Nous Research.
+### 4. 启动工作流
 
-## 📞 Support
+```bash
+bash scripts/hmte-start.sh
+```
 
-- **Issues**: [GitHub Issues](https://github.com/mohammedabdalmonim411-afk/hmte/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/mohammedabdalmonim411-afk/hmte/discussions)
-- **Documentation**: [Project Wiki](https://github.com/mohammedabdalmonim411-afk/hmte/wiki)
+在 Hermes 中输入：
 
-## 🗺️ Roadmap
+```text
+请使用 HTE 工作流处理这个任务。先作为 Leader 创建 phases.json，再按阶段委派 Worker 和 Verifier。Leader 不直接执行 Worker 的实现任务。
+```
 
-### v1.1 (Planned)
-- [ ] Windows compatibility improvements
-- [ ] MCP browser tools integration guide
-- [ ] Performance profiling tools
-- [ ] Health check script
+### 5. 执行阶段命令
 
-### v1.2 (Planned)
-- [ ] Parallel phase execution
-- [ ] Advanced retry strategies
-- [ ] Metrics dashboard
-- [ ] CI/CD integration examples
+```bash
+bash scripts/hmte-exec.sh phase_a --attempt 1 -- npm test
+```
 
-### v2.0 (Future)
-- [ ] External orchestrator option
-- [ ] Machine learning for phase planning
-- [ ] Multi-project support
-- [ ] Web UI for monitoring
+### 6. 检查阶段门禁
 
-## 📈 Project Stats
+```bash
+python3 src/skills/hmte/scripts/hmte-audit-flow.py phase_a 1 --json
+bash src/skills/hmte/scripts/phase_gate.sh phase_a --attempt 1
+```
 
-> **Note**: Statistics as of 2026-05-27. Run `find . -type f \( -name "*.sh" -o -name "*.py" -o -name "*.md" -o -name "*.json" -o -name "*.yaml" \) ! -path "./.git/*" ! -path "./.phase_control/*" | wc -l` to get current counts.
+### 7. 运行测试
 
-- **Files**: 67 (including migration artifacts)
-- **Lines of Code**: ~13,235 total
-- **Test Coverage**: E2E suite passing
-- **Security Issues Fixed**: 5 critical
-- **Status**: Production Ready ✅
+```bash
+bash scripts/e2e-core-workflow-test.sh
+bash scripts/e2e-anti-fake-test.sh
+```
+
+## 当前限制
+
+HTE 当前处于 Alpha / Internal Preview 阶段。
+
+当前版本需要注意：
+
+- `hmte run` 当前是基于文件协议的工作流状态机；
+- Worker / Verifier 的实际调用依赖 Hermes 侧的 `delegate_task` 或外部集成；
+- delegation receipt 当前用于记录委派意图；
+- OBSERVED 级别的委派证明需要未来接入 Hermes tool-call 日志；
+- Shell 脚本主要面向 Unix / Linux / macOS 环境；
+- Claude Code 相关文件保留为 legacy compatibility。
+
+## Testing
+
+### 语法检查
+
+```bash
+python3 -m py_compile src/skills/hmte/scripts/hmte-audit-flow.py
+python3 -m py_compile src/skills/hmte/scripts/orchestrator.py
+bash -n src/skills/hmte/scripts/phase_gate.sh
+bash -n scripts/hmte-exec.sh
+```
+
+### 核心工作流测试
+
+```bash
+bash scripts/e2e-core-workflow-test.sh
+```
+
+### 工作流保障测试
+
+```bash
+bash scripts/e2e-anti-fake-test.sh
+```
+
+### Legacy 测试
+
+```bash
+bash scripts/hmte-e2e-legacy.sh
+```
+
+## Roadmap
+
+### v0.4 — 核心流程接入
+
+- [x] command log 协议统一
+- [x] phase_gate 接入主流程
+- [x] audit-flow 校验
+- [x] core workflow E2E
+
+### v0.5 — GitHub 发布准备
+
+- [ ] README 重写
+- [ ] HERMES.md 同步
+- [ ] 文档旧口径清理
+- [ ] tar.gz 审计包
+- [ ] GitHub Actions 校验
+
+### v0.6 — 委派记录增强
+
+- [ ] 接入 Hermes tool-call 日志
+- [ ] 区分 INTENT_ONLY 与 OBSERVED
+- [ ] 为关键阶段提供更强的委派确认能力
+
+### Future
+
+- [ ] Dashboard
+- [ ] Parallel phases
+- [ ] Windows support
+- [ ] CI/CD templates
 
 ---
 
-**Built with ❤️ by the HTE community**
-
-**Star ⭐ this repo if you find it useful!**
+完整代码和文档请参考项目仓库。

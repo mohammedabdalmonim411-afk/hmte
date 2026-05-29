@@ -1,15 +1,28 @@
+# ============================================
 # Phase Control Runtime Files
+# ============================================
 .phase_control/state.json
+.phase_control/state.json.tmp
+.phase_control/state.json.corrupted*
 .phase_control/run.lock
 .phase_control/current_phase
 .phase_control/state.lock
-.phase_control/state.json.tmp
-.phase_control/state.json.corrupted*
+.phase_control/phases.json
+.phase_control/phases*.yaml
 .phase_control/evidence/*.json
+.phase_control/evidence/*.txt
+.phase_control/evidence/*.md
+.phase_control/verdicts/*.json
 .phase_control/verdicts/*.txt
 .phase_control/logs/*.jsonl
+.phase_control/logs/*.txt
 .phase_control/pids/*.pid
 .phase_control/traces/*
+.phase_control/delegations/*.json
+.phase_control/instructions/*.json
+.phase_control/errors/*.json
+.phase_control/state/*
+.phase_control/PHASE*.txt
 
 # Keep directory structure
 !.phase_control/evidence/.gitkeep
@@ -18,22 +31,32 @@
 !.phase_control/pids/.gitkeep
 !.phase_control/traces/.gitkeep
 
-# Worktrees
-.claude/worktrees/
+# ============================================
+# Internal dev files (not for GitHub)
+# ============================================
+FIX_PLAN*.md
+../hte-dev/
 
+# ============================================
 # OS Files
+# ============================================
 .DS_Store
 Thumbs.db
 *.swp
 *.swo
 *~
 
+# ============================================
 # IDE
+# ============================================
 .vscode/
 .idea/
 *.iml
+.claude/
 
+# ============================================
 # Python
+# ============================================
 __pycache__/
 *.py[cod]
 *$py.class
@@ -42,11 +65,23 @@ __pycache__/
 venv/
 env/
 
+# ============================================
 # Node
+# ============================================
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# ============================================
 # Logs
+# ============================================
 *.log
+
+# ============================================
+# Build artifacts
+# ============================================
+*.tar.gz
+hmte-full-pack-*.md
+hmte-pack-*
+test-pack.md

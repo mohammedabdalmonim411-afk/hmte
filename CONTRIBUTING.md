@@ -10,7 +10,7 @@ If you find a bug, please open an issue on GitHub with:
 - A clear, descriptive title
 - Steps to reproduce the issue
 - Expected behavior vs actual behavior
-- Your environment (OS, Node.js version, etc.)
+- Your environment (OS, Python version, Bash version, etc.)
 - Any relevant logs or screenshots
 
 ### Suggesting Enhancements
@@ -73,18 +73,24 @@ pip install -r requirements.txt
 # Run the installation script
 ./install-to-hermes.sh
 
-# Run end-to-end tests
-./scripts/mavis-e2e.sh
+# Run core workflow tests
+bash scripts/e2e-core-workflow-test.sh
+
+# Run anti-fake guarantee tests
+bash scripts/e2e-anti-fake-test.sh
 ```
 
 ## Testing
 
 ```bash
-# Run E2E test suite
-./scripts/mavis-e2e.sh
+# Run core workflow tests
+bash scripts/e2e-core-workflow-test.sh
+
+# Run anti-fake guarantee tests
+bash scripts/e2e-anti-fake-test.sh
 
 # Test individual scripts
-bash -n scripts/mavis-start.sh  # Syntax check
+bash -n scripts/hmte-start.sh  # Syntax check
 python -m py_compile src/skills/hmte/scripts/write_state.py
 
 # Test installation

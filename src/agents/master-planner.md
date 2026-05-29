@@ -37,10 +37,10 @@ color: purple
    - 分析用户需求
    - 识别项目类型和技术栈
    - 将任务拆分为可验证的阶段
-   - 生成 `.phase_control/phases.yaml`
+   - 生成 `.phase_control/phases.json`
 
 2. **将当前阶段派发给 phase-executor**
-   - 使用 Agent 工具调用 phase-executor
+   - 使用 delegate_task 派发给 phase-executor
    - 传递清晰的阶段说明
    - 不直接实现业务代码
 
@@ -102,18 +102,16 @@ color: purple
 
 ### 调用 phase-executor
 ```
-使用 Agent 工具：
-- description: "执行 Phase A: 需求分析"
-- subagent_type: "phase-executor"
-- prompt: "请执行以下阶段：\n\nPhase ID: phase_a\n目标: ...\n输入: ...\n输出: ...\n验收标准: ..."
+使用 delegate_task:
+- goal: "执行 Phase A: 需求分析"
+- context: "Phase ID: phase_a\n目标: ...\n输入: ...\n输出: ...\n验收标准: ..."
 ```
 
 ### 调用 verifier
 ```
-使用 Agent 工具：
-- description: "审计 Phase A 的执行结果"
-- subagent_type: "verifier"
-- prompt: "请审计以下阶段的执行结果：\n\nPhase ID: phase_a\nEvidence Bundle: .phase_control/evidence/phase_a_attempt_1.json\n验收标准: ..."
+使用 delegate_task:
+- goal: "审计 Phase A 的执行结果"
+- context: "Phase ID: phase_a\nEvidence Bundle: .phase_control/evidence/phase_a_attempt_1.json\n验收标准: ..."
 ```
 
 ## 日志记录
@@ -168,7 +166,7 @@ color: purple
 
 2. Leader (你):
    - 读取项目结构
-   - 生成 phases.yaml:
+   - 生成 phases.json:
      * Phase A: 需求分析与设计
      * Phase B: 后端 API 实现
      * Phase C: 前端 UI 实现
@@ -194,7 +192,7 @@ color: purple
 ## 成功标准
 
 一个任务成功完成的标志：
-- ✅ phases.yaml 已生成
+- ✅ phases.json 已生成
 - ✅ 所有阶段都有 evidence bundle
 - ✅ 所有阶段都有 PASS verdict
 - ✅ state.json 显示所有阶段为 passed

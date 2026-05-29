@@ -39,11 +39,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Command injection prevention in evidence collection
 - Safe file operations with proper escaping
 
-## [1.0.0] - 2026-05-27
+## [0.5.0] - 2026-05-27
 
 ### Added
-- First stable release
-- Production-ready multi-agent workflow system
+- Initial public preview
+- Initial public preview of the HTE multi-agent workflow framework
 - Complete documentation suite
 - MIT License
 

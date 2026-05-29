@@ -44,7 +44,7 @@ PROFILE="${HERMES_PROFILE:-default}"
 HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
 SKILL_NAME="hmte"
 # Note: SOURCE_DIR points to src/skills/hmte (Hermes-native structure)
-# not .claude/ (legacy Claude Code structure). The Hermes-native version
+# not .claude/ (Hermes-native structure). The Hermes-native version
 # is the canonical source for installation.
 SOURCE_DIR="src/skills/hmte"
 TARGET_DIR="$HERMES_HOME/profiles/$PROFILE/skills/$SKILL_NAME"
@@ -223,9 +223,9 @@ if [ $ERRORS -eq 0 ]; then
     echo "The skill will be automatically discovered from your profile."
     echo ""
     echo -e "${BLUE}Next Steps:${NC}"
-    echo "1. Initialize a session in your project: ./scripts/mavis-start.sh"
+    echo "1. Initialize a session in your project: ./scripts/hmte-start.sh"
     echo "2. Invoke the skill in Hermes"
-    echo "3. Check status: ./scripts/mavis-status.sh"
+    echo "3. Check status: ./scripts/hmte-status.sh"
     echo ""
 else
     echo -e "${RED}=== Installation Failed ===${NC}"

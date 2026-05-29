@@ -1,7 +1,7 @@
 #!/bin/bash
 # Start HTE session with atomic lock
 
-set -e
+set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"

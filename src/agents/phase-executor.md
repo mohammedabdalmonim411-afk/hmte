@@ -42,11 +42,28 @@ color: blue
    - 不要提前实现后续阶段的功能
    - 不要过度设计
 
-2. **运行必要命令**
-   - 安装依赖
-   - 运行测试
-   - 构建项目
-   - 启动服务（如需要）
+2. **通过 hmte exec 运行所有命令**（强制）
+
+   所有命令必须通过 hmte exec 执行：
+
+   ```bash
+   bash scripts/hmte-exec.sh <phase_id> --attempt <n> -- <command>
+   ```
+
+   正确示例：
+   ```bash
+   bash scripts/hmte-exec.sh phase_a --attempt 1 -- npm test
+   bash scripts/hmte-exec.sh phase_a --attempt 1 -- npm run build
+   bash scripts/hmte-exec.sh phase_a --attempt 1 -- python3 -m pytest
+   ```
+
+   ❌ 禁止直接运行命令（无审计追踪）：
+   ```bash
+   npm test          # ❌ 缺少 hmte exec 包装
+   pytest            # ❌ 缺少安全检查和证据采集
+   ```
+
+   **违反后果**：evidence bundle 缺少 command log → Verifier 判 FAIL → 阶段返工。
 
 3. **输出结构化 evidence bundle**
    - 必须是 JSON 格式

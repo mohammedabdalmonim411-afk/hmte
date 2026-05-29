@@ -1,7 +1,7 @@
 #!/bin/bash
 # End-to-End test for HTE
 
-set -e
+set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
@@ -11,13 +11,13 @@ echo ""
 
 # Cleanup previous test
 echo "Cleaning up previous test..."
-./scripts/mavis-stop.sh 2>/dev/null || true
+./scripts/hmte-stop.sh 2>/dev/null || true
 rm -rf .phase_control/evidence/* .phase_control/verdicts/* .phase_control/logs/*
-rm -f .phase_control/phases.yaml .phase_control/state.json .phase_control/current_phase
+rm -f .phase_control/phases.json .phase_control/state.json .phase_control/current_phase
 
 # Start fresh session
 echo "Starting new session..."
-./scripts/mavis-start.sh
+./scripts/hmte-start.sh
 
 # Check state file created
 if [ ! -f ".phase_control/state.json" ]; then
@@ -26,9 +26,9 @@ if [ ! -f ".phase_control/state.json" ]; then
 fi
 echo "✓ State file created"
 
-# Create test phases.yaml
+# Create test phases.json
 echo "Creating test phases..."
-cat > .phase_control/phases.yaml << 'PHASES_EOF'
+cat > .phase_control/phases.json << 'PHASES_EOF'
 phases:
   - id: phase_test
     name: "Test Phase"
@@ -137,12 +137,12 @@ fi
 # Check status
 echo ""
 echo "Checking status..."
-./scripts/mavis-status.sh
+./scripts/hmte-status.sh
 
 # Verify stop gate allows stopping
 echo ""
 echo "Testing stop gate..."
-if .claude/hooks/stop_gate.sh; then
+if $SKILL_DIR/hooks/stop_gate.sh; then
     echo "✓ Stop gate allows stopping (phase passed)"
 else
     echo "FAIL: Stop gate blocked stopping"
@@ -174,7 +174,7 @@ if command -v jq &> /dev/null; then
 fi
 
 # Verify stop gate blocks stopping
-if .claude/hooks/stop_gate.sh 2>/dev/null; then
+if $SKILL_DIR/hooks/stop_gate.sh 2>/dev/null; then
     echo "FAIL: Stop gate should block when phase failed"
     exit 1
 else
@@ -184,7 +184,7 @@ fi
 # Cleanup
 echo ""
 echo "Cleaning up..."
-./scripts/mavis-stop.sh
+./scripts/hmte-stop.sh
 
 echo ""
 echo "=== E2E Test PASSED ==="

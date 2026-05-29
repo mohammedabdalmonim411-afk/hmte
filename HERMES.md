@@ -1,114 +1,71 @@
-# Team Engine Policy
+# HTE Project Policy
 
-This project uses the HTE for structured development.
+本项目使用 HTE 进行结构化多 Agent 协作开发。
 
-## Core Rules (MANDATORY - NOT OPTIONAL)
+## 核心规则
 
-1. **All complex tasks MUST use Team Engine**
-   - MUST write phases to `.phase_control/phases.yaml` first
-   - MUST execute through master-planner → phase-executor → verifier flow
-   - MUST NOT bypass the verification step
+1. **复杂任务必须使用 HTE 工作流**
+   - 必须先创建 `.phase_control/phases.json`
+   - 必须按 Leader → Worker → Verifier 流程推进
+   - 必须通过 phase_gate 才能进入下一阶段
 
-2. **Phase Gate Enforcement (MANDATORY)**
-   - No phase proceeds without verifier PASS
-   - Evidence bundle REQUIRED for every phase
-   - State machine MUST be maintained
+2. **角色边界**
+   - Leader 负责规划阶段、维护状态、控制流程
+   - Worker 负责执行阶段任务并产出 evidence
+   - Verifier 负责独立审计并输出 verdict
+   - Verifier 不修改业务实现代码
+   - Worker 不自我放行
 
-3. **Role Boundaries (STRICT)**
-   - ONLY master-planner modifies `.phase_control/state.json`
-   - phase-executor produces implementation and evidence
-   - verifier ONLY audits, does NOT modify code
-   - Each role MUST stay in its lane
+3. **阶段产物**
+   - Worker 命令应通过 `hmte exec` 执行
+   - 每个阶段应产出 command log
+   - 每个阶段应产出 evidence bundle
+   - 每个阶段应产出 verdict JSON
+   - 阶段推进前必须通过 phase_gate
 
-4. **Evidence Requirements (MANDATORY)**
-   - Every phase MUST produce evidence bundle
-   - Evidence MUST match required_evidence in phase spec
-   - No subjective "looks good" - evidence-based only
+4. **文件归属**
+   - `.phase_control/phases.json`：Leader
+   - `.phase_control/instructions/`：Leader
+   - `.phase_control/delegations/`：Leader
+   - `.phase_control/logs/`：hmte exec
+   - `.phase_control/evidence/`：Worker
+   - `.phase_control/verdicts/`：Verifier
+   - `.phase_control/state.json`：Leader / orchestrator
 
-5. **Retry and Escalation (MANDATORY)**
-   - FAIL → rework (up to max_retries)
-   - Consecutive FAILs → escalate to Leader
-   - BLOCK → immediate escalation
-   - MUST preserve all evidence and verdicts
+## 工作流
 
-6. **Frontend/UI Changes (MANDATORY)**
-   - MUST require browser evidence when possible
-   - Screenshots, console logs, network traces
-   - If no browser available, MUST document limitation
-
-## File Ownership
-
-- `.phase_control/state.json` - master-planner only
-- `.phase_control/phases.yaml` - master-planner only
-- `.phase_control/evidence/*.json` - phase-executor only
-- `.phase_control/verdicts/*.txt` - verifier only
-
-## Workflow
-
-```
+```text
 User Request
   ↓
-master-planner: Generate phases.yaml
+Leader 创建 phases.json
   ↓
-For each phase:
-  master-planner: Dispatch to phase-executor
-  phase-executor: Execute + produce evidence
-  master-planner: Dispatch to verifier
-  verifier: Audit + output verdict
-  master-planner: PASS→next | FAIL→rework | BLOCK→escalate
+Leader 写入 Worker instruction
+  ↓
+Worker 执行任务并生成 command log + evidence
+  ↓
+Leader 写入 Verifier instruction
+  ↓
+Verifier 审计 evidence 并生成 verdict
+  ↓
+phase_gate 检查阶段产物
+  ↓
+PASS → 下一阶段
+FAIL → 返工
+BLOCK → 升级处理
 ```
 
-## Safety
+## 使用范围
 
-- Hooks enforce dangerous command blocking
-- Stop gate prevents incomplete termination
-- Worktree isolation for phase-executor
-- Read-only by default for verifier
+适合使用 HTE 的任务：
 
-### Hook Registration (Manual Setup Required)
+- 多阶段功能开发
+- 复杂重构
+- 需要审计和验收的工程任务
+- 需要明确质量门禁的任务
 
-> **⚠️ Important**: Hermes does not automatically register hooks from `.claude/hooks/`. You must manually configure them in your Hermes profile.
+可以不使用 HTE 的任务：
 
-The project includes three safety hooks:
-- `pretool_guard.sh` - Blocks dangerous commands (rm -rf, dd, etc.)
-- `stop_gate.sh` - Prevents premature session termination
-- `task_naming.sh` - Enforces task naming conventions
-
-**To enable hooks in Hermes:**
-
-1. Copy hooks to your Hermes profile:
-```bash
-cp .claude/hooks/*.sh ~/.hermes/profiles/default/hooks/
-```
-
-2. Configure in your Hermes profile settings (if supported), or
-
-3. Manually invoke hooks in agent prompts:
-```bash
-# Before executing commands, run:
-bash .claude/hooks/pretool_guard.sh "command_to_check"
-
-# Before stopping session, run:
-bash .claude/hooks/stop_gate.sh
-```
-
-**Note**: Hook integration depends on your Hermes setup. Consult Hermes documentation for the correct hook registration method for your version.
-
-## Models
-
-- master-planner: opus (or sonnet if constrained)
-- phase-executor: sonnet
-- verifier: opus (or sonnet with more tests)
-
-## When NOT to Use Team Engine
-
-- Simple one-file edits
-- Trivial bug fixes
-- Documentation updates
-- Exploratory research
-
-Use Team Engine for:
-- Multi-phase implementations
-- Features requiring verification
-- Changes with quality gates
-- Complex refactoring
+- 简单文本修改
+- 单文件小修
+- 临时性探索
+- 非工程化问答

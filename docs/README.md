@@ -1,30 +1,15 @@
 # HTE Documentation
 
-This directory contains project documentation organized by category.
+This directory contains project documentation.
 
-## Directory Structure
+## Files
 
-- **history/** - Historical documents from the project's development and migration
-  - Audit reports (AUDIT_*.md)
-  - Implementation reports (IMPLEMENTATION_*.md, FINAL_REPORT.md)
-  - Migration and verification reports
-  - Phase completion summaries
-  - Legal and security reviews
+- **[README.md](README.md)** — Documentation index
+- **[FILE_NAMING.md](FILE_NAMING.md)** — File naming conventions
+- **[history/PLATFORM_HISTORY.md](history/PLATFORM_HISTORY.md)** — Platform migration history (Claude Code → Hermes Agent)
 
-## Main Documentation
+## External Documentation
 
-For current project documentation, see:
-- [README.md](../README.md) - Main project documentation
-- [HERMES.md](../HERMES.md) - Hermes-specific integration guide
-- [src/skills/hmte/](../src/skills/hmte/) - Skill definitions and templates
-- [src/agents/](../src/agents/) - Agent definitions
-
-## Historical Context
-
-The documents in `history/` provide a complete audit trail of the project's development, including:
-- Initial implementation and verification
-- Migration from Claude Code to Hermes
-- Security and legal reviews
-- Multiple phases of fixes and improvements
-
-These are preserved for reference but may contain outdated statistics or information. Always refer to the main README.md for current project status.
+- **[../README.md](../README.md)** — Project overview, architecture, quick start
+- **[../HERMES.md](../HERMES.md)** — HTE project policy and workflow rules
+- **[../CONTRIBUTING.md](../CONTRIBUTING.md)** — Contribution guidelines

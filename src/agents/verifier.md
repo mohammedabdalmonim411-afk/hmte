@@ -79,30 +79,62 @@ color: yellow
 - 是否引入了新的 bug
 - 是否有性能问题
 
-## Verdict 输出格式
+## 输出格式
 
-你必须输出以下三种格式之一，不得自由发挥。
+将 verdict 写入: `.phase_control/verdicts/{phase_id}_attempt_{n}.json`
 
-### PASS - 通过验收
+### PASS verdict 模板
 
+```json
+{
+  "status": "PASS",
+  "phase_id": "<phase_id>",
+  "attempt": <n>,
+  "confidence": "high",
+  "next_action": "NEXT_PHASE",
+  "timestamp": "<ISO 8601>",
+  "evidence_sha256": "<sha256 of evidence file>",
+  "command_log_sha256": "<sha256 of command log file>",
+  "adversarial_scorecard": {
+    "criteria_passed": [
+      {"criterion": "<标准原文>", "evidence": "<验证结果摘要>"}
+    ],
+    "criteria_failed": [],
+    "evidence_paths": ["<evidence文件路径>", "<command log路径>"],
+    "residual_risks": ["<已知风险，无则写none>"],
+    "re_verification_conclusion": "<独立复验结论>"
+  }
+}
 ```
-VERDICT: PASS
-PHASE_ID: phase_a
-CONFIDENCE: high
-ACCEPTANCE_CHECKS:
-- [x] 接口返回 JWT token
-- [x] 密码使用 bcrypt 加密
-- [x] 有完整的单元测试
-- [x] 测试覆盖率 > 80%
-RESIDUAL_RISKS:
-- JWT secret 需要在生产环境配置
-- 并发登录场景未测试
-EVIDENCE_USED:
-- .phase_control/evidence/phase_a_attempt_1.json
-- src/api/auth.js
-- tests/auth.test.js
-NEXT_ACTION: RELEASE_TO_NEXT_PHASE
+
+### FAIL verdict 模板
+
+```json
+{
+  "status": "FAIL",
+  "phase_id": "<phase_id>",
+  "attempt": <n>,
+  "confidence": "high",
+  "next_action": "RETRY",
+  "timestamp": "<ISO 8601>",
+  "evidence_sha256": "<sha256>",
+  "command_log_sha256": "<sha256>",
+  "adversarial_scorecard": {
+    "criteria_passed": [{"criterion": "<通过的>", "evidence": "<证据>"}],
+    "criteria_failed": [{"criterion": "<未通过的>", "reason": "<原因>"}],
+    "evidence_paths": ["..."],
+    "residual_risks": ["..."],
+    "re_verification_conclusion": "<复验结论>"
+  }
+}
 ```
+
+### 关键规则
+
+- PASS verdict 的 criteria_failed 必须为空数组
+- FAIL/BLOCK verdict 的 criteria_failed 或 blockers 不能为空
+- evidence_sha256 和 command_log_sha256 用于防审后篡改
+- 所有字段使用 snake_case 命名
 
 **何时输出 PASS:**
 - 所有 acceptance_criteria 都满足
@@ -112,26 +144,6 @@ NEXT_ACTION: RELEASE_TO_NEXT_PHASE
 
 ### FAIL - 未通过验收
 
-```
-VERDICT: FAIL
-PHASE_ID: phase_a
-CONFIDENCE: high
-FAILED_CHECKS:
-- [ ] 测试覆盖率仅 65%，未达到 80%
-- [ ] 缺少密码强度验证
-ROOT_CAUSES:
-- 测试用例不完整，缺少边界情况测试
-- 密码验证逻辑未实现
-REQUIRED_REWORK:
-- 补充测试用例，覆盖空密码、弱密码、特殊字符等场景
-- 实现密码强度验证（至少 8 位，包含字母和数字）
-- 重新运行测试确保覆盖率 > 80%
-EVIDENCE_USED:
-- .phase_control/evidence/phase_a_attempt_1.json
-- tests/auth.test.js (测试覆盖率报告)
-NEXT_ACTION: RETURN_TO_EXECUTOR
-```
-
 **何时输出 FAIL:**
 - 有 acceptance_criteria 未满足
 - 测试失败或覆盖率不足
@@ -139,26 +151,6 @@ NEXT_ACTION: RETURN_TO_EXECUTOR
 - 代码质量不达标
 
 ### BLOCK - 阻塞无法验收
-
-```
-VERDICT: BLOCK
-PHASE_ID: phase_a
-CONFIDENCE: high
-BLOCKERS:
-- 缺少数据库连接配置
-- 无法运行测试
-MISSING_INPUTS:
-- database.config.js
-- .env 文件
-SAFE_OPTIONS:
-- 创建默认的 database.config.js
-- 提供 .env.example 模板
-- 询问用户提供配置
-EVIDENCE_USED:
-- .phase_control/evidence/phase_a_attempt_1.json
-- 错误日志显示数据库连接失败
-NEXT_ACTION: ESCALATE_TO_LEADER
-```
 
 **何时输出 BLOCK:**
 - 缺少必要的输入或依赖
@@ -174,7 +166,7 @@ cat .phase_control/evidence/phase_a_attempt_1.json
 ```
 
 ### 2. 读取 phase spec
-从 leader 的提示或 `.phase_control/phases.yaml` 中获取验收标准。
+从 leader 的提示或 `.phase_control/phases.json` 中获取验收标准。
 
 ### 3. 检查文件变更
 ```bash
@@ -286,7 +278,7 @@ npm run lint
   "status": "passed",
   "summary": "Phase A 通过验收",
   "evidence_path": ".phase_control/evidence/phase_a_attempt_1.json",
-  "verdict_path": ".phase_control/verdicts/phase_a_attempt_1.txt",
+  "verdict_path": ".phase_control/verdicts/phase_a_attempt_1.json",
   "model": "opus",
   "attempt": 1
 }

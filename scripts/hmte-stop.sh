@@ -1,10 +1,20 @@
 #!/bin/bash
 # Stop HTE session
 
-set -e
+set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
+
+SKILL_DIR="${HMTE_SKILL_DIR:-$PROJECT_ROOT/src/skills/hmte}"
+
+# Call stop_gate to check if safe to stop
+if [[ -x "$SKILL_DIR/hooks/stop_gate.sh" ]]; then
+    bash "$SKILL_DIR/hooks/stop_gate.sh" || {
+        echo "❌ stop_gate阻止了停止操作" >&2
+        exit 1
+    }
+fi
 
 LOCK_FILE=".phase_control/run.lock"
 PIDS_DIR=".phase_control/pids"
@@ -43,5 +53,5 @@ fi
 
 echo "HTE stopped successfully"
 echo ""
-echo "To restart, run: ./scripts/mavis-start.sh"
+echo "To restart, run: ./scripts/hmte-start.sh"
 echo "Then invoke the 'hmte' skill in Hermes"
