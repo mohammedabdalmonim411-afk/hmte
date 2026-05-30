@@ -1,41 +1,24 @@
 # ============================================
 # Phase Control Runtime Files
 # ============================================
-.phase_control/state.json
-.phase_control/state.json.tmp
-.phase_control/state.json.corrupted*
-.phase_control/run.lock
-.phase_control/current_phase
-.phase_control/state.lock
-.phase_control/phases.json
-.phase_control/phases*.yaml
-.phase_control/evidence/*.json
-.phase_control/evidence/*.txt
-.phase_control/evidence/*.md
-.phase_control/verdicts/*.json
-.phase_control/verdicts/*.txt
-.phase_control/logs/*.jsonl
-.phase_control/logs/*.txt
-.phase_control/pids/*.pid
-.phase_control/traces/*
-.phase_control/delegations/*.json
-.phase_control/instructions/*.json
-.phase_control/errors/*.json
-.phase_control/state/*
-.phase_control/PHASE*.txt
+dev/.phase_control/
+dev/.phase_control_archive/
+dev/.hmte/
+dev/.mavis/
 
 # Keep directory structure
-!.phase_control/evidence/.gitkeep
-!.phase_control/verdicts/.gitkeep
-!.phase_control/logs/.gitkeep
-!.phase_control/pids/.gitkeep
-!.phase_control/traces/.gitkeep
+!dev/.phase_control/evidence/.gitkeep
+!dev/.phase_control/verdicts/.gitkeep
+!dev/.phase_control/logs/.gitkeep
+!dev/.phase_control/pids/.gitkeep
+!dev/.phase_control/traces/.gitkeep
 
 # ============================================
 # Internal dev files (not for GitHub)
 # ============================================
 FIX_PLAN*.md
 ../hte-dev/
+dev/archive/
 
 # ============================================
 # OS Files
