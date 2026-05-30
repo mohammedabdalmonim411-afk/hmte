@@ -536,3 +536,27 @@ Memory 用于跨会话保留关键知识，但必须严格控制内容。
 ```
 
 **规则：每条 memory 不超过 200 字，保持可扫描性。**
+
+## 最终验收（Final Check）
+
+所有阶段通过 phase_gate 后，Leader 在输出"完成/PASS/封版"声明前，**必须运行 `hmte-final-check.sh`**：
+
+```bash
+bash scripts/hmte-final-check.sh
+```
+
+### 检查内容
+
+1. `session.json` 和 `phases.json` 存在且合法 JSON
+2. 每个 phase 的 7 文件链路完整（worker/verifier instruction, worker/verifier receipt, command log, evidence, verdict）
+3. 每个 verdict `status=PASS`
+4. 每个 phase_gate 通过
+5. `final_audit` 的 evidence / verdict / command log 存在
+
+### 声明规则
+
+- 未通过 final-check 的完成声明视为无效
+- Agent 不得仅凭自然语言声称完成
+- 最终回复必须包含：final-check 输出、执行结果、final_audit verdict 路径、未解决风险列表
+
+详见 `.hmte/team-rules.md` 中的"最终声明规则"。

@@ -52,6 +52,12 @@ phase_gate 检查阶段产物
 PASS → 下一阶段
 FAIL → 返工
 BLOCK → 升级处理
+  ↓
+所有阶段完成后运行 hmte-final-check.sh
+  ↓
+Final Audit (Release Auditor)
+  ↓
+声明完成（须附 final-check 输出 + verdict 路径）
 ```
 
 ## 使用范围
@@ -69,3 +75,15 @@ BLOCK → 升级处理
 - 单文件小修
 - 临时性探索
 - 非工程化问答
+
+## 最终声明规则
+
+Agent 在输出"完成/PASS/封版/全部通过"声明前必须运行 `bash scripts/hmte-final-check.sh`。
+
+最终回复必须包含：
+1. final-check 命令输出
+2. 执行结果（exit code）
+3. final_audit verdict 路径
+4. 未解决风险列表
+
+未运行 final-check 的完成声明视为无效。

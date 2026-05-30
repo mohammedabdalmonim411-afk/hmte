@@ -12,9 +12,9 @@ HTE 将 AI 辅助开发从"单个模型独立完成所有事情"，升级为"多
 - **phase_gate**：检查当前阶段是否满足放行条件。
 - **orchestrator**：管理基于文件协议的阶段流转。
 
-![状态](https://img.shields.io/badge/版本-v1.2.0-green)
+![状态](https://img.shields.io/badge/版本-v1.4.0-green)
 ![定位](https://img.shields.io/badge/定位-多%20Agent%20协作框架-blue)
-![机制](https://img.shields.io/badge/机制-阶段门禁%20/%20证据链-purple)
+![机制](https://img.shields.io/badge/机制-阶段门禁%20/%20证据链%20/%20最终声明验证-purple)
 
 > 当前状态：Beta
 > 当前重点：统一文件协议、命令日志、阶段门禁、独立审计和核心流程测试。
@@ -335,6 +335,26 @@ bash scripts/e2e-anti-fake-test.sh
 bash scripts/hmte-e2e-legacy.sh
 ```
 
+## 最终验收
+
+所有阶段通过 phase_gate 后，在输出"完成/PASS/封版"声明前，**必须运行 `hmte-final-check.sh`**：
+
+```bash
+bash scripts/hmte-final-check.sh
+```
+
+该脚本会检查：
+
+1. `session.json` 和 `phases.json` 存在且合法
+2. 每个 phase 的 7 文件链路完整（instruction × 2, receipt × 2, command log, evidence, verdict）
+3. 每个 verdict `status=PASS`
+4. 每个 phase_gate 通过
+5. `final_audit` 的 evidence / verdict / command log 存在
+
+**未通过 final-check 的完成声明视为无效。** Agent 不得仅凭自然语言声称完成。
+
+详见 `.hmte/team-rules.md` 中的"最终声明规则"。
+
 ## Roadmap
 
 ### v1.2 — GitHub 发布 ✅
@@ -347,6 +367,13 @@ bash scripts/hmte-e2e-legacy.sh
 - [x] HERMES.md 同步
 - [x] 文档旧口径清理
 - [x] 反伪造保障（receipt + audit-flow + scorecard）
+
+### v1.4 — 最终声明反作弊层 ✅
+
+- [x] `scripts/hmte-final-check.sh` — 文件协议完整性检查
+- [x] `.hmte/team-rules.md` — 最终声明规则
+- [x] `docs/attack-cases.md` — Attack Vector 8: Fake Completion Report
+- [x] README / HERMES / SKILL 最终验收章节同步
 
 ### v1.3 — 委派记录增强
 
