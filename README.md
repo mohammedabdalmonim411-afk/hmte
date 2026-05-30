@@ -396,12 +396,6 @@ bash scripts/hmte-final-check.sh
 - [x] 文档旧口径清理
 - [x] 反伪造保障（receipt + audit-flow + scorecard）
 
-### v1.3 — 委派记录增强 ✅
-
-- [x] receipt schema 区分 INTENT_ONLY / OBSERVED
-- [x] 当前默认 delegation_proof = INTENT_ONLY
-- [x] OBSERVED 字段预留，等待未来 tool-call trace adapter
-
 ### v1.4 — 最终声明反作弊层 ✅
 
 - [x] `scripts/hmte-final-check.sh` — 文件协议完整性检查
