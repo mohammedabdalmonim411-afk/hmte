@@ -1,0 +1,14 @@
+{
+  "phase_id": "phase_4_docs_update",
+  "attempt": 1,
+  "role": "verifier",
+  "objective": "验证 phase_4_docs_update 的产物完整性",
+  "acceptance_criteria": [
+    "README.md 验收章节包含 hmte-final-check.sh",
+    "HERMES.md 工作流包含 final-check 步骤",
+    "SKILL.md 验收标准包含 final-check",
+    "说明清晰不引入歧义",
+    "保持原有内容结构"
+  ],
+  "evidence_path": ".phase_control/evidence/phase_4_docs_update_attempt_1.json"
+}

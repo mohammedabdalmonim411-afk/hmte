@@ -1,0 +1,25 @@
+{
+  "instruction_id": "phase_3_attack_cases_update_attempt_2_worker",
+  "phase_id": "phase_3_attack_cases_update",
+  "attempt": 2,
+  "role": "worker",
+  "assigned_to": "leader_direct_execution",
+  "task": "验证 docs/attack-cases.md 已包含 Attack Vector 8: Fake Completion Report 章节",
+  "context": "Phase 3 attempt 1 已完成文件修改，但 command log runner 字段不合规。本次 attempt 2 使用 Leader 直接执行（方案 A），通过 hmte exec 验证文件内容符合验收标准。",
+  "acceptance_criteria": [
+    "Attack Vector 8 章节存在（标题含中英文双语）",
+    "攻击描述包含：Agent 直接修改文件后伪造 Phase PASS 表格、声称 evidence/verdict 已写入但没有 phase_gate",
+    "检测方法包含：bash scripts/hmte-final-check.sh 可检出",
+    "局限性说明包含：用户不运行 final-check 时 HTE 无法阻止自然语言欺骗",
+    "Summary 表格包含 Fake completion report 行（检测级别：Partial）"
+  ],
+  "expected_outputs": [
+    "docs/attack-cases.md 包含完整的 Attack Vector 8 章节",
+    "Summary 表格已更新"
+  ],
+  "verification_commands": [
+    "grep -n 'Attack Vector 8: Fake Completion Report' docs/attack-cases.md",
+    "grep -n 'Fake completion report' docs/attack-cases.md",
+    "grep -n 'hmte-final-check.sh' docs/attack-cases.md"
+  ]
+}

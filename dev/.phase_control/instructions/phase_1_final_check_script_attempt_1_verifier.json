@@ -1,0 +1,45 @@
+{
+  "role": "verifier",
+  "phase_id": "phase_1_final_check_script",
+  "attempt": 1,
+  "objective": "独立审计 phase_1_final_check_script 的实现质量",
+  "evidence_path": ".phase_control/evidence/phase_1_final_check_script_attempt_1.json",
+  "command_log_path": ".phase_control/logs/phase_1_final_check_script_attempt_1.commands.jsonl",
+  "acceptance_criteria": [
+    "检查 .phase_control/session.json 存在且合法 JSON",
+    "检查 .phase_control/phases.json 存在且合法 JSON",
+    "对每个 phase，检查 7 个文件存在：worker instruction、worker receipt、command log、evidence、verifier instruction、verifier receipt、verdict",
+    "检查每个 verdict 的 status 字段为 PASS",
+    "检查每个 phase_gate 实际通过（调用 phase_gate.sh，exit 0 为通过）",
+    "检查 final_audit evidence、verdict、command log 存在",
+    "检查 final_audit phase_gate 通过",
+    "FAIL_COUNT > 0 时 exit 1，输出失败项清单",
+    "PASS 时 exit 0，输出检查通过的统计信息",
+    "使用 bash + python3 标准库，不引入新依赖",
+    "脚本开头使用 set -euo pipefail",
+    "输出格式清晰，使用 ✅/❌ 标记"
+  ],
+  "verification_tasks": [
+    "读取 evidence bundle，确认 Worker 声称的输出文件存在",
+    "读取 command log，确认 Worker 使用了 hmte exec",
+    "检查 scripts/hmte-final-check.sh 文件存在且可执行",
+    "审查脚本内容，确认实现了所有验收标准",
+    "验证脚本使用 set -euo pipefail",
+    "验证脚本检查 session.json 和 phases.json",
+    "验证脚本对每个 phase 检查 7 个文件",
+    "验证脚本检查 verdict status=PASS",
+    "验证脚本调用 phase_gate.sh",
+    "验证脚本检查 final_audit 完整性",
+    "验证脚本在失败时 exit 1，成功时 exit 0",
+    "验证输出格式使用 ✅/❌ 标记",
+    "运行脚本测试（如果当前项目状态允许）",
+    "检查脚本是否引入了新依赖（应该只用 bash + python3 标准库）"
+  ],
+  "forbidden_actions": [
+    "不得修改 scripts/hmte-final-check.sh",
+    "不得修改任何业务代码",
+    "不得修改 evidence 或 command log"
+  ],
+  "verdict_output_path": ".phase_control/verdicts/phase_1_final_check_script_attempt_1.json",
+  "created_at": "2026-05-30T09:44:44Z"
+}

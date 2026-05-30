@@ -1,0 +1,88 @@
+{
+  "phases": [
+    {
+      "phase_id": "phase_1_final_check_script",
+      "name": "实现 hmte-final-check.sh",
+      "objective": "创建 scripts/hmte-final-check.sh，检查文件协议完整性",
+      "inputs": [
+        "src/skills/hmte/scripts/phase_gate.sh",
+        "src/skills/hmte/scripts/hmte-audit-flow.py",
+        ".phase_control/phases.json",
+        ".phase_control/session.json"
+      ],
+      "outputs": [
+        "scripts/hmte-final-check.sh"
+      ],
+      "acceptance_criteria": [
+        "检查 session.json 和 phases.json 存在且合法",
+        "对每个 phase 检查 7 个文件存在",
+        "检查每个 verdict 的 status=PASS",
+        "检查每个 phase_gate 实际通过",
+        "检查 final_audit 完整性",
+        "FAIL_COUNT > 0 时 exit 1",
+        "使用 bash + python3 标准库"
+      ]
+    },
+    {
+      "phase_id": "phase_2_team_rules_update",
+      "name": "更新 team-rules.md 最终声明规则",
+      "objective": "在 team-rules.md 新增最终声明规则章节",
+      "inputs": [
+        ".hmte/team-rules.md",
+        "scripts/hmte-final-check.sh"
+      ],
+      "outputs": [
+        ".hmte/team-rules.md"
+      ],
+      "acceptance_criteria": [
+        "新增最终声明规则章节",
+        "明确规定 Agent 不得仅凭自然语言声明完成",
+        "要求输出完成声明前必须运行 hmte-final-check.sh",
+        "列出最终回复必须包含的内容",
+        "保持原有章节不变"
+      ]
+    },
+    {
+      "phase_id": "phase_3_attack_cases_update",
+      "name": "更新 attack-cases.md 记录伪造完成报告",
+      "objective": "在 attack-cases.md 新增 Fake Completion Report 攻击向量",
+      "inputs": [
+        "docs/attack-cases.md",
+        "scripts/hmte-final-check.sh"
+      ],
+      "outputs": [
+        "docs/attack-cases.md"
+      ],
+      "acceptance_criteria": [
+        "新增 Attack Vector 章节",
+        "描述伪造完成报告的攻击方式",
+        "说明 hmte-final-check.sh 的检测能力",
+        "明确说明检测边界和限制",
+        "格式与现有章节一致"
+      ]
+    },
+    {
+      "phase_id": "phase_4_docs_update",
+      "name": "更新 README/HERMES/SKILL 验收章节",
+      "objective": "在文档的验收章节加入 hmte-final-check.sh",
+      "inputs": [
+        "README.md",
+        "HERMES.md",
+        "src/skills/hmte/SKILL.md",
+        "scripts/hmte-final-check.sh"
+      ],
+      "outputs": [
+        "README.md",
+        "HERMES.md",
+        "src/skills/hmte/SKILL.md"
+      ],
+      "acceptance_criteria": [
+        "README.md 验收章节包含 hmte-final-check.sh",
+        "HERMES.md 工作流包含 final-check 步骤",
+        "SKILL.md 验收标准包含 final-check",
+        "说明清晰不引入歧义",
+        "保持原有内容结构"
+      ]
+    }
+  ]
+}

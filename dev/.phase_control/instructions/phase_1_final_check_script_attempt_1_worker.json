@@ -1,0 +1,32 @@
+{
+  "role": "worker",
+  "phase_id": "phase_1_final_check_script",
+  "attempt": 1,
+  "objective": "创建 scripts/hmte-final-check.sh，检查文件协议完整性",
+  "inputs": [
+    "src/skills/hmte/scripts/phase_gate.sh",
+    "src/skills/hmte/scripts/hmte-audit-flow.py",
+    ".phase_control/phases.json",
+    ".phase_control/session.json"
+  ],
+  "outputs": [
+    "scripts/hmte-final-check.sh"
+  ],
+  "acceptance_criteria": [
+    "检查 .phase_control/session.json 存在且合法 JSON",
+    "检查 .phase_control/phases.json 存在且合法 JSON",
+    "对每个 phase，检查 7 个文件存在：{phase_id}_attempt_{n}_worker.json (instruction)、{phase_id}_attempt_{n}_worker.json (receipt)、{phase_id}_attempt_{n}.commands.jsonl、{phase_id}_attempt_{n}.json (evidence)、{phase_id}_attempt_{n}_verifier.json (instruction)、{phase_id}_attempt_{n}_verifier.json (receipt)、{phase_id}_attempt_{n}.json (verdict)",
+    "检查每个 verdict 的 status 字段为 PASS",
+    "检查每个 phase_gate 实际通过（调用 src/skills/hmte/scripts/phase_gate.sh <phase_id> --attempt <n>，exit 0 为通过）",
+    "检查 final_audit evidence、verdict、command log 存在",
+    "检查 final_audit phase_gate 通过",
+    "FAIL_COUNT > 0 时 exit 1，输出失败项清单",
+    "PASS 时 exit 0，输出检查通过的统计信息（总 phase 数、检查项数、通过数）",
+    "使用 bash + python3 标准库，不引入新依赖",
+    "脚本开头使用 set -euo pipefail",
+    "输出格式清晰，使用 ✅/❌ 标记通过/失败项"
+  ],
+  "commands_must_use_hmte_exec": true,
+  "evidence_output_path": ".phase_control/evidence/phase_1_final_check_script_attempt_1.json",
+  "created_at": "2026-05-30T09:44:44Z"
+}

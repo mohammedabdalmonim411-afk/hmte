@@ -1,0 +1,23 @@
+{
+  "instruction_id": "phase_3_attack_cases_update_attempt_2_verifier",
+  "phase_id": "phase_3_attack_cases_update",
+  "attempt": 2,
+  "role": "verifier",
+  "assigned_to": "leader_direct_execution",
+  "task": "验证 Phase 3 attempt 2 的 Worker 输出符合验收标准",
+  "context": "Worker 已通过 hmte exec 验证 docs/attack-cases.md 包含 Attack Vector 8 章节。Verifier 需检查 command log 合规性、evidence bundle 完整性、文件内容符合验收标准。",
+  "acceptance_criteria": [
+    "command log 存在且 runner='hmte exec'",
+    "evidence bundle 包含 command_log_path、verification_results",
+    "Attack Vector 8 章节包含中英文标题",
+    "攻击描述包含伪造 Phase PASS 表格、绕过 phase_gate",
+    "检测方法提及 hmte-final-check.sh",
+    "局限性说明包含自然语言欺骗无法阻止",
+    "Summary 表格包含 Fake completion report 行"
+  ],
+  "verification_commands": [
+    "cat .phase_control/logs/phase_3_attack_cases_update_attempt_2.commands.jsonl | jq -r '.runner'",
+    "grep -A 5 'Attack Vector 8' docs/attack-cases.md | head -10",
+    "grep 'Fake completion report' docs/attack-cases.md"
+  ]
+}

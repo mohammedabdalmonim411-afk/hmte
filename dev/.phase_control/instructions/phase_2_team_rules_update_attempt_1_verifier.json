@@ -1,0 +1,33 @@
+{
+  "role": "verifier",
+  "phase_id": "phase_2_team_rules_update",
+  "attempt": 1,
+  "objective": "独立审计 phase_2_team_rules_update 的实现质量",
+  "evidence_path": ".phase_control/evidence/phase_2_team_rules_update_attempt_1.json",
+  "command_log_path": ".phase_control/logs/phase_2_team_rules_update_attempt_1.commands.jsonl",
+  "acceptance_criteria": [
+    "新增最终声明规则章节",
+    "明确规定 Agent 不得仅凭自然语言声称完成或PASS或封版",
+    "要求输出完成声明前必须运行 bash scripts/hmte-final-check.sh",
+    "列出最终回复必须包含的内容",
+    "说明未运行 final-check 的完成声明视为无效",
+    "保持原有章节不变只追加新章节"
+  ],
+  "verification_tasks": [
+    "读取 evidence bundle 确认 Worker 声称的输出",
+    "读取 command log 确认 Worker 使用了 hmte exec",
+    "检查 .hmte/team-rules.md 文件存在",
+    "审查文件内容确认新增了最终声明规则章节",
+    "验证章节标题清晰",
+    "验证规则内容完整覆盖所有验收标准",
+    "验证原有章节未被修改",
+    "验证格式与原有章节一致"
+  ],
+  "forbidden_actions": [
+    "不得修改 .hmte/team-rules.md",
+    "不得修改任何业务代码",
+    "不得修改 evidence 或 command log"
+  ],
+  "verdict_output_path": ".phase_control/verdicts/phase_2_team_rules_update_attempt_1.json",
+  "created_at": "2026-05-30T09:44:44Z"
+}

@@ -1,0 +1,65 @@
+{
+  "phase_id": "phase_3_attack_cases_update",
+  "attempt": 1,
+  "role": "verifier",
+  "objective": "审计 Phase 3 Worker 实现质量：验证 docs/attack-cases.md 新增 Fake Completion Report 攻击向量章节是否满足验收标准",
+  "context": {
+    "worker_instruction_path": ".phase_control/instructions/phase_3_attack_cases_update_attempt_1_worker.json",
+    "worker_evidence_path": ".phase_control/evidence/phase_3_attack_cases_update_attempt_1.json",
+    "worker_command_log_path": ".phase_control/logs/phase_3_attack_cases_update_attempt_1.commands.jsonl",
+    "target_file": "docs/attack-cases.md",
+    "acceptance_criteria": [
+      "新增章节标题 'Attack Vector: Fake Completion Report'",
+      "包含攻击描述（Agent 直接修改文件后伪造 Phase PASS 表格）",
+      "包含检测方法（当前能通过 final-check 检出）",
+      "包含局限性说明（如果用户不运行 final-check，HTE 不能阻止自然语言欺骗）",
+      "明确指出 final-check 的作用和边界"
+    ]
+  },
+  "tasks": [
+    {
+      "task_id": "verify_1",
+      "description": "读取 Worker evidence 和 command log，确认 Worker 执行了哪些操作"
+    },
+    {
+      "task_id": "verify_2",
+      "description": "读取 docs/attack-cases.md，验证新增章节内容是否满足所有验收标准"
+    },
+    {
+      "task_id": "verify_3",
+      "description": "检查新增内容的技术准确性：final-check 的作用、局限性、检测级别是否正确描述"
+    },
+    {
+      "task_id": "verify_4",
+      "description": "检查文档格式：章节结构、Markdown 语法、表格更新是否正确"
+    },
+    {
+      "task_id": "verify_5",
+      "description": "生成 verdict，使用 adversarial_scorecard 格式（必需字段：criteria_passed、criteria_failed、evidence_paths、residual_risks、re_verification_conclusion）"
+    }
+  ],
+  "output_requirements": {
+    "verdict_path": ".phase_control/verdicts/phase_3_attack_cases_update_attempt_1.json",
+    "verdict_schema": {
+      "phase_id": "string",
+      "attempt": "number",
+      "status": "PASS | FAIL",
+      "timestamp": "ISO8601",
+      "verifier_session_id": "string",
+      "adversarial_scorecard": {
+        "criteria_passed": ["array of passed criteria"],
+        "criteria_failed": ["array of failed criteria"],
+        "evidence_paths": ["array of evidence file paths"],
+        "residual_risks": ["array of remaining risks"],
+        "re_verification_conclusion": "string"
+      },
+      "recommendation": "string"
+    }
+  },
+  "constraints": [
+    "不得修改任何文件，只读审计",
+    "verdict 必须包含完整的 adversarial_scorecard 格式",
+    "如果发现任何验收标准未满足，status 必须为 FAIL",
+    "timestamp 必须晚于 Worker evidence timestamp (2026-05-30T12:00:00Z)"
+  ]
+}

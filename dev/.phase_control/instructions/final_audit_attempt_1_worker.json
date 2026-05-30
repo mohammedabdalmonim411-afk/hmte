@@ -1,0 +1,14 @@
+{
+  "phase_id": "final_audit",
+  "attempt": 1,
+  "role": "worker",
+  "objective": "HTE v1.4 全局审计",
+  "acceptance_criteria": [
+    "所有 Phase (1-4) 的 verdict 均为 PASS",
+    "所有 phase_gate 均通过",
+    "README / HERMES / SKILL 口径一致",
+    "scripts/hmte-final-check.sh 功能完整",
+    "docs/attack-cases.md 记录完整",
+    ".hmte/team-rules.md 规则清晰"
+  ]
+}

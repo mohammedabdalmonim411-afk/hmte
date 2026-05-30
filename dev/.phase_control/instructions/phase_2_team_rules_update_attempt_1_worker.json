@@ -1,0 +1,24 @@
+{
+  "role": "worker",
+  "phase_id": "phase_2_team_rules_update",
+  "attempt": 1,
+  "objective": "在 .hmte/team-rules.md 新增最终声明规则章节",
+  "inputs": [
+    ".hmte/team-rules.md",
+    "scripts/hmte-final-check.sh"
+  ],
+  "outputs": [
+    ".hmte/team-rules.md"
+  ],
+  "acceptance_criteria": [
+    "新增最终声明规则章节",
+    "明确规定 Agent 不得仅凭自然语言声称完成或PASS或封版",
+    "要求输出完成声明前必须运行 bash scripts/hmte-final-check.sh",
+    "列出最终回复必须包含的内容",
+    "说明未运行 final-check 的完成声明视为无效",
+    "保持原有章节不变只追加新章节"
+  ],
+  "commands_must_use_hmte_exec": true,
+  "evidence_output_path": ".phase_control/evidence/phase_2_team_rules_update_attempt_1.json",
+  "created_at": "2026-05-30T09:44:44Z"
+}

@@ -1,0 +1,24 @@
+{
+  "phase_id": "phase_4_docs_update",
+  "attempt": 1,
+  "role": "worker",
+  "objective": "在 README.md / HERMES.md / SKILL.md 的验收章节加入 hmte-final-check.sh",
+  "acceptance_criteria": [
+    "README.md 验收章节包含 hmte-final-check.sh",
+    "HERMES.md 工作流包含 final-check 步骤",
+    "SKILL.md 验收标准包含 final-check",
+    "说明清晰不引入歧义",
+    "保持原有内容结构"
+  ],
+  "inputs": [
+    "README.md",
+    "HERMES.md",
+    "src/skills/hmte/SKILL.md",
+    "scripts/hmte-final-check.sh"
+  ],
+  "outputs": [
+    "README.md",
+    "HERMES.md",
+    "src/skills/hmte/SKILL.md"
+  ]
+}

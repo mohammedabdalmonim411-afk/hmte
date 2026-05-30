@@ -1,0 +1,7 @@
+{
+  "phase_id": "final_audit",
+  "attempt": 1,
+  "role": "verifier",
+  "objective": "验证 final_audit",
+  "evidence_path": ".phase_control/evidence/final_audit_attempt_1.json"
+}

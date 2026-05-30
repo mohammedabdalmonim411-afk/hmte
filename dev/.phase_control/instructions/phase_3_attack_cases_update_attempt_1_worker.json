@@ -1,0 +1,29 @@
+{
+  "phase_id": "phase_3_attack_cases_update",
+  "attempt": 1,
+  "role": "worker",
+  "task": "在 docs/attack-cases.md 新增 Attack Vector: Fake Completion Report / 伪造完成报告",
+  "acceptance_criteria": [
+    "新增章节标题 'Attack Vector: Fake Completion Report'",
+    "包含攻击描述：Agent 直接修改文件后伪造 Phase PASS 表格、声称 evidence/verdict 已写入但没有 phase_gate",
+    "包含检测方法：当前能通过 final-check 检出",
+    "包含局限性说明：如果用户不运行 final-check，HTE 不能阻止自然语言欺骗",
+    "明确指出 final-check 的作用和边界"
+  ],
+  "constraints": [
+    "只修改 docs/attack-cases.md，不修改其他文件",
+    "保持文档格式一致",
+    "使用清晰的技术语言",
+    "不夸大 final-check 的能力"
+  ],
+  "context": {
+    "background": "HTE v1.4 新增 scripts/hmte-final-check.sh 和 .hmte/team-rules.md 最终声明规则，用于防止 Agent 口头伪造完成报告",
+    "real_failure_case": "Agent 直接修改文件和运行命令，没有 kickoff、没有 Worker/Verifier 闭环、没有 phase_gate，却输出'HTE v1.4 封版修复完成 ✅''各 Phase PASS''Evidence + Verdicts 已写入'",
+    "final_check_capability": "final-check 只能检查文件协议完整性（session.json、phases.json、7 个文件链路、verdict PASS、phase_gate 通过、final_audit 存在），不能证明 Agent 真实执行了 delegate_task",
+    "final_check_limitation": "如果用户不运行 final-check，HTE 不能阻止自然语言欺骗"
+  },
+  "deliverables": [
+    "docs/attack-cases.md 新增 Fake Completion Report 章节",
+    "command log 记录所有文件操作"
+  ]
+}
