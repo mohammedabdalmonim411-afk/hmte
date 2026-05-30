@@ -1,0 +1,55 @@
+{
+  "phase_id": "phase_2_final_audit",
+  "attempt": 1,
+  "role": "verifier",
+  "assigned_to": "verifier",
+  "created_at": "2026-05-29T11:50:00+08:00",
+  "objective": "独立审计 Phase 2 的完成情况，确认 Release Auditor 和 final_audit 模板正确实现",
+  "evidence_path": ".phase_control/evidence/phase_2_final_audit_attempt_1.json",
+  "command_log_path": ".phase_control/logs/phase_2_final_audit_attempt_1.commands.jsonl",
+  "acceptance_criteria": [
+    "src/agents/release-auditor.md 存在且内容完整",
+    "src/skills/hmte/final-audit-template.md 存在且内容完整",
+    "Release Auditor 角色定义包含 10 项必查",
+    "final_audit verdict 格式包含 evidence_paths（不得为空）",
+    "final_audit verdict 格式包含 next_action 字段",
+    "文件命名符合硬规则（无 .evidence. / .verdict. 中缀）",
+    "phase_gate 正确处理 final_audit PASS/FAIL",
+    "通过 Phase 2 验收标准（所有测试用例）",
+    "evidence bundle 完整",
+    "command log 完整"
+  ],
+  "verification_tasks": [
+    "读取并验证 evidence bundle",
+    "读取并验证 command log",
+    "计算 SHA256 哈希",
+    "检查新增文件是否存在",
+    "验证 Release Auditor 角色定义（10 项必查）",
+    "验证 final_audit verdict 格式",
+    "验证文件命名规则",
+    "验证测试结果（6 个测试用例）",
+    "评估 residual_risks 和 verification_gaps"
+  ],
+  "output_path": ".phase_control/verdicts/phase_2_final_audit_attempt_1.json",
+  "verdict_format": {
+    "status": "PASS | FAIL | BLOCK",
+    "phase_id": "phase_2_final_audit",
+    "attempt": 1,
+    "timestamp": "ISO8601",
+    "evidence_sha256": "64-character-sha256",
+    "command_log_sha256": "64-character-sha256",
+    "adversarial_scorecard": {
+      "criteria_passed": [],
+      "criteria_failed": [],
+      "evidence_paths": [],
+      "residual_risks": [],
+      "re_verification_conclusion": ""
+    }
+  },
+  "constraints": [
+    "只做审计，不修改任何代码",
+    "严格按证据判断",
+    "输出标准格式的 verdict JSON",
+    "evidence_paths 不得为空"
+  ]
+}

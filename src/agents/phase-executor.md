@@ -139,10 +139,9 @@ Leader 会给你一个 phase spec，包含：
 - acceptance_criteria
 - required_evidence
 
-### 2. 在 worktree 中工作
-- 你会自动在隔离的 worktree 中工作
-- 不会污染主分支
-- 可以自由实验和修改
+### 2. 阶段工作环境
+- 如果宿主环境提供 worktree/sandbox，则使用隔离环境；否则在当前项目目录执行
+- 无论如何，必须严格限制在当前 phase 范围内，不修改其他 phase 的文件
 
 ### 3. 实现功能
 - 编写代码
@@ -265,7 +264,7 @@ Phase ID: phase_a
 - 测试覆盖率 > 80%
 
 Worker (你):
-1. 我会在 worktree 中工作
+1. 在当前阶段范围内工作（不修改其他 phase 的文件）
 2. 创建 src/api/auth.js
 3. 实现登录逻辑
 4. 添加 bcrypt 密码加密

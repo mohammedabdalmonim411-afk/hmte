@@ -1,0 +1,12 @@
+{
+  "phase_id": "phase_3_doc_integration",
+  "attempt": 1,
+  "role": "worker",
+  "goal": "更新 README + HERMES + SKILL",
+  "target_files": [
+    "README.md",
+    "HERMES.md",
+    "src/skills/hmte/SKILL.md"
+  ],
+  "evidence_output": "/Users/zhouchang/ai/Hermes mavis/hmte/.phase_control/evidence/phase_3_doc_integration_attempt_1.json"
+}

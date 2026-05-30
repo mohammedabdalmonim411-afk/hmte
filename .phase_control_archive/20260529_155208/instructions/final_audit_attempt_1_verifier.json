@@ -1,0 +1,84 @@
+{
+  "phase_id": "final_audit",
+  "attempt": 1,
+  "role": "verifier",
+  "agent_role": "release_auditor",
+  "created_at": "2026-05-29T10:30:00Z",
+  "task": "Review Final Audit evidence and determine if HTE v1.3 meets release criteria",
+  "context": {
+    "worker_evidence_path": ".phase_control/evidence/final_audit_attempt_1.json",
+    "worker_command_log": ".phase_control/logs/final_audit_attempt_1.commands.jsonl",
+    "git_baseline": "aad9ae0e9c4d9f1a8e13431d8fa3c79e44c2960e",
+    "session_file": ".phase_control/session.json",
+    "completed_phases": [
+      "phase_0 (baseline)",
+      "phase_1 (kickoff)",
+      "phase_2 (final_audit)",
+      "phase_3 (receipt)",
+      "phase_e2e",
+      "phase_docs"
+    ]
+  },
+  "acceptance_criteria": [
+    "Worker evidence bundle is complete and well-formed",
+    "All 36 tests pass (e2e-core + e2e-anti-fake + e2e-lifecycle)",
+    "All phase verdicts are PASS",
+    "Git diff matches expected v1.3 changes (no unexpected modifications)",
+    "Documentation is consistent across README/HERMES/SKILL/CHANGELOG",
+    "No legacy protocol remnants (except in backward-compat code)",
+    "Residual risks are acceptable and documented",
+    "Verification gaps are acceptable and documented",
+    "All 10 Release Auditor checks pass (see src/agents/release-auditor.md)",
+    "v1.3 is ready for git commit and push"
+  ],
+  "instructions": [
+    "1. Read the worker evidence bundle (.phase_control/evidence/final_audit_attempt_1.json)",
+    "2. Verify worker command log exists and is complete",
+    "3. Execute all 10 Release Auditor checks (see src/agents/release-auditor.md):",
+    "   - Check 1: Original goal alignment (v1.1+r2+r3+r4)",
+    "   - Check 2: Phase verdicts (all PASS)",
+    "   - Check 3: Complete chain (7-file trail for each phase)",
+    "   - Check 4: Phase gate integrity",
+    "   - Check 5: Git diff audit (no unexpected changes)",
+    "   - Check 6: Documentation consistency",
+    "   - Check 7: Legacy protocol check",
+    "   - Check 8: Full test suite (36/36 PASS)",
+    "   - Check 9: Risk aggregation",
+    "   - Check 10: Release readiness",
+    "4. Cross-reference worker findings with your own verification",
+    "5. Assess residual risks and verification gaps",
+    "6. Make final PASS/FAIL/BLOCK decision",
+    "7. Generate verdict with evidence_paths and next_action"
+  ],
+  "verdict_format": {
+    "status": "PASS | FAIL | BLOCK",
+    "evidence_paths": [
+      ".phase_control/evidence/final_audit_attempt_1.json",
+      ".phase_control/logs/final_audit_attempt_1.commands.jsonl"
+    ],
+    "checks": {
+      "check_1_goal_alignment": "PASS/FAIL + rationale",
+      "check_2_phase_verdicts": "PASS/FAIL + rationale",
+      "check_3_complete_chain": "PASS/FAIL + rationale",
+      "check_4_phase_gate": "PASS/FAIL + rationale",
+      "check_5_git_diff": "PASS/FAIL + rationale",
+      "check_6_documentation": "PASS/FAIL + rationale",
+      "check_7_legacy_protocol": "PASS/FAIL + rationale",
+      "check_8_full_tests": "PASS/FAIL + rationale",
+      "check_9_risk_aggregation": "PASS/FAIL + rationale",
+      "check_10_release_readiness": "PASS/FAIL + rationale"
+    },
+    "residual_risks_assessment": "Acceptable | Unacceptable + details",
+    "verification_gaps_assessment": "Acceptable | Unacceptable + details",
+    "next_action": "If PASS: git commit + push. If FAIL: specify rework. If BLOCK: escalate to human.",
+    "rationale": "Overall assessment and recommendation"
+  },
+  "constraints": [
+    "You are Release Auditor - make the final call on release readiness",
+    "PASS only if all 10 checks pass AND risks/gaps are acceptable",
+    "FAIL if any check fails but can be fixed with rework",
+    "BLOCK if there are fundamental issues requiring human decision",
+    "Be thorough but pragmatic - v1.3 is a significant enhancement",
+    "Document your reasoning clearly for future reference"
+  ]
+}

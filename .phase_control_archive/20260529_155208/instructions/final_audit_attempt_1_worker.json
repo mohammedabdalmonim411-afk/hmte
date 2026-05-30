@@ -1,0 +1,48 @@
+{
+  "phase_id": "final_audit",
+  "attempt": 1,
+  "role": "worker",
+  "assigned_to": "phase-executor",
+  "created_at": "2026-05-29T12:20:00+08:00",
+  "objective": "对 v1.3 所有变更进行全局审计，确认满足发布条件",
+  "inputs": [
+    "Phase 0-Docs 完成的所有代码和文档",
+    ".phase_control/session.json (git 基线)",
+    "所有阶段的 evidence 和 verdict"
+  ],
+  "tasks": [
+    "运行全量测试（e2e-core + e2e-anti-fake + e2e-lifecycle）",
+    "检查 git diff（对比 session.json 的 git_head_at_kickoff）",
+    "验证所有普通 phase 都有 PASS verdict",
+    "验证每个 phase 有完整链路（command log + evidence + verdict）",
+    "检查 README / HERMES.md / SKILL.md 口径一致",
+    "检查无旧协议残留",
+    "汇总 residual_risks 和 verification_gaps",
+    "生成 evidence bundle"
+  ],
+  "acceptance_criteria": [
+    "原始目标完成（v1.3 计划 v1.1+r2+r3+r4）",
+    "所有普通 phase 都有 PASS verdict",
+    "每个 phase 有完整链路（command log + evidence + verdict）",
+    "所有 phase_gate 通过",
+    "git diff 无意外改动",
+    "README / HERMES.md / SKILL.md 口径一致",
+    "无旧协议残留",
+    "全量测试通过（e2e-core + e2e-anti-fake + e2e-lifecycle）",
+    "residual_risks / verification_gaps 汇总",
+    "满足交付条件"
+  ],
+  "required_evidence": [
+    "全量测试执行结果",
+    "git diff 统计",
+    "文档一致性检查",
+    "所有 phase 的 verdict 汇总",
+    "command log"
+  ],
+  "output_path": ".phase_control/evidence/final_audit_attempt_1.json",
+  "command_log_path": ".phase_control/logs/final_audit_attempt_1.commands.jsonl",
+  "constraints": [
+    "所有命令必须使用 hmte exec 执行",
+    "这是 Worker 角色，只收集证据，不做最终判断"
+  ]
+}

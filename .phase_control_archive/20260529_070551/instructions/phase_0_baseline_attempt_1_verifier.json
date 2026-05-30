@@ -1,0 +1,51 @@
+{
+  "phase_id": "phase_0_baseline",
+  "attempt": 1,
+  "role": "verifier",
+  "assigned_to": "verifier",
+  "created_at": "2026-05-29T11:06:00+08:00",
+  "objective": "独立审计 Phase 0 的修复工作，确认所有 8 项修复正确应用且测试通过",
+  "evidence_path": ".phase_control/evidence/phase_0_baseline_attempt_1.json",
+  "command_log_path": ".phase_control/logs/phase_0_baseline_attempt_1.commands.jsonl",
+  "acceptance_criteria": [
+    "所有 8 项修复（r2-1 到 r2-9）已正确应用",
+    "e2e-core-workflow-test.sh 通过（8/8 tests）",
+    "e2e-anti-fake-test.sh 通过（12/12 tests）",
+    "Python 语法检查通过（orchestrator.py, hmte-audit-flow.py）",
+    "Shell 语法检查通过（hmte-exec.sh, phase_gate.sh）",
+    "无新增 regression",
+    "修改的文件符合预期（5 个文件）",
+    "command log 完整且使用 hmte exec"
+  ],
+  "verification_tasks": [
+    "读取 evidence bundle，确认所有修复项已列出",
+    "检查修改的文件列表和 diff 统计",
+    "验证测试结果（e2e-core 8/8, e2e-anti 12/12）",
+    "验证语法检查结果",
+    "检查 command log 完整性",
+    "确认无意外修改或遗漏",
+    "评估 residual_risks 和 verification_gaps"
+  ],
+  "output_path": ".phase_control/verdicts/phase_0_baseline_attempt_1.json",
+  "verdict_format": {
+    "status": "PASS | FAIL | BLOCK",
+    "phase_id": "phase_0_baseline",
+    "attempt": 1,
+    "timestamp": "ISO8601",
+    "evidence_sha256": "64-character-sha256",
+    "command_log_sha256": "64-character-sha256",
+    "adversarial_scorecard": {
+      "criteria_passed": [],
+      "criteria_failed": [],
+      "evidence_paths": [],
+      "residual_risks": [],
+      "re_verification_conclusion": ""
+    }
+  },
+  "constraints": [
+    "只做审计，不修改任何代码",
+    "严格按证据判断",
+    "输出标准格式的 verdict JSON",
+    "evidence_paths 不得为空"
+  ]
+}

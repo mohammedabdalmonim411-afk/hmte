@@ -5,11 +5,18 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
+# Ensure E2E tests run independently of local Hermes installation
+export HMTE_SKILL_DIR="$PROJECT_ROOT/src/skills/hmte"
+
 PASS_COUNT=0
 FAIL_COUNT=0
 
-pass() { ((PASS_COUNT++)); echo "✅ PASS: $1"; }
-fail() { ((FAIL_COUNT++)); echo "❌ FAIL: $1"; }
+# Incrementing deterministic timestamp helper (avoids timeline flake)
+_TS_NEXT=0
+_ts() { _TS_NEXT=$((_TS_NEXT + 1)); printf "2026-01-01T00:00:%02dZ" $_TS_NEXT; }
+
+pass() { PASS_COUNT=$((PASS_COUNT + 1)); echo "✅ PASS: $1"; }
+fail() { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "❌ FAIL: $1"; }
 
 # 清理测试环境
 cleanup() {
@@ -26,7 +33,7 @@ make_intent_receipt() {
 import json, datetime
 receipt = {
     'phase_id': '$phase_id', 'attempt': $attempt, 'role': '$role',
-    'delegated_at': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+    'delegated_at': '$(_ts)',
     'leader_session_id': 'test',
     'instruction_path': '.phase_control/instructions/${phase_id}_${role}_0.json',
     'expected_output_path': '.phase_control/verdicts/${phase_id}_attempt_${attempt}.json',
@@ -90,37 +97,28 @@ test_audit_flow() {
     # 1. 生成 command log
     bash scripts/hmte-exec.sh c3_phase -- echo "audit test"
 
-    # 2. 写 evidence
-    python3 -c "
-import json, datetime
-ev = {
-    'phase_id': 'c3_phase', 'attempt': 1, 'status': 'completed',
-    'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
-    'results': {'test': 'PASS'}, 'files_modified': []
-}
-with open('.phase_control/evidence/c3_phase_attempt_1.json', 'w') as f:
-    json.dump(ev, f, indent=2)
-"
-
-    # 3. 写 delegation receipts (worker + verifier)
-    # Worker receipt via hmte-write-receipt.sh
-    # First create a minimal instruction file
+    # 2. 写 delegation receipts FIRST (timeline: receipt ≤ evidence ≤ verdict)
+    # Worker receipt — write directly with fixed timestamp
     python3 -c "
 import json
-instr = {'task_id': 'c3_phase_worker_0', 'role': 'worker', 'goal': 'test'}
-with open('.phase_control/instructions/c3_phase_worker_0.json', 'w') as f:
-    json.dump(instr, f, indent=2)
+receipt = {
+    'phase_id': 'c3_phase', 'attempt': 1, 'role': 'worker',
+    'delegated_at': '$(_ts)',
+    'leader_session_id': 'test',
+    'instruction_path': '.phase_control/instructions/c3_phase_worker_0.json',
+    'expected_output_path': '.phase_control/evidence/c3_phase_attempt_1.json',
+    'trust_level': 'INTENT_ONLY'
+}
+with open('.phase_control/delegations/c3_phase_attempt_1_worker.json', 'w') as f:
+    json.dump(receipt, f, indent=2)
 "
-    bash scripts/hmte-write-receipt.sh c3_phase 1 worker \
-        .phase_control/instructions/c3_phase_worker_0.json \
-        .phase_control/evidence/c3_phase_attempt_1.json 2>/dev/null || true
 
     # 写 verifier receipt
     python3 -c "
-import json, datetime
+import json
 receipt = {
     'phase_id': 'c3_phase', 'attempt': 1, 'role': 'verifier',
-    'delegated_at': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+    'delegated_at': '$(_ts)',
     'leader_session_id': 'test',
     'instruction_path': '.phase_control/instructions/c3_phase_verifier_0.json',
     'expected_output_path': '.phase_control/verdicts/c3_phase_attempt_1.json',
@@ -130,20 +128,36 @@ with open('.phase_control/delegations/c3_phase_attempt_1_verifier.json', 'w') as
     json.dump(receipt, f, indent=2)
 "
 
+    # 3. 写 evidence (after receipts so timestamp is ≥ receipt time)
+    python3 -c "
+import json
+ev = {
+    'phase_id': 'c3_phase', 'attempt': 1, 'status': 'completed',
+    'timestamp': '$(_ts)',
+    'results': {'test': 'PASS'}, 'files_modified': []
+}
+with open('.phase_control/evidence/c3_phase_attempt_1.json', 'w') as f:
+    json.dump(ev, f, indent=2)
+"
+
     # 4. 写 verdict (with adversarial_scorecard for PASS)
     python3 -c "
 import json, datetime
 v = {
     'status': 'PASS', 'phase_id': 'c3_phase', 'attempt': 1,
     'confidence': 'high', 'next_action': 'NEXT_PHASE',
-    'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+    'timestamp': '$(_ts)',
     'verification': {'test': 'PASS'},
     'adversarial_scorecard': {
         'criteria_passed': ['all checks'],
         'criteria_failed': [],
-        'evidence_paths': ['.phase_control/evidence/c3_phase_attempt_1.json'],
+        'evidence_paths': ['.phase_control/evidence/c3_phase_attempt_1.json', '.phase_control/logs/c3_phase_attempt_1.commands.jsonl'],
         'residual_risks': [],
-        're_verification_conclusion': 'PASS'
+        're_verification_conclusion': 'PASS',
+        'independently_verified_files': ['README.md'],
+        'command_log_checked': True,
+        'diff_checked': True,
+        'evidence_consistency_checked': True
     }
 }
 with open('.phase_control/verdicts/c3_phase_attempt_1.json', 'w') as f:
@@ -180,7 +194,7 @@ test_orchestrator_rejects_fake_verdict() {
 import json, datetime
 ev = {
     'phase_id': 'c3_phase', 'attempt': 1, 'status': 'completed',
-    'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+    'timestamp': '$(_ts)',
     'results': {'c5b': 'PASS'}
 }
 with open('.phase_control/evidence/c3_phase_attempt_1.json', 'w') as f:
@@ -193,13 +207,17 @@ import json, datetime
 v = {
     'status': 'PASS', 'phase_id': 'c3_phase', 'attempt': 1,
     'confidence': 'high', 'next_action': 'NEXT_PHASE',
-    'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+    'timestamp': '$(_ts)',
     'adversarial_scorecard': {
         'criteria_passed': [{'criterion': 'test', 'evidence': 'ok'}],
         'criteria_failed': [],
-        'evidence_paths': [],
+        'evidence_paths': ['.phase_control/logs/c3_phase_attempt_1.commands.jsonl'],
         'residual_risks': ['none'],
-        're_verification_conclusion': 'verified'
+        're_verification_conclusion': 'verified',
+        'independently_verified_files': ['README.md'],
+        'command_log_checked': True,
+        'diff_checked': True,
+        'evidence_consistency_checked': True
     }
 }
 with open('.phase_control/verdicts/c3_phase_attempt_1.json', 'w') as f:

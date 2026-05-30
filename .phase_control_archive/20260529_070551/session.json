@@ -1,0 +1,10 @@
+{
+  "task_description": "HTE v1.3 Development: Lifecycle Enhancement (kickoff + final_audit + receipt schema)",
+  "started_at": "2026-05-29T10:55:00+08:00",
+  "git_head_at_kickoff": "aad9ae0e9c4d9f1a8e13431d8fa3c79e44c2960e",
+  "git_dirty_at_kickoff": true,
+  "git_status_at_kickoff": "modified: .gitignore\nuntracked: docs/HTE_v1.3_DEVELOPMENT_PLAN.md",
+  "plan_version": "v1.1+r2+r3+r4",
+  "leader": "master-planner",
+  "project_root": "/Users/zhouchang/ai/Hermes mavis/hmte"
+}

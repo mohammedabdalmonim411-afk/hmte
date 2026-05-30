@@ -81,19 +81,29 @@ declare -a FILES=(
     # === 安装脚本 ===
     "install-to-hermes.sh"
 
-    # === HTE开发目录 - 设计文档 ===
-    "../hte-dev/docs/orchestrator_design.md"
-    "../hte-dev/docs/sqlite_state_design.md"
-    "../hte-dev/docs/verifier_replay_design.md"
+    # === P0 硬化脚本 (v1.4 P0) ===
+    "scripts/hmte-final-check.sh"
+    "scripts/hmte-kickoff.sh"
+    "scripts/hmte-leader-jail.sh"
+    "scripts/hmte-audit-start.sh"
+    "scripts/hmte-lint-instructions.sh"
+    "scripts/hmte-verify-claims.sh"
+    "scripts/hmte-goal-lock.sh"
+    "scripts/hmte-claims.sh"
+    "scripts/hmte-lint-protocol.sh"
+    "scripts/pack-all-to-md.sh"
+    "scripts/e2e-p0-hardening-test.sh"
+    "scripts/e2e-lifecycle-test.sh"
 
-    # === HTE开发目录 - 原型代码 ===
-    "../hte-dev/prototypes/write_state_sqlite.py"
-    "../hte-dev/prototypes/test_orchestrator.py"
-    "../hte-dev/prototypes/test_write_state_sqlite.py"
+    # === P0 硬化产物 ===
+    ".hmte/team-rules.md"
+    "src/agents/release-auditor.md"
+    "src/skills/hmte/final-audit-template.md"
 
-    # === HTE开发目录 - 进度和证据 ===
-    "../hte-dev/.phase_control/PROGRESS.md"
-    "../hte-dev/.phase_control/phases.json"
+    # === 文档 ===
+    "docs/attack-cases.md"
+    "docs/HTE_v1.3_DEVELOPMENT_PLAN.md"
+    "docs/HTE_v1.4_PROJECT_HANDOVER.md"
 )
 
 # ============================================================
@@ -121,10 +131,10 @@ if [ "$MODE" = "tar" ]; then
             mkdir -p "$dest_dir"
             cp "$src" "$PACK_DIR/$file"
             echo "✓ 打包: $file"
-            ((packed++)) || true
+            packed=$((packed + 1))
         else
             echo "⚠️  跳过: $file"
-            ((skipped++)) || true
+            skipped=$((skipped + 1))
         fi
     done
 
@@ -188,38 +198,26 @@ for file in "${FILES[@]}"; do
 
     if [ ! -f "$filepath" ]; then
         echo "⚠️  跳过不存在的文件: $file"
-        ((skipped++)) || true
+        skipped=$((skipped + 1))
         continue
     fi
 
     echo "✓ 打包: $file"
-    ((packed++)) || true
+    packed=$((packed + 1))
 
-    # 确定文件扩展名
-    case "$file" in
-        *.md) ext="markdown" ;;
-        *.py) ext="python" ;;
-        *.sh) ext="bash" ;;
-        *.json) ext="json" ;;
-        *.yaml|*.yml) ext="yaml" ;;
-        *) ext="text" ;;
-    esac
-
-    # 添加文件分隔符和标题
+    # 使用 BEGIN FILE / END FILE 格式，避免 Markdown 嵌套 code fence 截断
     cat >> "$OUTPUT_FILE" <<EOF
 
----
 
-## 📄 \\\`$file\\\`
-
-\`\`\`$ext
+===== BEGIN FILE: $file =====
 EOF
 
     # 添加文件内容
     cat "$filepath" >> "$OUTPUT_FILE"
+    printf '\n' >> "$OUTPUT_FILE"
 
-    # 关闭代码块
-    echo '```' >> "$OUTPUT_FILE"
+    # 关闭文件块
+    echo "===== END FILE: $file =====" >> "$OUTPUT_FILE"
 done
 
 # 添加目录结构

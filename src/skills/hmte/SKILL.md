@@ -245,7 +245,13 @@ Verifier 必须输出 JSON 格式的 verdict 文件（不是文本格式）。
     "residual_risks": [
       "<已知风险，无则写 'none'>"
     ],
-    "re_verification_conclusion": "独立重新运行所有验证命令，结果与 Worker evidence 一致。"
+    "re_verification_conclusion": "独立重新运行所有验证命令，结果与 Worker evidence 一致。",
+    "independently_verified_files": [
+      "<Verifier 独立验证过的具体文件路径>"
+    ],
+    "command_log_checked": true,
+    "diff_checked": true,
+    "evidence_consistency_checked": true
   }
 }
 ```
@@ -271,7 +277,11 @@ Verifier 必须输出 JSON 格式的 verdict 文件（不是文本格式）。
     ],
     "evidence_paths": ["..."],
     "residual_risks": ["..."],
-    "re_verification_conclusion": "复验发现 <具体问题>。"
+    "re_verification_conclusion": "复验发现 <具体问题>。",
+    "independently_verified_files": ["<Verifier 独立验证过的文件>"],
+    "command_log_checked": true,
+    "diff_checked": true,
+    "evidence_consistency_checked": true
   }
 }
 ```

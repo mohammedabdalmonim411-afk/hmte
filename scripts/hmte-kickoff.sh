@@ -150,10 +150,48 @@ state = {
 )
 PY
 
+# 7. 创建 Leader Jail lock
+python3 - "$CTRL" "$GIT_HEAD" <<'PY'
+import json, sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+ctrl, git_head = sys.argv[1], sys.argv[2]
+lock = {
+    "lock_mode": "LEADER_JAIL",
+    "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    "git_head": git_head if git_head != "null" else None,
+    "allowed_write_paths": [
+        ".phase_control/instructions/",
+        ".phase_control/delegations/",
+        ".phase_control/state.json",
+        ".phase_control/phases.json",
+        ".phase_control/goal_lock.json",
+        ".phase_control/amendments/",
+        ".phase_control/session.json",
+        ".phase_control/lock.json"
+    ],
+    "forbidden_write_paths": [
+        "src/", "lib/", "test/", "docs/", "scripts/",
+        ".phase_control/evidence/",
+        ".phase_control/verdicts/",
+        ".phase_control/logs/"
+    ]
+}
+Path(ctrl, "lock.json").write_text(
+    json.dumps(lock, ensure_ascii=False, indent=2), encoding="utf-8"
+)
+PY
+
 echo ""
 echo "✅ HTE session kicked off"
 echo "📄 Session: $CTRL/session.json"
 echo "📋 Leader instructions: $CTRL/instructions/leader_kickoff.json"
+echo "🔒 Leader Jail: ACTIVE (lock.json created)"
 echo "🔖 Git baseline: $GIT_HEAD ($GIT_BRANCH)"
 echo ""
-echo "Next: Leader reads leader_kickoff.json, creates phases.json"
+echo "Next:"
+echo "  1. Leader reads leader_kickoff.json"
+echo "  2. Leader creates phases.json"
+echo "  3. Run: bash scripts/hmte-goal-lock.sh"
+echo "  4. Start dispatching Workers"

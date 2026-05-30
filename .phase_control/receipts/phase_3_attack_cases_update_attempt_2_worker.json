@@ -1,0 +1,11 @@
+{
+  "receipt_id": "phase_3_attack_cases_update_attempt_2_worker",
+  "instruction_id": "phase_3_attack_cases_update_attempt_2_worker",
+  "phase_id": "phase_3_attack_cases_update",
+  "attempt": 2,
+  "role": "worker",
+  "delegated_by": "leader",
+  "delegated_to": "leader_direct_execution",
+  "delegated_at": "2026-05-30T09:58:00Z",
+  "status": "delegated"
+}

@@ -1,0 +1,37 @@
+{
+  "phase_id": "phase_0_baseline",
+  "attempt": 3,
+  "role": "worker",
+  "assigned_to": "phase-executor",
+  "created_at": "2026-05-29T11:24:00+08:00",
+  "previous_attempt": 2,
+  "previous_verdict": "FAIL - command log 缺少 e2e-core-workflow-test.sh 记录（被测试脚本清理）",
+  "objective": "修复 e2e-core-workflow-test.sh 的 log 清理逻辑，确保不删除当前 phase 的 command log，然后重新生成完整的审计追踪文件",
+  "context": "Attempt 2 的 Verifier 发现 command log 只有 5 条记录，缺少 e2e-core-workflow-test.sh 的执行记录。原因是该测试脚本在启动时清理了整个 logs 目录，包括当前 phase 正在使用的 log 文件。需要修改测试脚本，让它在清理时跳过当前正在使用的 log 文件。",
+  "tasks": [
+    "修改 scripts/e2e-core-workflow-test.sh，在清理 logs 时跳过 phase_0_baseline_attempt_3.commands.jsonl",
+    "使用 hmte exec 按顺序运行所有验证命令（包括 e2e-core-workflow-test.sh）",
+    "确认 command log 包含所有 6 个命令的记录",
+    "生成完整的 evidence bundle"
+  ],
+  "acceptance_criteria": [
+    "e2e-core-workflow-test.sh 已修改，不删除当前 phase 的 log",
+    "command log 包含所有 6 个命令的记录",
+    "所有命令使用 hmte exec 执行",
+    "e2e-core-workflow-test.sh 通过（8/8 tests）",
+    "e2e-anti-fake-test.sh 通过（12/12 tests）",
+    "Python 和 Shell 语法检查通过",
+    "evidence bundle 完整且格式正确"
+  ],
+  "required_evidence": [
+    "evidence bundle: .phase_control/evidence/phase_0_baseline_attempt_3.json",
+    "command log: .phase_control/logs/phase_0_baseline_attempt_3.commands.jsonl（包含 6 条记录）"
+  ],
+  "output_path": ".phase_control/evidence/phase_0_baseline_attempt_3.json",
+  "command_log_path": ".phase_control/logs/phase_0_baseline_attempt_3.commands.jsonl",
+  "constraints": [
+    "所有命令必须使用 hmte exec 执行",
+    "修改测试脚本时要保持其功能不变",
+    "确保 command log 完整性"
+  ]
+}

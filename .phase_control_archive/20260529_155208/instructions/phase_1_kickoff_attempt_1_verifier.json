@@ -1,0 +1,55 @@
+{
+  "phase_id": "phase_1_kickoff",
+  "attempt": 1,
+  "role": "verifier",
+  "assigned_to": "verifier",
+  "created_at": "2026-05-29T11:41:00+08:00",
+  "objective": "独立审计 Phase 1 的完成情况，确认 kickoff 和 audit-start 脚本正确实现",
+  "evidence_path": ".phase_control/evidence/phase_1_kickoff_attempt_1.json",
+  "command_log_path": ".phase_control/logs/phase_1_kickoff_attempt_1.commands.jsonl",
+  "acceptance_criteria": [
+    "scripts/hmte-kickoff.sh 存在且语法正确",
+    "scripts/hmte-audit-start.sh 存在且语法正确",
+    "kickoff 默认拒绝覆盖已有 session",
+    "kickoff --archive 模式正常工作",
+    "kickoff --force + HMTE_FORCE=1 双重确认",
+    "kickoff 记录 git 基线（git_head_at_kickoff + git_status_at_kickoff）",
+    "audit-start 正确识别 KICKED_OFF / PLANNED / READY_FOR_WORKER 状态",
+    "audit-start 兼容 id 字段并输出 warning",
+    "kickoff 检查全部 8 个 RUNTIME_SUBDIRS 残留",
+    "通过 Phase 1 验收标准（所有测试用例）",
+    "evidence bundle 完整",
+    "command log 完整"
+  ],
+  "verification_tasks": [
+    "读取并验证 evidence bundle",
+    "读取并验证 command log",
+    "计算 SHA256 哈希",
+    "检查新增文件是否存在",
+    "运行语法检查",
+    "验证测试结果（8 个测试用例）",
+    "评估 residual_risks 和 verification_gaps"
+  ],
+  "output_path": ".phase_control/verdicts/phase_1_kickoff_attempt_1.json",
+  "verdict_format": {
+    "status": "PASS | FAIL | BLOCK",
+    "phase_id": "phase_1_kickoff",
+    "attempt": 1,
+    "timestamp": "ISO8601",
+    "evidence_sha256": "64-character-sha256",
+    "command_log_sha256": "64-character-sha256",
+    "adversarial_scorecard": {
+      "criteria_passed": [],
+      "criteria_failed": [],
+      "evidence_paths": [],
+      "residual_risks": [],
+      "re_verification_conclusion": ""
+    }
+  },
+  "constraints": [
+    "只做审计，不修改任何代码",
+    "严格按证据判断",
+    "输出标准格式的 verdict JSON",
+    "evidence_paths 不得为空"
+  ]
+}

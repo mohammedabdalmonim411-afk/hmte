@@ -209,7 +209,11 @@ Verifier 输出 JSON verdict：
     "criteria_failed": [],
     "evidence_paths": [".phase_control/evidence/phase_a_attempt_1.json"],
     "residual_risks": ["生产配置需要部署时单独确认"],
-    "re_verification_conclusion": "证据支持 PASS"
+    "re_verification_conclusion": "证据支持 PASS",
+    "independently_verified_files": ["src/api/auth.js", "tests/auth.test.js"],
+    "command_log_checked": true,
+    "diff_checked": true,
+    "evidence_consistency_checked": true
   }
 }
 ```
@@ -225,7 +229,7 @@ Verifier 输出 JSON verdict：
 `phase_gate` 负责判断当前阶段是否可以继续。
 
 ```bash
-bash src/skills/hmte/scripts/phase_gate.sh phase_a --attempt 1
+bash /path/to/hmte/src/skills/hmte/scripts/phase_gate.sh phase_a --attempt 1
 ```
 
 它会检查：
@@ -248,49 +252,68 @@ git clone https://github.com/mohammedabdalmonim411-afk/hmte.git
 cd hmte
 ```
 
-### 2. 安装 Hermes Skill
+### 2. 安装 HTE Skill 到 Hermes
 
 ```bash
-bash install-to-hermes.sh
+bash install-to-hermes.sh --all
 ```
 
-### 3. 将运行时结构复制到目标项目
+这会自动安装 Python 依赖、将 skill/agent/hook 文件复制到 Hermes profile，并验证安装可用性。
+
+### 3. 在目标项目中启动工作流
 
 ```bash
-cp -r scripts .phase_control /path/to/your/project/
 cd /path/to/your/project
+
+# 复制运行时脚本到项目
+cp -r /path/to/hmte/scripts ./scripts
+
+# 启动 HTE 会话（自动创建 .phase_control/ 目录）
+bash scripts/hmte-kickoff.sh "你的任务描述"
 ```
 
-### 4. 启动工作流
+> ⚠️ `.phase_control/` 是运行时目录，由 `hmte-kickoff.sh` 自动创建，不要手动复制或从其他项目带入。
 
-```bash
-bash scripts/hmte-start.sh
-```
-
-在 Hermes 中输入：
+### 4. 在 Hermes 中启动工作流
 
 ```text
 请使用 HTE 工作流处理这个任务。先作为 Leader 创建 phases.json，再按阶段委派 Worker 和 Verifier。Leader 不直接执行 Worker 的实现任务。
 ```
 
-### 5. 执行阶段命令
+### 5. 锁定验收标准
+
+Leader 创建 `phases.json` 后，**必须**运行 Goalpost Lock：
+
+```bash
+bash scripts/hmte-goal-lock.sh
+```
+
+这会锁定验收标准，防止后续弱化。
+
+### 6. 执行阶段命令
 
 ```bash
 bash scripts/hmte-exec.sh phase_a --attempt 1 -- npm test
 ```
 
-### 6. 检查阶段门禁
+### 7. 检查阶段门禁
 
 ```bash
-python3 src/skills/hmte/scripts/hmte-audit-flow.py phase_a 1 --json
-bash src/skills/hmte/scripts/phase_gate.sh phase_a --attempt 1
+bash /path/to/hmte/src/skills/hmte/scripts/phase_gate.sh phase_a --attempt 1
 ```
 
-### 7. 运行测试
+### 8. 最终验收
+
+```bash
+bash scripts/hmte-final-check.sh --mode release
+```
+
+### 9. 运行测试
 
 ```bash
 bash scripts/e2e-core-workflow-test.sh
 bash scripts/e2e-anti-fake-test.sh
+bash scripts/e2e-p0-hardening-test.sh
 ```
 
 ## 当前限制
@@ -348,8 +371,13 @@ bash scripts/hmte-final-check.sh
 1. `session.json` 和 `phases.json` 存在且合法
 2. 每个 phase 的 7 文件链路完整（instruction × 2, receipt × 2, command log, evidence, verdict）
 3. 每个 verdict `status=PASS`
-4. 每个 phase_gate 通过
-5. `final_audit` 的 evidence / verdict / command log 存在
+4. 每个 phase_gate 通过（含 P0-4 Verifier Minimum Audit）
+5. `final_audit` 的 evidence / verdict / command log 存在（release 模式下缺失 → FAIL）
+6. **P0-1 Goalpost Lock** — 验收标准锁定，检测弱化/删除
+7. **P0-2 Instruction Lint** — 检测危险弱化语句
+8. **P0-3 Evidence Claim Verification** — 验证 claimed file 真实存在
+9. **P0-5 Leader Jail** — 检测 Leader 越权写入项目文件（含未提交改动）
+10. Release 模式下 WARN 升级为 FAIL，缺 goal_lock/final_audit/leader-jail 均 FAIL
 
 **未通过 final-check 的完成声明视为无效。** Agent 不得仅凭自然语言声称完成。
 
@@ -368,25 +396,31 @@ bash scripts/hmte-final-check.sh
 - [x] 文档旧口径清理
 - [x] 反伪造保障（receipt + audit-flow + scorecard）
 
+### v1.3 — 委派记录增强 ✅
+
+- [x] receipt schema 区分 INTENT_ONLY / OBSERVED
+- [x] 当前默认 delegation_proof = INTENT_ONLY
+- [x] OBSERVED 字段预留，等待未来 tool-call trace adapter
+
 ### v1.4 — 最终声明反作弊层 ✅
 
 - [x] `scripts/hmte-final-check.sh` — 文件协议完整性检查
 - [x] `.hmte/team-rules.md` — 最终声明规则
 - [x] `docs/attack-cases.md` — Attack Vector 8: Fake Completion Report
 - [x] README / HERMES / SKILL 最终验收章节同步
-
-### v1.3 — 委派记录增强
-
-- [ ] 接入 Hermes tool-call 日志
-- [ ] 区分 INTENT_ONLY 与 OBSERVED
-- [ ] 为关键阶段提供更强的委派确认能力
+- [x] Leader Jail（lock.json + hmte-leader-jail.sh）
+- [x] Goalpost Lock（hmte-goal-lock.sh）
+- [x] Instruction Lint（hmte-lint-instructions.sh）
+- [x] Evidence Claim Verification（hmte-verify-claims.sh）
+- [x] Verifier Minimum Audit（phase_gate.sh 内嵌）
 
 ### Future
 
-- [ ] Dashboard
-- [ ] Parallel phases
-- [ ] Windows support
-- [ ] CI/CD templates
+- [ ] Leader Jail 真正运行时 Hook 集成（pretool callback）
+- [ ] 真实 tool-call trace adapter（OBSERVED 级别委派证明）
+- [ ] Instruction Lint 规则库完善
+- [ ] 首次使用交互式向导（hmte-setup）
+- [ ] CI/CD 模板
 
 ---
 

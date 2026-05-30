@@ -1,0 +1,6 @@
+.gitignore
+scripts/e2e-anti-fake-test.sh
+scripts/e2e-core-workflow-test.sh
+scripts/hmte-exec.sh
+src/skills/hmte/scripts/hmte-audit-flow.py
+src/skills/hmte/scripts/orchestrator.py

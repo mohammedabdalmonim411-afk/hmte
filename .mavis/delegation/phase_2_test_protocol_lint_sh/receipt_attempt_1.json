@@ -1,0 +1,12 @@
+{
+  "phase": "phase_2_test_protocol_lint_sh",
+  "attempt": 1,
+  "delegated_at": "2026-05-30T10:15:00Z",
+  "worker_completed_at": "2026-05-30T10:18:00Z",
+  "verifier_completed_at": "2026-05-30T10:20:00Z",
+  "verdict": "PASS",
+  "worker_agent": "worker_phase2_attempt1",
+  "verifier_agent": "verifier_phase2_attempt1",
+  "evidence_file": "evidence_attempt_1.md",
+  "notes": "20/20 tests passed, protocol validation complete"
+}

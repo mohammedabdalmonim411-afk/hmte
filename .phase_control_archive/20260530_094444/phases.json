@@ -1,0 +1,55 @@
+{
+  "phases": [
+    {
+      "phase_id": "phase_1_final_check_script",
+      "name": "创建 hmte-final-check.sh",
+      "objective": "新增 scripts/hmte-final-check.sh：检查 session.json、phases.json 存在；每个 phase 有完整 artifact 链（instruction→receipt→command_log→evidence→verifier_instruction→verifier_receipt→verdict）；每个 verdict status=PASS；每个 phase_gate 通过；final_audit 的 evidence/verdict/command_log 存在且 phase_gate 通过；FAIL_COUNT>0 时 exit 1",
+      "priority": "P0",
+      "max_retries": 2,
+      "acceptance_criteria": [
+        "脚本检查 .phase_control/session.json 存在",
+        "脚本检查 .phase_control/phases.json 存在并可解析",
+        "对每个 phase 检查 7 个 artifact 文件全部存在",
+        "对每个 verdict 检查 status=PASS",
+        "对每个 phase 运行 phase_gate.sh 并检查 exit 0",
+        "检查 final_audit 的 evidence/verdict/command_log 存在",
+        "运行 final_audit 的 phase_gate 并检查 exit 0",
+        "输出汇总表（phase/status/artifacts）",
+        "FAIL_COUNT>0 时 exit 1，全部 PASS 时 exit 0",
+        "只用 bash + python3 标准库，不引入新依赖"
+      ]
+    },
+    {
+      "phase_id": "phase_2_team_rules_attack_cases",
+      "name": "更新 team-rules.md + attack-cases.md",
+      "objective": "team-rules.md 新增最终声明规则；attack-cases.md 新增 Fake Completion Report 攻击向量",
+      "priority": "P0",
+      "max_retries": 2,
+      "acceptance_criteria": [
+        "team-rules.md 新增'最终声明规则'章节",
+        "规则包含：不得仅凭自然语言声明完成",
+        "规则包含：输出完成/PASS/封版前必须运行 hmte-final-check.sh",
+        "规则包含：最终回复必须列出 final-check 命令、结果、verdict 路径、未解决风险",
+        "规则包含：未运行 final-check 的完成声明视为无效",
+        "attack-cases.md 新增 Fake Completion Report 攻击向量",
+        "攻击向量描述：直接改文件后伪造 Phase PASS 表格",
+        "攻击向量描述：声称 evidence/verdict 已写入但没有 phase_gate",
+        "攻击向量描述：final-check 可检出",
+        "攻击向量描述：用户不运行 final-check 则 HTE 不能阻止自然语言欺骗"
+      ]
+    },
+    {
+      "phase_id": "phase_3_doc_integration",
+      "name": "更新 README + HERMES + SKILL 集成 final-check",
+      "objective": "在 README Testing 章节、HERMES.md 适合场景、SKILL.md 终局审计章节中加入 hmte-final-check.sh 引用",
+      "priority": "P1",
+      "max_retries": 1,
+      "acceptance_criteria": [
+        "README Testing 章节新增 final-check 命令",
+        "README 当前限制章节提及 final-check 是文件协议完整性门禁",
+        "HERMES.md 适合场景或注意事项中提及 final-check",
+        "SKILL.md 中提及 final-check 作为最终验收前置条件"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+ .gitignore                                 |  1 +
+ scripts/e2e-anti-fake-test.sh              |  8 +++++++-
+ scripts/e2e-core-workflow-test.sh          | 33 +++++++++++++++++++++++-------
+ scripts/hmte-exec.sh                       |  2 ++
+ src/skills/hmte/scripts/hmte-audit-flow.py |  6 ++++++
+ src/skills/hmte/scripts/orchestrator.py    |  4 ++--
+ 6 files changed, 44 insertions(+), 10 deletions(-)

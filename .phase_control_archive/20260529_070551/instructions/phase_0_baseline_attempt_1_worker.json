@@ -1,0 +1,48 @@
+{
+  "phase_id": "phase_0_baseline",
+  "attempt": 1,
+  "role": "worker",
+  "assigned_to": "phase-executor",
+  "created_at": "2026-05-29T10:56:00+08:00",
+  "objective": "修复 v1.2 遗留的 8 个协议不一致问题（r2-1 到 r2-9）",
+  "inputs": [
+    "docs/HTE_v1.3_DEVELOPMENT_PLAN.md (Section 6.1-6.8)",
+    "scripts/e2e-core-workflow-test.sh",
+    "scripts/e2e-anti-fake-test.sh",
+    "src/skills/hmte/scripts/orchestrator.py",
+    "src/skills/hmte/scripts/hmte-audit-flow.py",
+    "scripts/hmte-exec.sh",
+    "src/skills/hmte/scripts/phase_gate.sh"
+  ],
+  "tasks": [
+    "阅读 docs/HTE_v1.3_DEVELOPMENT_PLAN.md Section 6.1-6.8，理解 8 项修复要求",
+    "按照计划逐项修复：r2-1 到 r2-9",
+    "修复后运行 e2e-core-workflow-test.sh 验证",
+    "修复后运行 e2e-anti-fake-test.sh 验证",
+    "运行语法检查：python3 -m py_compile 和 bash -n",
+    "生成 evidence bundle"
+  ],
+  "acceptance_criteria": [
+    "所有 8 项修复（r2-1 到 r2-9）已应用",
+    "e2e-core-workflow-test.sh 通过",
+    "e2e-anti-fake-test.sh 通过",
+    "Python 语法检查通过",
+    "Shell 语法检查通过",
+    "无新增 regression"
+  ],
+  "required_evidence": [
+    "修改的文件列表和 diff 统计",
+    "e2e-core-workflow-test.sh 执行结果",
+    "e2e-anti-fake-test.sh 执行结果",
+    "语法检查结果",
+    "command log"
+  ],
+  "output_path": ".phase_control/evidence/phase_0_baseline_attempt_1.json",
+  "command_log_path": ".phase_control/logs/phase_0_baseline_attempt_1.commands.jsonl",
+  "constraints": [
+    "所有命令必须使用 hmte exec 执行",
+    "保持向后兼容",
+    "不破坏现有测试",
+    "遵循 v1.3 计划中的具体修复要求"
+  ]
+}

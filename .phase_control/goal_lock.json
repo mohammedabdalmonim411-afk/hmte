@@ -1,0 +1,57 @@
+{
+  "task": "HTE v1.4: 最终声明反作弊层 - 新增 hmte-final-check.sh + team-rules 强制验证 + attack-cases 记录伪造完成报告攻击向量",
+  "phases": [
+    {
+      "phase_id": "phase_1_final_check_script",
+      "name": "实现 hmte-final-check.sh",
+      "acceptance_criteria": [
+        "检查 session.json 和 phases.json 存在且合法",
+        "对每个 phase 检查 7 个文件存在",
+        "检查每个 verdict 的 status=PASS",
+        "检查每个 phase_gate 实际通过",
+        "检查 final_audit 完整性",
+        "FAIL_COUNT > 0 时 exit 1",
+        "使用 bash + python3 标准库"
+      ],
+      "criteria_hash": "2a3f9c0c4a658012867f902c6d8e542a7acf963d42744e436c697ae32f63d866"
+    },
+    {
+      "phase_id": "phase_2_team_rules_update",
+      "name": "更新 team-rules.md 最终声明规则",
+      "acceptance_criteria": [
+        "新增最终声明规则章节",
+        "明确规定 Agent 不得仅凭自然语言声明完成",
+        "要求输出完成声明前必须运行 hmte-final-check.sh",
+        "列出最终回复必须包含的内容",
+        "保持原有章节不变"
+      ],
+      "criteria_hash": "26254dc98ebfb7342f685f159408d663a38dfec66bb70b3f4c2330e62f8a1d4a"
+    },
+    {
+      "phase_id": "phase_3_attack_cases_update",
+      "name": "更新 attack-cases.md 记录伪造完成报告",
+      "acceptance_criteria": [
+        "新增 Attack Vector 章节",
+        "描述伪造完成报告的攻击方式",
+        "说明 hmte-final-check.sh 的检测能力",
+        "明确说明检测边界和限制",
+        "格式与现有章节一致"
+      ],
+      "criteria_hash": "07f14cb1c5d24772d43b72c73999fdc9e0e95b2c8a2dd55a6fc0e0bae52973b5"
+    },
+    {
+      "phase_id": "phase_4_docs_update",
+      "name": "更新 README/HERMES/SKILL 验收章节",
+      "acceptance_criteria": [
+        "README.md 验收章节包含 hmte-final-check.sh",
+        "HERMES.md 工作流包含 final-check 步骤",
+        "SKILL.md 验收标准包含 final-check",
+        "说明清晰不引入歧义",
+        "保持原有内容结构"
+      ],
+      "criteria_hash": "1cd9004607eeff9a1298df8e251fbc8d04785c21d0e2545eeae39f6850f7ba0b"
+    }
+  ],
+  "created_at": "2026-05-30T12:19:00Z",
+  "git_head": "341b935bd83b030d0db981e5b6aab4ae4fa64a5e"
+}

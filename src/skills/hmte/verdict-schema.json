@@ -87,6 +87,24 @@
         "re_verification_conclusion": {
           "type": "string",
           "description": "复验结论：Verifier 独立重新运行验证命令后的结果摘要"
+        },
+        "independently_verified_files": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Verifier 独立验证过的具体文件路径列表（PASS verdict 必填，Verifier Minimum Audit 要求）"
+        },
+        "command_log_checked": {
+          "type": "boolean",
+          "description": "Verifier 是否实际检查了 command log（PASS verdict 必须为 true）"
+        },
+        "diff_checked": {
+          "type": "boolean",
+          "description": "Verifier 是否检查了 git diff（PASS verdict 必须为 true）"
+        },
+        "evidence_consistency_checked": {
+          "type": "boolean",
+          "description": "Verifier 是否检查了 evidence 与 command log/git diff 的一致性（PASS verdict 必须为 true）"
         }
       }
     }

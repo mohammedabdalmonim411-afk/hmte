@@ -5,6 +5,8 @@
 set -euo pipefail
 
 SKILL_DIR="src/skills/hmte"
+# Ensure E2E tests run independently of local Hermes installation
+export HMTE_SKILL_DIR="$PWD/$SKILL_DIR"
 AUDIT="python3 $SKILL_DIR/scripts/hmte-audit-flow.py"
 GATE="bash $SKILL_DIR/scripts/phase_gate.sh"
 PHASE="test_anti_fake"
@@ -94,7 +96,7 @@ make_pass_verdict() {
     local log_sha
     log_sha="$(sha256_file ".phase_control/logs/${PHASE}_attempt_${ATTEMPT}.commands.jsonl")" 
     cat > ".phase_control/verdicts/${PHASE}_attempt_${ATTEMPT}.json" <<EOF
-{"status":"PASS","phase_id":"$PHASE","attempt":$ATTEMPT,"timestamp":"2026-05-28T13:02:00Z","evidence_sha256":"$ev_sha","command_log_sha256":"$log_sha","adversarial_scorecard":{"criteria_passed":[{"criterion":"test","evidence":"verified"}],"criteria_failed":[],"evidence_paths":["x"],"residual_risks":["none"],"re_verification_conclusion":"ok"}}
+{"status":"PASS","phase_id":"$PHASE","attempt":$ATTEMPT,"timestamp":"2026-05-28T13:02:00Z","evidence_sha256":"$ev_sha","command_log_sha256":"$log_sha","adversarial_scorecard":{"criteria_passed":[{"criterion":"test","evidence":"verified"}],"criteria_failed":[],"evidence_paths":["x",".phase_control/logs/test_attempt_1.commands.jsonl"],"residual_risks":["none"],"re_verification_conclusion":"ok","independently_verified_files":["README.md"],"command_log_checked":true,"diff_checked":true,"evidence_consistency_checked":true}}
 EOF
 }
 
@@ -273,7 +275,11 @@ cat > ".phase_control/verdicts/${PHASE}_attempt_${ATTEMPT}.json" <<'EOF'
     "criteria_failed": [],
     "evidence_paths": ["x"],
     "residual_risks": ["none"],
-    "re_verification_conclusion": "ok"
+    "re_verification_conclusion": "ok",
+    "independently_verified_files": ["README.md"],
+    "command_log_checked": true,
+    "diff_checked": true,
+    "evidence_consistency_checked": true
   }
 }
 EOF

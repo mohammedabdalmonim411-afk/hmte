@@ -1,0 +1,13 @@
+{
+  "workflow": "HTE",
+  "version": "1.3",
+  "mode": "file-instruction",
+  "task": "HTE v1.4: 最终声明反作弊层 - 新增 hmte-final-check.sh + team-rules 强制验证 + attack-cases 记录伪造完成报告攻击向量",
+  "status": "KICKED_OFF",
+  "required_first_action": "Leader must create .phase_control/phases.json before implementation",
+  "git_head_at_kickoff": "341b935bd83b030d0db981e5b6aab4ae4fa64a5e",
+  "git_branch_at_kickoff": "master",
+  "git_dirty_at_kickoff": true,
+  "git_status_at_kickoff": "?? .hmte/\n?? .mavis/\n?? .phase_control/delegations/\n?? .phase_control/errors/\n?? .phase_control/instructions/\n?? .phase_control_archive/\n?? docs/HTE_v1.3_DEVELOPMENT_PLAN.md\n?? docs/attack-cases.md\n?? hte-v1.2-full.md\n?? scripts/e2e-lifecycle-test.sh\n?? scripts/hmte-audit-start.sh\n?? scripts/hmte-claims.sh\n?? scripts/hmte-kickoff.sh\n?? scripts/hmte-lint-protocol.sh\n?? scripts/test-phase2-acceptance.sh\n?? scripts/test-protocol-lint.sh\n?? src/agents/release-auditor.md\n?? src/skills/hmte/final-audit-template.md",
+  "created_at": "2026-05-30T09:44:44Z"
+}

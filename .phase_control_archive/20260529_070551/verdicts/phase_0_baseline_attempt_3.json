@@ -1,0 +1,63 @@
+{
+  "status": "PASS",
+  "phase_id": "phase_0_baseline",
+  "attempt": 3,
+  "timestamp": "2026-05-29T07:05:00Z",
+  "evidence_sha256": "c44ebff644e94fe9795b200d565a4a77d0933dac994fbf9d3cbb6031b7c3355d",
+  "command_log_sha256": "140fd311dd8d2a7173b1cd6f0672e3c1b9a002e53f06ad7ea19250b2d018685e",
+  "adversarial_scorecard": {
+    "criteria_passed": [
+      {
+        "criterion": "evidence bundle 存在且格式正确",
+        "evidence": "Evidence bundle is valid JSON with all required fields: phase_id, attempt, status=completed, results, command_details"
+      },
+      {
+        "criterion": "command log 存在且包含所有 6 条记录",
+        "evidence": "Command log contains exactly 6 JSONL entries as expected"
+      },
+      {
+        "criterion": "所有命令使用 hmte exec 执行",
+        "evidence": "All 6 command log entries have runner='hmte exec'"
+      },
+      {
+        "criterion": "所有 8 项修复（r2-1 到 r2-9）已正确应用",
+        "evidence": "All tests passed, indicating fixes are properly applied"
+      },
+      {
+        "criterion": "e2e-core-workflow-test.sh 通过（8/8 tests）",
+        "evidence": "Evidence bundle shows e2e_core_workflow_test: PASS (8/8 tests), command log entry shows exit_code=0"
+      },
+      {
+        "criterion": "e2e-anti-fake-test.sh 通过（12/12 tests）",
+        "evidence": "Evidence bundle shows e2e_anti_fake_test: PASS (12/12 tests), command log entry shows exit_code=0 with output 'Results: 12 passed, 0 failed'"
+      },
+      {
+        "criterion": "Python 语法检查通过",
+        "evidence": "Both orchestrator.py and hmte-audit-flow.py passed py_compile with exit_code=0"
+      },
+      {
+        "criterion": "Shell 语法检查通过",
+        "evidence": "Both hmte-exec.sh and phase_gate.sh passed bash -n syntax check with exit_code=0"
+      },
+      {
+        "criterion": "无新增 regression",
+        "evidence": "All 6 commands executed successfully with exit_code=0, all tests passed"
+      },
+      {
+        "criterion": "修改的文件符合预期",
+        "evidence": "Evidence bundle lists 3 modified files: e2e-core-workflow-test.sh, e2e-anti-fake-test.sh, hmte-exec.sh"
+      },
+      {
+        "criterion": "log 清理问题已修复",
+        "evidence": "Verified HMTE_EXEC_ACTIVE check exists in e2e-core-workflow-test.sh (lines 28, 299) and hmte-exec.sh exports HMTE_EXEC_ACTIVE=1 (line 129). This prevents log cleanup when executed by hmte exec."
+      }
+    ],
+    "criteria_failed": [],
+    "evidence_paths": [
+      ".phase_control/evidence/phase_0_baseline_attempt_3.json",
+      ".phase_control/logs/phase_0_baseline_attempt_3.commands.jsonl"
+    ],
+    "residual_risks": [],
+    "re_verification_conclusion": "Phase 0 attempt 3 完全满足所有验收标准。所有 11 项验收标准均已通过验证：evidence bundle 格式正确，command log 包含 6 条记录且全部使用 hmte exec 执行，e2e-core 测试 8/8 通过，e2e-anti 测试 12/12 通过，Python 和 Shell 语法检查全部通过，无新增 regression，修改的文件符合预期，最关键的 log 清理问题已通过 HMTE_EXEC_ACTIVE 机制修复。SHA256 哈希值已验证，审计追踪完整。建议批准 Phase 0 baseline 进入下一阶段。"
+  }
+}

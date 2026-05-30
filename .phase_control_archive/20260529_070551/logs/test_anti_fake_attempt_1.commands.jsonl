@@ -1,0 +1,1 @@
+{"phase_id":"test_anti_fake","attempt":1,"command":"echo test","exit_code":0,"runner":"hmte exec","started_at":"2026-05-28T13:00:00Z","ended_at":"2026-05-28T13:00:01Z"}

@@ -1,0 +1,17 @@
+{
+  "role": "Leader",
+  "task": "HTE v1.4 反作弊层：hmte-final-check.sh + team-rules + attack-cases + README/HERMES/SKILL 更新",
+  "required_actions": [
+    "Read HERMES.md",
+    "Read src/skills/hmte/SKILL.md",
+    "Inspect project structure",
+    "Create .phase_control/phases.json",
+    "Create first Worker instruction"
+  ],
+  "forbidden_actions": [
+    "Do not modify business code before phases.json exists",
+    "Do not write Worker evidence as Leader",
+    "Do not write Verifier verdict as Leader"
+  ],
+  "created_at": "2026-05-30T09:37:37Z"
+}

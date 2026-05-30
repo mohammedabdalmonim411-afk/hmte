@@ -1,0 +1,46 @@
+{
+  "phase_id": "phase_3_receipt",
+  "attempt": 1,
+  "role": "worker",
+  "assigned_to": "phase-executor",
+  "created_at": "2026-05-29T11:53:00+08:00",
+  "objective": "更新 delegation receipt schema，增加新字段并保持向后兼容",
+  "inputs": [
+    "docs/HTE_v1.3_DEVELOPMENT_PLAN.md (Section 8)",
+    "src/skills/hmte/delegation-receipt-schema.json",
+    "scripts/hmte-write-receipt.sh",
+    "src/skills/hmte/scripts/hmte-audit-flow.py",
+    "Phase 0-2 完成的代码"
+  ],
+  "tasks": [
+    "阅读 docs/HTE_v1.3_DEVELOPMENT_PLAN.md Section 8，理解 Phase 3 要求",
+    "更新 src/skills/hmte/delegation-receipt-schema.json，增加新字段",
+    "更新 scripts/hmte-write-receipt.sh，区分 Worker/Verifier expected_output_path",
+    "更新 src/skills/hmte/scripts/hmte-audit-flow.py，兼容旧 trust_level 字段，实现 OBSERVED 降级策略",
+    "更新 scripts/e2e-core-workflow-test.sh，更新 receipt helper",
+    "更新 README.md / SKILL.md，更新 receipt 示例",
+    "运行 Phase 3 验收标准中的测试",
+    "生成 evidence bundle"
+  ],
+  "acceptance_criteria": [
+    "新 schema 包含所有新字段（delegation_trust_level, delegation_method, leader_instruction_path, expected_output_path, tool_call_trace_path, observed_delegate_task_id）",
+    "audit-flow.py 兼容旧 trust_level 字段",
+    "OBSERVED 降级策略正确实现（缺 trace 时降级 INTENT_ONLY + WARN）",
+    "绝对禁止 OBSERVED 缺 trace 时以 OBSERVED+PASS 通过",
+    "hmte-write-receipt.sh 区分 Worker/Verifier expected_output_path",
+    "通过 Phase 3 验收标准"
+  ],
+  "required_evidence": [
+    "修改的文件列表和 diff 统计",
+    "schema 验证通过",
+    "兼容性测试结果",
+    "command log"
+  ],
+  "output_path": ".phase_control/evidence/phase_3_receipt_attempt_1.json",
+  "command_log_path": ".phase_control/logs/phase_3_receipt_attempt_1.commands.jsonl",
+  "constraints": [
+    "所有命令必须使用 hmte exec 执行",
+    "保持向后兼容",
+    "绝对禁止 OBSERVED 缺 trace 时以 OBSERVED+PASS 通过"
+  ]
+}

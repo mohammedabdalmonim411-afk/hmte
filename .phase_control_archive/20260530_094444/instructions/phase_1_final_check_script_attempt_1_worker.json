@@ -1,0 +1,8 @@
+{
+  "phase_id": "phase_1_final_check_script",
+  "attempt": 1,
+  "role": "worker",
+  "goal": "创建 hmte-final-check.sh",
+  "target_file": "scripts/hmte-final-check.sh",
+  "evidence_output": "/Users/zhouchang/ai/Hermes mavis/hmte/.phase_control/evidence/phase_1_final_check_script_attempt_1.json"
+}

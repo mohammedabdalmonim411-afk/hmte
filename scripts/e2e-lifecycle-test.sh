@@ -5,6 +5,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+# Ensure E2E tests run independently of local Hermes installation
+export HMTE_SKILL_DIR="$PROJECT_ROOT/src/skills/hmte"
+
 # Create isolated test environment
 TMPDIR=$(mktemp -d)
 trap 'rm -rf "$TMPDIR"' EXIT
@@ -49,8 +52,8 @@ SKILL="$TMPDIR/src/skills/hmte"
 PASS_COUNT=0
 FAIL_COUNT=0
 
-pass() { ((PASS_COUNT++)); echo "✅ PASS: $1"; }
-fail() { ((FAIL_COUNT++)); echo "❌ FAIL: $1"; }
+pass() { PASS_COUNT=$((PASS_COUNT + 1)); echo "✅ PASS: $1"; }
+fail() { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "❌ FAIL: $1"; }
 
 # Unified reset function
 reset_runtime() {

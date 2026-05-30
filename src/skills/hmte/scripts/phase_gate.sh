@@ -128,7 +128,43 @@ with open(sys.argv[1]) as f:
 " "$LATEST_VERDICT" 2>/dev/null || echo "UNKNOWN")"
 
 case "$verdict" in
-  PASS)   echo "PASS: Phase $PHASE_ID can proceed (audit OK, verdict OK)"; exit 0 ;;
+  PASS)
+    # === P0-4: Verifier Minimum Audit ===
+    # PASS verdict must have independently_verified_files, command_log_checked, diff_checked, evidence_consistency_checked
+    MIN_AUDIT=$(python3 -c "
+import json, sys
+with open(sys.argv[1]) as f:
+    v = json.load(f)
+sc = v.get('adversarial_scorecard', {})
+issues = []
+# Check independently_verified_files
+ivf = sc.get('independently_verified_files', [])
+if not ivf:
+    issues.append('missing independently_verified_files (must be non-empty list)')
+# Check required boolean fields
+for field in ('command_log_checked', 'diff_checked', 'evidence_consistency_checked'):
+    if sc.get(field) is not True:
+        issues.append(f'missing or false: {field}')
+# Check that verdict references both evidence AND command_log or project files
+ep = sc.get('evidence_paths', [])
+has_cmd_log_ref = any('commands' in p for p in ep)
+has_project_file = any('src/' in p or 'scripts/' in p or 'README' in p for p in ep)
+if not has_cmd_log_ref and not has_project_file:
+    issues.append('verdict only references evidence, not command_log or project files')
+if issues:
+    print('FAIL:' + '; '.join(issues))
+else:
+    print('PASS')
+" "$LATEST_VERDICT" 2>/dev/null || echo "FAIL:verdict parse error")
+
+    if [[ "$MIN_AUDIT" == FAIL* ]]; then
+        echo "BLOCKED: Verifier Minimum Audit failed for $PHASE_ID"
+        echo "  $MIN_AUDIT" | sed 's/FAIL:/  ❌ /'
+        exit 1
+    fi
+    echo "PASS: Phase $PHASE_ID can proceed (audit OK, verdict OK, verifier minimum audit OK)"
+    exit 0
+    ;;
   FAIL)   echo "BLOCKED: Phase $PHASE_ID verdict=FAIL"; exit 1 ;;
   BLOCK)  echo "BLOCKED: Phase $PHASE_ID verdict=BLOCK"; exit 1 ;;
   *)      echo "BLOCKED: Invalid verdict status: $verdict"; exit 1 ;;

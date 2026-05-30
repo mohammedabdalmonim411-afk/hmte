@@ -1,251 +1,289 @@
-#!/usr/bin/env bash
-# install-to-hermes.sh
-# Install HTE skills to Hermes global profile
-
+#!/bin/bash
+# install-to-hermes.sh — Install HTE skill into Hermes profile + global
+#
+# Usage:
+#   bash install-to-hermes.sh [--all|--profile NAME|--global|--verify-only] [--force]
+#
+# --all          Install to BOTH profile AND global + install deps + verify (default)
+# --profile NAME Install to specific profile only
+# --global       Install to global skills directory only
+# --verify-only  Only verify, don't install (checks both profile + global)
+# --force        Overwrite existing files without prompting
 set -euo pipefail
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$SCRIPT_DIR"
 
-# Parse command line arguments
-FORCE_INSTALL=false
+MODE="all"
+PROFILE="default"
+HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
+FORCE=false
+VERIFY_ONLY=false
+
+# ─── Parse args ────────────────────────────────────────────────
 while [[ $# -gt 0 ]]; do
-    case $1 in
-        --force|-f)
-            FORCE_INSTALL=true
-            shift
-            ;;
-        --help|-h)
-            echo "Usage: $0 [OPTIONS]"
+    case "$1" in
+        --all)         MODE="all"; shift ;;
+        --profile)     MODE="profile"; PROFILE="${2:?--profile requires a name}"; shift 2 ;;
+        --global)      MODE="global"; shift ;;
+        --verify-only) VERIFY_ONLY=true; shift ;;
+        --force)       FORCE=true; shift ;;
+        -h|--help)
+            echo "Usage: $0 [--all|--profile NAME|--global|--verify-only] [--force]"
             echo ""
-            echo "Options:"
-            echo "  --force, -f    Skip confirmation and overwrite existing installation"
-            echo "  --help, -h     Show this help message"
-            echo ""
-            echo "Environment variables:"
-            echo "  HERMES_PROFILE    Target profile (default: default)"
-            echo "  HERMES_HOME       Hermes home directory (default: ~/.hermes)"
+            echo "  --all          Install to BOTH profile AND global + deps + verify (default)"
+            echo "  --profile NAME Install to specific Hermes profile only"
+            echo "  --global       Install to global skills directory only"
+            echo "  --verify-only  Only verify installation (checks both profile + global), don't copy"
+            echo "  --force        Overwrite without prompting"
             exit 0
             ;;
         *)
-            echo "Unknown option: $1"
-            echo "Use --help for usage information"
+            echo "Unknown option: $1" >&2
             exit 1
             ;;
     esac
 done
 
-# Configuration
-PROFILE="${HERMES_PROFILE:-default}"
-HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
-SKILL_NAME="hmte"
-# Note: SOURCE_DIR points to src/skills/hmte (Hermes-native structure)
-# not .claude/ (Hermes-native structure). The Hermes-native version
-# is the canonical source for installation.
-SOURCE_DIR="src/skills/hmte"
-TARGET_DIR="$HERMES_HOME/profiles/$PROFILE/skills/$SKILL_NAME"
+# ─── Determine install targets ─────────────────────────────────
+if [ "$MODE" = "all" ]; then
+    # --all: install to BOTH profile and global
+    TARGETS=(
+        "profile:$HERMES_HOME/profiles/$PROFILE/skills/hmte"
+        "global:$HERMES_HOME/skills/hmte"
+    )
+elif [ "$MODE" = "profile" ]; then
+    TARGETS=("profile:$HERMES_HOME/profiles/$PROFILE/skills/hmte")
+elif [ "$MODE" = "global" ]; then
+    TARGETS=("global:$HERMES_HOME/skills/hmte")
+fi
 
-echo -e "${BLUE}=== HTE Hermes Installation ===${NC}"
+echo "╔══════════════════════════════════════════════╗"
+echo "║  HTE Install to Hermes                       ║"
+echo "╚══════════════════════════════════════════════╝"
+echo ""
+echo "  Mode:       $MODE"
+echo "  Profile:    $PROFILE"
+echo "  Targets:"
+for t in "${TARGETS[@]}"; do
+    echo "    → ${t%%:*}: ${t#*:}"
+done
+echo "  Project:    $PROJECT_ROOT"
 echo ""
 
-# Check if source directory exists
-if [ ! -d "$SOURCE_DIR" ]; then
-    echo -e "${RED}ERROR: Source directory not found: $SOURCE_DIR${NC}"
-    echo "Please run this script from the HTE project root."
-    exit 1
-fi
-
-# Check if Hermes home exists
-if [ ! -d "$HERMES_HOME" ]; then
-    echo -e "${YELLOW}WARNING: Hermes home directory not found: $HERMES_HOME${NC}"
-    echo "Creating Hermes directory structure..."
-    mkdir -p "$HERMES_HOME/profiles/$PROFILE/skills"
-fi
-
-# Check if profile exists
-if [ ! -d "$HERMES_HOME/profiles/$PROFILE" ]; then
-    echo -e "${YELLOW}WARNING: Profile '$PROFILE' not found${NC}"
-    echo "Creating profile directory..."
-    mkdir -p "$HERMES_HOME/profiles/$PROFILE/skills"
-fi
-
-# Check for existing installation and prompt for confirmation
-if [ -d "$TARGET_DIR" ]; then
-    if [ "$FORCE_INSTALL" = false ]; then
-        echo -e "${YELLOW}Existing installation found at:${NC}"
-        echo "  $TARGET_DIR"
-        echo ""
-        echo -e "${YELLOW}This will backup the existing installation and install the new version.${NC}"
-        echo -n "Continue? [y/N] "
-        read -r response
-        if [[ ! "$response" =~ ^[Yy]$ ]]; then
-            echo ""
-            echo -e "${BLUE}Installation cancelled.${NC}"
-            echo "Use --force to skip this confirmation."
-            exit 0
+# ─── Step 1: Install Python dependencies ──────────────────────
+if [ "$VERIFY_ONLY" = false ]; then
+    echo "── Step 1: Install Python dependencies ──"
+    REQ_FILE="$PROJECT_ROOT/requirements.txt"
+    if [ -f "$REQ_FILE" ]; then
+        DEPS_INSTALLED=false
+        if command -v uv >/dev/null 2>&1; then
+            echo "  Using uv..."
+            uv pip install -r "$REQ_FILE" 2>/dev/null && DEPS_INSTALLED=true
         fi
+        if [ "$DEPS_INSTALLED" = false ] && python3 -m pip --version >/dev/null 2>&1; then
+            echo "  Using python3 -m pip..."
+            python3 -m pip install -r "$REQ_FILE" --user -q 2>/dev/null && DEPS_INSTALLED=true
+        fi
+        if [ "$DEPS_INSTALLED" = false ] && command -v pip >/dev/null 2>&1; then
+            echo "  Using pip..."
+            pip install -r "$REQ_FILE" --user -q 2>/dev/null && DEPS_INSTALLED=true
+        fi
+        if [ "$DEPS_INSTALLED" = true ]; then
+            echo "  ✅ Dependencies installed"
+        else
+            echo "  ⚠️  Could not auto-install dependencies (non-fatal, may already be installed)"
+        fi
+    else
+        echo "  ⚠️  No requirements.txt found"
     fi
-    
-    BACKUP_DIR="$TARGET_DIR.backup.$(date +%Y%m%d_%H%M%S)"
-    echo -e "${YELLOW}Backing up existing installation to:${NC}"
-    echo "  $BACKUP_DIR"
-    mv "$TARGET_DIR" "$BACKUP_DIR"
+    echo ""
 fi
 
-# Create target directory
-echo -e "${BLUE}Creating target directory...${NC}"
-mkdir -p "$TARGET_DIR"
+# ─── Step 2: Copy skill files to each target ──────────────────
+if [ "$VERIFY_ONLY" = false ]; then
+    echo "── Step 2: Copy skill files ──"
 
-# Copy skill files
-echo -e "${BLUE}Copying skill files...${NC}"
-cp -r "$SOURCE_DIR"/* "$TARGET_DIR/"
+    for target_entry in "${TARGETS[@]}"; do
+        target_label="${target_entry%%:*}"
+        TARGET_DIR="${target_entry#*:}"
 
-# Copy agents directory
-if [ -d "src/agents" ]; then
-    echo -e "${BLUE}Copying agent definitions...${NC}"
-    mkdir -p "$TARGET_DIR/agents"
-    cp -r src/agents/* "$TARGET_DIR/agents/"
+        echo "  Installing to [$target_label]: $TARGET_DIR"
+
+        # Create target directories
+        mkdir -p "$TARGET_DIR"
+        mkdir -p "$TARGET_DIR/scripts"
+        mkdir -p "$TARGET_DIR/hooks"
+        mkdir -p "$TARGET_DIR/agents"
+
+        COPIED=0
+        SKIPPED=0
+
+        # Copy skill definition
+        for f in SKILL.md phase-template.md audit-checklist.md final-audit-template.md; do
+            src="$PROJECT_ROOT/src/skills/hmte/$f"
+            if [ -f "$src" ]; then
+                cp "$src" "$TARGET_DIR/$f"
+                COPIED=$((COPIED + 1))
+            fi
+        done
+
+        # Copy schemas
+        for f in evidence-schema.json verdict-schema.json delegation-receipt-schema.json; do
+            src="$PROJECT_ROOT/src/skills/hmte/$f"
+            if [ -f "$src" ]; then
+                cp "$src" "$TARGET_DIR/$f"
+                COPIED=$((COPIED + 1))
+            fi
+        done
+
+        # Copy scripts
+        for f in orchestrator.py hmte-audit-flow.py phase_gate.sh write_state.py collect_evidence.sh; do
+            src="$PROJECT_ROOT/src/skills/hmte/scripts/$f"
+            if [ -f "$src" ]; then
+                cp "$src" "$TARGET_DIR/scripts/$f"
+                COPIED=$((COPIED + 1))
+            fi
+        done
+
+        # Copy hooks
+        for f in pretool_guard.sh stop_gate.sh task_naming.sh; do
+            src="$PROJECT_ROOT/src/skills/hmte/hooks/$f"
+            if [ -f "$src" ]; then
+                cp "$src" "$TARGET_DIR/hooks/$f"
+                COPIED=$((COPIED + 1))
+            fi
+        done
+
+        # Copy agents
+        for f in master-planner.md phase-executor.md verifier.md release-auditor.md; do
+            src="$PROJECT_ROOT/src/agents/$f"
+            if [ -f "$src" ]; then
+                cp "$src" "$TARGET_DIR/agents/$f"
+                COPIED=$((COPIED + 1))
+            fi
+        done
+
+        echo "  ✅ [$target_label] Copied $COPIED files"
+    done
+    echo ""
 fi
 
-# Copy hooks directory (now part of skill structure)
-if [ -d "$SOURCE_DIR/hooks" ]; then
-    echo -e "${BLUE}Copying hooks...${NC}"
-    mkdir -p "$TARGET_DIR/hooks"
-    cp -r "$SOURCE_DIR/hooks"/* "$TARGET_DIR/hooks/"
-fi
+# ─── Step 3: Verify installation (all targets) ─────────────────
+echo "── Step 3: Verify installation ──"
 
-# Make scripts executable
-echo -e "${BLUE}Setting executable permissions...${NC}"
-find "$TARGET_DIR" -type f -name "*.sh" -exec chmod +x {} \;
-find "$TARGET_DIR" -type f -name "*.py" -exec chmod +x {} \;
+OVERALL_ERRORS=0
 
-# Verify installation
-echo ""
-echo -e "${BLUE}=== Verification ===${NC}"
-echo ""
+for target_entry in "${TARGETS[@]}"; do
+    target_label="${target_entry%%:*}"
+    TARGET_DIR="${target_entry#*:}"
 
-ERRORS=0
+    echo ""
+    echo "  Verifying [$target_label]: $TARGET_DIR"
+    ERRORS=0
 
-# Check SKILL.md exists
-if [ -f "$TARGET_DIR/SKILL.md" ]; then
-    echo -e "${GREEN}✓${NC} SKILL.md found"
-else
-    echo -e "${RED}✗${NC} SKILL.md not found"
-    ERRORS=$((ERRORS + 1))
-fi
+    # Check target directory exists
+    if [ ! -d "$TARGET_DIR" ]; then
+        echo "    ❌ Target directory not found"
+        ERRORS=$((ERRORS + 1))
+    else
+        echo "    ✅ Target directory exists"
+    fi
 
-# Check scripts directory
-if [ -d "$TARGET_DIR/scripts" ]; then
-    echo -e "${GREEN}✓${NC} scripts/ directory found"
-    
-    # Check key scripts
-    for script in write_state.py collect_evidence.sh phase_gate.sh; do
-        if [ -f "$TARGET_DIR/scripts/$script" ]; then
-            echo -e "${GREEN}  ✓${NC} $script"
+    # Check critical files
+    CRITICAL_FILES=(
+        "SKILL.md"
+        "scripts/hmte-audit-flow.py"
+        "scripts/phase_gate.sh"
+        "hooks/pretool_guard.sh"
+        "agents/verifier.md"
+    )
+
+    for f in "${CRITICAL_FILES[@]}"; do
+        if [ -f "$TARGET_DIR/$f" ]; then
+            echo "    ✅ $f"
         else
-            echo -e "${RED}  ✗${NC} $script not found"
+            echo "    ❌ MISSING: $f"
             ERRORS=$((ERRORS + 1))
         fi
     done
-else
-    echo -e "${RED}✗${NC} scripts/ directory not found"
-    ERRORS=$((ERRORS + 1))
-fi
 
-# Check agents directory
-if [ -d "$TARGET_DIR/agents" ]; then
-    echo -e "${GREEN}✓${NC} agents/ directory found"
-    
-    # Check key agents
-    for agent in master-planner.md phase-executor.md verifier.md; do
-        if [ -f "$TARGET_DIR/agents/$agent" ]; then
-            echo -e "${GREEN}  ✓${NC} $agent"
-        else
-            echo -e "${RED}  ✗${NC} $agent not found"
-            ERRORS=$((ERRORS + 1))
+    # Syntax check Python files
+    for pyfile in "$TARGET_DIR"/scripts/*.py; do
+        if [ -f "$pyfile" ]; then
+            if python3 -m py_compile "$pyfile" 2>/dev/null; then
+                echo "    ✅ $(basename "$pyfile") syntax OK"
+            else
+                echo "    ❌ $(basename "$pyfile") syntax error"
+                ERRORS=$((ERRORS + 1))
+            fi
         fi
     done
-else
-    echo -e "${RED}✗${NC} agents/ directory not found"
-    ERRORS=$((ERRORS + 1))
-fi
 
-# Check hooks directory
-if [ -d "$TARGET_DIR/hooks" ]; then
-    echo -e "${GREEN}✓${NC} hooks/ directory found"
-    
-    # Check key hooks
-    for hook in pretool_guard.sh stop_gate.sh; do
-        if [ -f "$TARGET_DIR/hooks/$hook" ]; then
-            echo -e "${GREEN}  ✓${NC} $hook"
-        else
-            echo -e "${RED}  ✗${NC} $hook not found"
-            ERRORS=$((ERRORS + 1))
+    # Syntax check Bash files
+    for shfile in "$TARGET_DIR"/scripts/*.sh "$TARGET_DIR"/hooks/*.sh; do
+        if [ -f "$shfile" ]; then
+            if bash -n "$shfile" 2>/dev/null; then
+                echo "    ✅ $(basename "$shfile") syntax OK"
+            else
+                echo "    ❌ $(basename "$shfile") syntax error"
+                ERRORS=$((ERRORS + 1))
+            fi
         fi
     done
+
+    if [ "$ERRORS" -gt 0 ]; then
+        echo "    ❌ [$target_label] Verification FAILED ($ERRORS errors)"
+    else
+        echo "    ✅ [$target_label] Verification PASSED"
+    fi
+
+    OVERALL_ERRORS=$((OVERALL_ERRORS + ERRORS))
+done
+
+# ─── Check Python dependency ────────────────────────────────────
+echo ""
+if python3 -c "import filelock" 2>/dev/null; then
+    echo "  ✅ Python dependency (filelock) available"
 else
-    echo -e "${RED}✗${NC} hooks/ directory not found"
-    ERRORS=$((ERRORS + 1))
+    echo "  ❌ Python dependency (filelock) NOT installed"
+    echo "     Fix: pip install filelock"
+    OVERALL_ERRORS=$((OVERALL_ERRORS + 1))
 fi
 
-# Check evidence schema
-if [ -f "$TARGET_DIR/evidence-schema.json" ]; then
-    echo -e "${GREEN}✓${NC} evidence-schema.json found"
+# ─── CLI visibility check ───────────────────────────────────────
+echo ""
+if [ -d "$HERMES_HOME/skills/hmte" ]; then
+    echo "  ✅ Global skill visible at: $HERMES_HOME/skills/hmte"
 else
-    echo -e "${RED}✗${NC} evidence-schema.json not found"
-    ERRORS=$((ERRORS + 1))
-fi
-
-# Check audit checklist
-if [ -f "$TARGET_DIR/audit-checklist.md" ]; then
-    echo -e "${GREEN}✓${NC} audit-checklist.md found"
-else
-    echo -e "${RED}✗${NC} audit-checklist.md not found"
-    ERRORS=$((ERRORS + 1))
+    echo "  ⚠️  Global skill NOT installed (Hermes CLI may not see skill)"
+    if [ "$MODE" = "all" ]; then
+        OVERALL_ERRORS=$((OVERALL_ERRORS + 1))
+    fi
 fi
 
 echo ""
 
-# Final result
-if [ $ERRORS -eq 0 ]; then
-    echo -e "${GREEN}=== Installation Successful ===${NC}"
-    echo ""
-    echo "HTE has been installed to:"
-    echo -e "  ${BLUE}$TARGET_DIR${NC}"
-    echo ""
-    echo "To use in Hermes, simply invoke:"
-    echo -e "  ${YELLOW}Please use the hmte skill to implement user authentication.${NC}"
-    echo ""
-    echo "The skill will be automatically discovered from your profile."
-    echo ""
-    echo -e "${BLUE}Next Steps:${NC}"
-    echo "1. Initialize a session in your project: ./scripts/hmte-start.sh"
-    echo "2. Invoke the skill in Hermes"
-    echo "3. Check status: ./scripts/hmte-status.sh"
-    echo ""
-else
-    echo -e "${RED}=== Installation Failed ===${NC}"
-    echo ""
-    echo -e "${RED}$ERRORS error(s) found during verification.${NC}"
-    echo "Please check the output above and try again."
-    echo ""
+# ─── Result ────────────────────────────────────────────────────
+if [ "$OVERALL_ERRORS" -gt 0 ]; then
+    echo "╔══════════════════════════════════════════════╗"
+    echo "  ⚠️  Installation completed with $OVERALL_ERRORS error(s)"
+    echo "╚══════════════════════════════════════════════╝"
     exit 1
+else
+    echo "╔══════════════════════════════════════════════╗"
+    echo "  ✅ HTE installed successfully! (all targets)"
+    echo ""
+    echo "  Targets verified:"
+    for t in "${TARGETS[@]}"; do
+        echo "    ✅ ${t%%:*}: ${t#*:}"
+    done
+    echo ""
+    echo "  Next steps:"
+    echo "    1. cd /path/to/your/project"
+    echo "    2. cp -r $(pwd)/scripts ./scripts"
+    echo "    3. bash scripts/hmte-kickoff.sh \"your task\""
+    echo "    4. bash scripts/hmte-goal-lock.sh"
+    echo "╚══════════════════════════════════════════════╝"
+    exit 0
 fi
-
-# Show profile info
-echo -e "${BLUE}Profile Information:${NC}"
-echo "  Profile: $PROFILE"
-echo "  Hermes Home: $HERMES_HOME"
-echo "  Skills Directory: $HERMES_HOME/profiles/$PROFILE/skills/"
-echo ""
-
-# Check for other skills
-SKILL_COUNT=$(find "$HERMES_HOME/profiles/$PROFILE/skills/" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-echo "  Total skills in profile: $SKILL_COUNT"
-echo ""
-
-echo -e "${GREEN}Installation complete!${NC}"

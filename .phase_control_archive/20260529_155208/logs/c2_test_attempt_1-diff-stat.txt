@@ -1,0 +1,14 @@
+ .gitignore                                     |  1 +
+ CHANGELOG.md                                   | 49 ++++++++++++++++-
+ CONTRIBUTING.md                                | 32 ++++++++++-
+ HERMES.md                                      | 22 ++++++++
+ README.md                                      | 60 ++++++++++++++++-----
+ scripts/e2e-anti-fake-test.sh                  |  8 ++-
+ scripts/e2e-core-workflow-test.sh              | 39 +++++++++++---
+ scripts/hmte-exec.sh                           |  2 +
+ scripts/hmte-write-receipt.sh                  | 22 ++++++--
+ src/skills/hmte/SKILL.md                       | 75 +++++++++++++++++++++++++-
+ src/skills/hmte/delegation-receipt-schema.json | 31 +++++++++--
+ src/skills/hmte/scripts/hmte-audit-flow.py     | 63 +++++++++++++++++++---
+ src/skills/hmte/scripts/orchestrator.py        |  4 +-
+ 13 files changed, 364 insertions(+), 44 deletions(-)

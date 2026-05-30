@@ -67,17 +67,20 @@ We welcome feature requests! Please open an issue with:
 git clone https://github.com/mohammedabdalmonim411-afk/hmte.git
 cd hmte
 
-# Install Python dependencies
-pip install -r requirements.txt
+# Install Python dependencies + skill to Hermes (both profile and global)
+bash install-to-hermes.sh --all
 
-# Run the installation script
-./install-to-hermes.sh
+# Verify installation
+bash install-to-hermes.sh --verify-only
 
 # Run core workflow tests
 bash scripts/e2e-core-workflow-test.sh
 
 # Run anti-fake guarantee tests
 bash scripts/e2e-anti-fake-test.sh
+
+# Run P0 hardening tests
+bash scripts/e2e-p0-hardening-test.sh
 ```
 
 ## Testing
@@ -89,12 +92,20 @@ bash scripts/e2e-core-workflow-test.sh
 # Run anti-fake guarantee tests
 bash scripts/e2e-anti-fake-test.sh
 
-# Test individual scripts
-bash -n scripts/hmte-start.sh  # Syntax check
-python -m py_compile src/skills/hmte/scripts/write_state.py
+# Run P0 hardening tests
+bash scripts/e2e-p0-hardening-test.sh
 
-# Test installation
-./install-to-hermes.sh --force
+# Run lifecycle tests (legacy, non-blocking for v1.4 release)
+bash scripts/e2e-lifecycle-test.sh
+
+# Syntax check
+bash -n scripts/hmte-kickoff.sh
+bash -n scripts/hmte-final-check.sh
+bash -n scripts/hmte-leader-jail.sh
+
+# Test installation (installs to both profile + global)
+bash install-to-hermes.sh --all
+bash install-to-hermes.sh --verify-only
 ```
 
 ## Code Review Process

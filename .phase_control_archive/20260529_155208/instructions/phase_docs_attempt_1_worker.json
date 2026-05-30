@@ -1,0 +1,47 @@
+{
+  "phase_id": "phase_docs",
+  "attempt": 1,
+  "role": "worker",
+  "assigned_to": "phase-executor",
+  "created_at": "2026-05-29T12:12:00+08:00",
+  "objective": "更新所有相关文档，反映 v1.3 新增功能",
+  "inputs": [
+    "docs/HTE_v1.3_DEVELOPMENT_PLAN.md (Section 10)",
+    "README.md",
+    "CHANGELOG.md",
+    "HERMES.md",
+    "src/skills/hmte/SKILL.md",
+    "CONTRIBUTING.md",
+    "Phase 0-E2E 完成的所有代码"
+  ],
+  "tasks": [
+    "阅读 docs/HTE_v1.3_DEVELOPMENT_PLAN.md Section 10，理解文档更新要求",
+    "更新 README.md：v1.3 Roadmap、kickoff/audit-start/final_audit 说明",
+    "更新 CHANGELOG.md：新增 [1.3.0] 条目",
+    "更新 HERMES.md：完整工作流（kickoff → phases → exec → audit → final_audit）",
+    "更新 SKILL.md：新增 kickoff/audit-start/final_audit 用法",
+    "更新 CONTRIBUTING.md：新增 e2e-lifecycle-test.sh",
+    "确保所有文档口径一致",
+    "生成 evidence bundle"
+  ],
+  "acceptance_criteria": [
+    "README.md 包含 v1.3 Roadmap 和 kickoff/audit-start/final_audit 说明",
+    "CHANGELOG.md 新增 [1.3.0] 条目",
+    "HERMES.md 包含完整工作流：kickoff → phases → exec → audit → final_audit",
+    "SKILL.md 新增 kickoff/audit-start/final_audit 用法",
+    "CONTRIBUTING.md 新增 e2e-lifecycle-test.sh",
+    "所有文档口径一致"
+  ],
+  "required_evidence": [
+    "修改的文件列表和 diff 统计",
+    "文档一致性检查结果",
+    "command log"
+  ],
+  "output_path": ".phase_control/evidence/phase_docs_attempt_1.json",
+  "command_log_path": ".phase_control/logs/phase_docs_attempt_1.commands.jsonl",
+  "constraints": [
+    "所有命令必须使用 hmte exec 执行",
+    "保持文档风格一致",
+    "确保版本号正确（v1.3.0）"
+  ]
+}

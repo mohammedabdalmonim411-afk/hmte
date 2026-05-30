@@ -1,0 +1,11 @@
+{
+  "phase_id": "phase_2_team_rules_attack_cases",
+  "attempt": 1,
+  "role": "worker",
+  "goal": "更新 team-rules.md + attack-cases.md",
+  "target_files": [
+    ".hmte/team-rules.md",
+    "docs/attack-cases.md"
+  ],
+  "evidence_output": "/Users/zhouchang/ai/Hermes mavis/hmte/.phase_control/evidence/phase_2_team_rules_attack_cases_attempt_1.json"
+}

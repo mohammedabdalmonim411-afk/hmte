@@ -1,0 +1,36 @@
+{
+  "phase_id": "phase_0_baseline",
+  "attempt": 2,
+  "role": "worker",
+  "assigned_to": "phase-executor",
+  "created_at": "2026-05-29T11:08:00+08:00",
+  "previous_attempt": 1,
+  "previous_verdict": "BLOCK - 技术工作完成但缺少审计追踪文件",
+  "objective": "补充生成 Phase 0 的审计追踪文件（evidence bundle 和 command log）",
+  "context": "Attempt 1 已完成所有技术修复（8项修复已应用，测试通过），但未生成必需的审计文件。本次任务只需补充审计文件，无需重新修改代码。",
+  "tasks": [
+    "确认 attempt 1 的技术修复仍然存在（检查 git diff）",
+    "使用 hmte exec 重新运行验证命令（生成 command log）",
+    "生成完整的 evidence bundle，包含：修改文件列表、测试结果、语法检查结果、command log 路径",
+    "确保 evidence bundle 写入 .phase_control/evidence/phase_0_baseline_attempt_2.json",
+    "确保 command log 存在于 .phase_control/logs/phase_0_baseline_attempt_2.commands.jsonl"
+  ],
+  "acceptance_criteria": [
+    "evidence bundle 存在且格式正确",
+    "command log 存在且包含所有验证命令",
+    "所有命令使用 hmte exec 执行",
+    "evidence bundle 包含完整信息：修改文件、测试结果、语法检查、command log 路径",
+    "技术修复仍然有效（测试通过）"
+  ],
+  "required_evidence": [
+    "evidence bundle: .phase_control/evidence/phase_0_baseline_attempt_2.json",
+    "command log: .phase_control/logs/phase_0_baseline_attempt_2.commands.jsonl"
+  ],
+  "output_path": ".phase_control/evidence/phase_0_baseline_attempt_2.json",
+  "command_log_path": ".phase_control/logs/phase_0_baseline_attempt_2.commands.jsonl",
+  "constraints": [
+    "所有命令必须使用 hmte exec 执行",
+    "不要重新修改代码（attempt 1 的修复已完成）",
+    "专注于生成审计追踪文件"
+  ]
+}

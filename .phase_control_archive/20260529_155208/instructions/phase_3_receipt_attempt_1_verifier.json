@@ -1,0 +1,54 @@
+{
+  "phase_id": "phase_3_receipt",
+  "attempt": 1,
+  "role": "verifier",
+  "assigned_to": "verifier",
+  "created_at": "2026-05-29T11:58:00+08:00",
+  "objective": "独立审计 Phase 3 的完成情况，确认 delegation receipt schema 更新正确且保持向后兼容",
+  "evidence_path": ".phase_control/evidence/phase_3_receipt_attempt_1.json",
+  "command_log_path": ".phase_control/logs/phase_3_receipt_attempt_1.commands.jsonl",
+  "acceptance_criteria": [
+    "新 schema 包含所有新字段（delegation_trust_level, delegation_method, leader_instruction_path, expected_output_path, tool_call_trace_path, observed_delegate_task_id）",
+    "audit-flow.py 兼容旧 trust_level 字段",
+    "OBSERVED 降级策略正确实现（缺 trace 时降级 INTENT_ONLY + WARN）",
+    "绝对禁止 OBSERVED 缺 trace 时以 OBSERVED+PASS 通过",
+    "hmte-write-receipt.sh 区分 Worker/Verifier expected_output_path",
+    "schema 验证通过（valid JSON）",
+    "修改的文件符合预期（5-6 个文件）",
+    "evidence bundle 完整",
+    "command log 完整"
+  ],
+  "verification_tasks": [
+    "读取并验证 evidence bundle",
+    "读取并验证 command log",
+    "计算 SHA256 哈希",
+    "检查 schema 文件格式（JSON 验证）",
+    "验证新字段是否存在",
+    "检查 audit-flow.py 兼容性代码",
+    "检查 OBSERVED 降级逻辑",
+    "验证 hmte-write-receipt.sh 修改",
+    "评估 residual_risks 和 verification_gaps"
+  ],
+  "output_path": ".phase_control/verdicts/phase_3_receipt_attempt_1.json",
+  "verdict_format": {
+    "status": "PASS | FAIL | BLOCK",
+    "phase_id": "phase_3_receipt",
+    "attempt": 1,
+    "timestamp": "ISO8601",
+    "evidence_sha256": "64-character-sha256",
+    "command_log_sha256": "64-character-sha256",
+    "adversarial_scorecard": {
+      "criteria_passed": [],
+      "criteria_failed": [],
+      "evidence_paths": [],
+      "residual_risks": [],
+      "re_verification_conclusion": ""
+    }
+  },
+  "constraints": [
+    "只做审计，不修改任何代码",
+    "严格按证据判断",
+    "输出标准格式的 verdict JSON",
+    "evidence_paths 不得为空"
+  ]
+}

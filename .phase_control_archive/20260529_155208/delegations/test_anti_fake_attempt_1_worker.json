@@ -1,0 +1,11 @@
+{
+  "phase_id": "test_anti_fake",
+  "attempt": 1,
+  "role": "worker",
+  "delegated_at": "2026-05-28T13:00:00Z",
+  "leader_session_id": "test",
+  "leader_instruction_path": ".phase_control/instructions/test_anti_fake_attempt_1_worker.json",
+  "instruction_path": ".phase_control/instructions/test_anti_fake_attempt_1_worker.json",
+  "expected_output_path": ".phase_control/evidence/test_anti_fake_attempt_1.json",
+  "trust_level": "INTENT_ONLY"
+}

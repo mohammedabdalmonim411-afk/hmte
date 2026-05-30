@@ -1,0 +1,61 @@
+{
+  "phase_id": "phase_e2e",
+  "attempt": 1,
+  "role": "verifier",
+  "assigned_to": "verifier",
+  "created_at": "2026-05-29T12:10:00+08:00",
+  "objective": "独立审计 Phase E2E 的完成情况，确认生命周期测试正确实现且全部通过",
+  "evidence_path": ".phase_control/evidence/phase_e2e_attempt_1.json",
+  "command_log_path": ".phase_control/logs/phase_e2e_attempt_1.commands.jsonl",
+  "acceptance_criteria": [
+    "scripts/e2e-lifecycle-test.sh 存在且可执行",
+    "测试在 mktemp 临时项目中运行，不破坏真实 .phase_control",
+    "不复制真实 .git，创建临时 git repo",
+    "统一 reset_runtime 函数存在",
+    "make_final_audit_chain helper 存在且正确",
+    "L1: Kickoff 创建启动文件",
+    "L2: Audit Start 未规划状态",
+    "L3: Audit Start 可委派状态",
+    "L4: Final Audit PASS（完整 7 文件链路）",
+    "L5: Final Audit FAIL（完整 7 文件链路）",
+    "L6a: 旧 receipt 兼容",
+    "L6b: 新 receipt 兼容",
+    "L6c: OBSERVED 无 trace（绝不 OBSERVED+PASS）",
+    "kickoff residual 拒绝覆盖全部 8 个目录",
+    "所有测试用例通过",
+    "evidence bundle 完整",
+    "command log 完整"
+  ],
+  "verification_tasks": [
+    "读取并验证 evidence bundle",
+    "读取并验证 command log",
+    "计算 SHA256 哈希",
+    "检查测试脚本是否存在且可执行",
+    "验证测试脚本内容（隔离、reset_runtime、make_final_audit_chain）",
+    "验证所有测试用例（L1-L6c + residual）",
+    "运行测试脚本确认通过",
+    "评估 residual_risks 和 verification_gaps"
+  ],
+  "output_path": ".phase_control/verdicts/phase_e2e_attempt_1.json",
+  "verdict_format": {
+    "status": "PASS | FAIL | BLOCK",
+    "phase_id": "phase_e2e",
+    "attempt": 1,
+    "timestamp": "ISO8601",
+    "evidence_sha256": "64-character-sha256",
+    "command_log_sha256": "64-character-sha256",
+    "adversarial_scorecard": {
+      "criteria_passed": [],
+      "criteria_failed": [],
+      "evidence_paths": [],
+      "residual_risks": [],
+      "re_verification_conclusion": ""
+    }
+  },
+  "constraints": [
+    "只做审计，不修改任何代码",
+    "严格按证据判断",
+    "输出标准格式的 verdict JSON",
+    "evidence_paths 不得为空"
+  ]
+}

@@ -9,7 +9,7 @@
 <!-- Worktree isolation is not supported in Hermes. -->
 name: master-planner
 description: 负责规划、拆阶段、派发任务、维护状态机、决定是否放行到下一阶段
-tools: Read Grep Glob Bash Edit Write Agent
+tools: Read Grep Glob Bash
 model: opus
 permissionMode: plan
 maxTurns: 20
@@ -58,7 +58,7 @@ color: purple
 
 ## 你绝不直接大规模实现业务代码
 
-除非用户明确要求降级为单代理模式。
+进入 HTE 流程后，Leader 不得修改项目面文件。HTE 流程一旦启动，Leader 不得单方面退出或降级为单 Agent 模式。无例外。如用户明确要求退出 HTE，Leader 必须声明当前阶段状态、未完成 phase 列表、已产出文件路径，交由用户决策后退出。
 
 ## 规划输出必须包含
 
