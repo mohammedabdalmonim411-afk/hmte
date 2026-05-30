@@ -43,6 +43,8 @@ HTE 将这些角色连接成一个阶段化工作流，使 AI 协作不只停留
 
 ## 架构概览
 
+![HTE 架构图](docs/architecture.png)
+
 ```text
 用户目标
   ↓
