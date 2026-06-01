@@ -176,7 +176,9 @@ if [ -f ".phase_control/goal_lock.json" ]; then
 
     # 对比 phases.json 与 goal_lock
     GOAL_RESULT=$(python3 -c "
-import json, sys, hashlib
+import json, sys, hashlib, os, glob
+
+MODE = '$MODE'
 
 with open('.phase_control/goal_lock.json') as f:
     goal = json.load(f)
@@ -189,13 +191,31 @@ current_phases = {p.get('phase_id', p.get('id', '')): p for p in current_phases_
 
 issues = []
 
+# Helper: normalize criteria for hash calculation
+def normalize_criteria(criteria):
+    if isinstance(criteria, list):
+        return [c.strip() for c in criteria if isinstance(c, str) and c.strip()]
+    elif isinstance(criteria, str):
+        stripped = criteria.strip()
+        return [stripped] if stripped else []
+    elif criteria is None:
+        return []
+    else:
+        # 其他类型转字符串
+        val = str(criteria).strip()
+        return [val] if val else []
+
+def compute_hash(criteria):
+    normalized = normalize_criteria(criteria)
+    concatenated = json.dumps(normalized, ensure_ascii=False, separators=(',', ':'))
+    return hashlib.sha256(concatenated.encode('utf-8')).hexdigest()
+
 # Check for deleted phases
 for pid in goal_phases:
     if pid not in current_phases:
         issues.append(f'phase deleted: {pid}')
 
 # Check for newly added phases (not in goal_lock)
-import os, glob
 for pid in current_phases:
     if pid not in goal_phases:
         # Check if there's an amendment authorizing this new phase
@@ -206,20 +226,53 @@ for pid in current_phases:
                 with open(af) as f:
                     amend = json.load(f)
                 if amend.get('action') == 'add_phase' and amend.get('phase_id') == pid:
+                    # 必需字段检查
+                    if 'created_at' not in amend:
+                        issues.append(f'new phase {pid}: amendment missing created_at')
+                        continue
+                    if 'scope_impact' not in amend:
+                        issues.append(f'new phase {pid}: amendment missing scope_impact')
+                        continue
+                    
+                    scope_impact = amend.get('scope_impact', '')
+                    if scope_impact not in ['expand', 'clarify', 'neutral', 'reduce']:
+                        issues.append(f'new phase {pid}: invalid scope_impact={scope_impact}')
+                        continue
+                    
                     reason = amend.get('reason', '').strip()
-                    if reason:
-                        amended = True
-                        break
+                    # Reason length check: add_phase >= 20 chars
+                    if len(reason) < 20:
+                        issues.append(f'new phase {pid}: reason too short ({len(reason)} < 20 chars)')
+                        continue
+                    
+                    # Phase binding check: must have new_hash matching current criteria
+                    if 'new_hash' not in amend:
+                        issues.append(f'new phase {pid}: amendment missing new_hash')
+                        continue
+                    
+                    new_hash = amend.get('new_hash', '')
+                    current_hash = compute_hash(current_phases[pid].get('acceptance_criteria', []))
+                    if new_hash != current_hash:
+                        issues.append(f'new phase {pid}: amendment hash mismatch (expected {current_hash}, got {new_hash})')
+                        continue
+                    
+                    # Release mode: check scope_impact
+                    if MODE == 'release' and scope_impact == 'reduce':
+                        issues.append(f'new phase {pid}: scope_impact=reduce blocked in release mode')
+                        continue
+                    
+                    amended = True
+                    break
         if not amended:
-            issues.append(f'new phase added without amendment: {pid}')
+            issues.append(f'new phase added without valid amendment: {pid}')
 
 # Check for weakened criteria
 for pid, gp in goal_phases.items():
     if pid not in current_phases:
         continue
     cp = current_phases[pid]
-    goal_criteria = gp.get('acceptance_criteria', [])
-    current_criteria = cp.get('acceptance_criteria', [])
+    goal_criteria = normalize_criteria(gp.get('acceptance_criteria', []))
+    current_criteria = normalize_criteria(cp.get('acceptance_criteria', []))
     # Check for deleted criteria
     for gc in goal_criteria:
         if gc not in current_criteria:
@@ -230,11 +283,48 @@ for pid, gp in goal_phases.items():
                 for af in glob.glob(f'{amend_dir}/*.json'):
                     with open(af) as f:
                         amend = json.load(f)
-                    if amend.get('phase_id') == pid and amend.get('old') == gc:
-                        amended = True
-                        break
+                    if amend.get('phase_id') == pid and amend.get('action') == 'modify_criteria':
+                        old_val = amend.get('old', '')
+                        if old_val == gc:
+                            # 必需字段检查
+                            if 'created_at' not in amend:
+                                issues.append(f'{pid}: amendment missing created_at')
+                                continue
+                            if 'scope_impact' not in amend:
+                                issues.append(f'{pid}: amendment missing scope_impact')
+                                continue
+                            
+                            scope_impact = amend.get('scope_impact', '')
+                            if scope_impact not in ['expand', 'clarify', 'neutral', 'reduce']:
+                                issues.append(f'{pid}: invalid scope_impact={scope_impact}')
+                                continue
+                            
+                            reason = amend.get('reason', '').strip()
+                            # Reason length check: modify_criteria >= 30 chars
+                            if len(reason) < 30:
+                                issues.append(f'{pid}: reason too short ({len(reason)} < 30 chars)')
+                                continue
+                            
+                            # Hash binding check
+                            if 'old_hash' not in amend or 'new_hash' not in amend:
+                                issues.append(f'{pid}: amendment missing old_hash or new_hash')
+                                continue
+                            
+                            new_hash = amend.get('new_hash', '')
+                            current_hash = compute_hash(current_criteria)
+                            if new_hash != current_hash:
+                                issues.append(f'{pid}: amendment hash mismatch')
+                                continue
+                            
+                            # Release mode: check scope_impact
+                            if MODE == 'release' and scope_impact == 'reduce':
+                                issues.append(f'{pid}: scope_impact=reduce blocked in release mode')
+                                continue
+                            
+                            amended = True
+                            break
             if not amended:
-                issues.append(f'{pid}: criteria deleted: {gc[:60]}')
+                issues.append(f'{pid}: criteria deleted without valid amendment: {gc[:60]}')
 
 if issues:
     print('FAIL:' + '; '.join(issues))

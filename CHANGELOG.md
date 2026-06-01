@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-06-01
+
+### Added (P0)
+- **Verifier Cross-Validation**: Enhanced phase_gate.sh with P0 mandatory fields (verification_method, risk_disposition, re_verification_conclusion)
+- **Type Safety**: Implemented as_list(), as_dict(), as_bool() normalization functions in phase_gate.sh
+- **Amendment Lock Tightening**: Hash normalization, phase binding check, reason length validation in hmte-goal-lock.sh
+- **Verifier Adversarial Test Suite**: 12 adversarial test cases with one-bad-thing-per-case principle (e2e-verifier-adversarial-test.sh)
+
+### Added (P1)
+- **Instruction Lint Extension**: 30 dangerous weakening phrases (15 Chinese + 15 English) in hmte-lint-instructions.sh
+- **Red Team Documentation**: red-team-prompts.md, red-team-evaluation.md, red-team-results.md
+- **hmte-doctor**: Lightweight diagnostic script (54 checks, diagnose-only mode)
+- **Receipt Compatibility**: Support both trust_level and delegation_trust_level formats in hmte-audit-flow.py
+
+### Changed
+- phase_gate.sh: Enhanced with P0 field validation and exemption logic tightening
+- hmte-goal-lock.sh: Hash normalization implementation for consistent SHA256 calculation
+- hmte-final-check.sh: Phase binding check and release mode blocking for invalid amendments
+- hmte-audit-flow.py: Backward compatibility for old and new receipt formats
+
+### Fixed
+- e2e-anti-fake-test.sh: Updated verdict format to include P0 mandatory fields
+- src/skills/hmte/scripts/phase_gate.sh: Added execute permission
+
+### Complexity Budget
+- New code: ~514 lines (modified) + ~3051 lines (new files) = ~3565 lines
+- New files: 10 (4 test scripts + 3 red team docs + 3 planning docs)
+- New dependencies: 0
+
 ## [1.4.0] - 2026-05-30
 
 ### Added

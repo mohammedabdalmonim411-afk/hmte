@@ -124,12 +124,23 @@ PASS verdict **必须**包含以下字段，否则 phase_gate 拒绝放行：
   "command_log_sha256": "<sha256 of command log file>",
   "adversarial_scorecard": {
     "criteria_passed": [
-      {"criterion": "<标准原文>", "evidence": "<验证结果摘要>"}
+      {"criterion": "<标准原文>", "evidence": "<具体验证结果，不能是ok/pass/done等占位符>"}
     ],
     "criteria_failed": [],
-    "evidence_paths": ["<evidence文件路径>", "<command log路径>"],
+    "evidence_paths": [
+      ".phase_control/evidence/<phase_id>_attempt_<n>.json",
+      ".phase_control/logs/<phase_id>_attempt_<n>.commands.jsonl"
+    ],
+    "verification_method": "code_review",
+    "risk_disposition": [
+      {
+        "risk": "<风险描述>",
+        "disposition": "accepted",
+        "reason": "<处置理由>"
+      }
+    ],
     "residual_risks": ["<已知风险，无则写none>"],
-    "re_verification_conclusion": "<独立复验结论>",
+    "re_verification_conclusion": "<独立复验结论，至少20字符>",
     "independently_verified_files": ["<Verifier 独立验证过的具体文件路径>"],
     "command_log_checked": true,
     "diff_checked": true,
@@ -137,6 +148,19 @@ PASS verdict **必须**包含以下字段，否则 phase_gate 拒绝放行：
   }
 }
 ```
+
+### P0 必需字段说明
+
+- `verification_method`: 必须是枚举值之一：`manual_review` / `automated_test` / `cross_check` / `code_review` / `docs_review` / `config_review`
+- `risk_disposition`: 必须是数组；当 `evidence.unresolved_risks` 非空时，数组长度必须 >= 风险数量
+  - 每条必须包含：`risk` / `disposition` (accepted/mitigated/blocked/deferred) / `reason`
+- `re_verification_conclusion`: 长度至少 20 字符
+- `independently_verified_files`: 必须非空、文件存在、不得指向 `.phase_control/`
+- `evidence_paths`: 必须包含 evidence 文件和 command log 文件
+- `criteria_passed[].evidence`: 不能为空，不能是 ok/pass/done/yes/good 等占位符
+- `criteria_failed`: PASS verdict 必须为空数组
+- `command_log_checked` / `diff_checked` / `evidence_consistency_checked`: 必须为 `true`
+
 
 ### FAIL verdict 模板
 

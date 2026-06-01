@@ -64,6 +64,7 @@ fi
 # ─── Dangerous weakening phrases ─────────────────────────────────
 # Each phrase is a raw string (not regex) — we do case-insensitive matching
 WEAKENING_PHRASES=(
+    # 中文危险短语 (15条)
     "只检查格式"
     "不需要运行"
     "无需测试"
@@ -73,6 +74,29 @@ WEAKENING_PHRASES=(
     "不用查看项目文件"
     "不需要独立验证"
     "复用上次 evidence"
+    "跳过验证"
+    "假设正确"
+    "不必检查"
+    "直接通过"
+    "省略测试"
+    "信任输出"
+
+    # 英文危险短语 (15条)
+    "skip validation"
+    "assume correct"
+    "no need to verify"
+    "trust the output"
+    "format check only"
+    "code review only"
+    "ignore risks"
+    "default pass"
+    "reuse previous evidence"
+    "no testing required"
+    "bypass verification"
+    "accept without checking"
+    "skip execution"
+    "trust blindly"
+    "no independent validation"
 )
 
 TOTAL=0
@@ -155,8 +179,14 @@ print(f\"REASON_LEN={data.get('reason_len', 0)}\")
     ALLOWED=$(echo "$PARSED" | grep "^ALLOWED=" | cut -d= -f2)
     REASON_LEN=$(echo "$PARSED" | grep "^REASON_LEN=" | cut -d= -f2)
 
-    for phrase in $(echo "$PARSED" | grep -v "^${MATCH_COUNT}$" | grep -v "^ALLOWED=" | grep -v "^REASON_LEN="); do
+    # Use while read to preserve spaces in phrases
+    while IFS= read -r phrase; do
         [ -z "$phrase" ] && continue
+        # Skip metadata lines
+        [[ "$phrase" == "ALLOWED="* ]] && continue
+        [[ "$phrase" == "REASON_LEN="* ]] && continue
+        [[ "$phrase" == "$MATCH_COUNT" ]] && continue
+
         if [ "$MODE" = "dev" ]; then
             warn "$FNAME: weakening phrase detected → \"$phrase\""
             WARN_COUNT=$((WARN_COUNT + 1))
@@ -169,7 +199,7 @@ print(f\"REASON_LEN={data.get('reason_len', 0)}\")
                 FAIL_COUNT=$((FAIL_COUNT + 1))
             fi
         fi
-    done
+    done < <(echo "$PARSED")
 done
 
 # ─── Summary ──────────────────────────────────────────────────────

@@ -76,7 +76,7 @@ EOF
 # ---- Helper: create valid evidence ----
 make_evidence() {
     cat > ".phase_control/evidence/${PHASE}_attempt_${ATTEMPT}.json" <<EOF
-{"phase_id":"$PHASE","attempt":$ATTEMPT,"status":"completed","timestamp":"2026-05-28T13:01:00Z"}
+{"phase_id":"$PHASE","attempt":$ATTEMPT,"status":"completed","timestamp":"2026-05-28T13:01:00Z","command_log_path":".phase_control/logs/${PHASE}_attempt_${ATTEMPT}.commands.jsonl"}
 EOF
 }
 
@@ -94,9 +94,9 @@ make_pass_verdict() {
     local ev_sha
     ev_sha="$(sha256_file ".phase_control/evidence/${PHASE}_attempt_${ATTEMPT}.json")"
     local log_sha
-    log_sha="$(sha256_file ".phase_control/logs/${PHASE}_attempt_${ATTEMPT}.commands.jsonl")" 
+    log_sha="$(sha256_file ".phase_control/logs/${PHASE}_attempt_${ATTEMPT}.commands.jsonl")"
     cat > ".phase_control/verdicts/${PHASE}_attempt_${ATTEMPT}.json" <<EOF
-{"status":"PASS","phase_id":"$PHASE","attempt":$ATTEMPT,"timestamp":"2026-05-28T13:02:00Z","evidence_sha256":"$ev_sha","command_log_sha256":"$log_sha","adversarial_scorecard":{"criteria_passed":[{"criterion":"test","evidence":"verified"}],"criteria_failed":[],"evidence_paths":["x",".phase_control/logs/test_attempt_1.commands.jsonl"],"residual_risks":["none"],"re_verification_conclusion":"ok","independently_verified_files":["README.md"],"command_log_checked":true,"diff_checked":true,"evidence_consistency_checked":true}}
+{"status":"PASS","phase_id":"$PHASE","attempt":$ATTEMPT,"timestamp":"2026-05-28T13:02:00Z","evidence_sha256":"$ev_sha","command_log_sha256":"$log_sha","adversarial_scorecard":{"criteria_passed":[{"criterion":"test","evidence":"test execution completed and verified through code review"}],"criteria_failed":[],"evidence_paths":[".phase_control/evidence/${PHASE}_attempt_${ATTEMPT}.json",".phase_control/logs/${PHASE}_attempt_${ATTEMPT}.commands.jsonl","README.md"],"residual_risks":["none"],"verification_method":"code_review","risk_disposition":[],"re_verification_conclusion":"All acceptance criteria verified independently through code review and command log analysis","independently_verified_files":["README.md"],"command_log_checked":true,"diff_checked":true,"evidence_consistency_checked":true}}
 EOF
 }
 
@@ -173,7 +173,7 @@ make_evidence
 cat > ".phase_control/verdicts/${PHASE}_attempt_${ATTEMPT}.json" <<EOF
 {"status":"PASS","phase_id":"$PHASE","attempt":$ATTEMPT,"timestamp":"2026-05-28T13:02:00Z"}
 EOF
-if $GATE "$PHASE" > /dev/null 2>&1; then
+if $GATE "$PHASE" --attempt "$ATTEMPT" > /dev/null 2>&1; then
     log_fail "F4: gate should have BLOCKED (no scorecard)"
 else
     log_pass "F4: gate correctly BLOCKED (no scorecard)"
@@ -190,7 +190,7 @@ make_evidence
 cat > ".phase_control/verdicts/${PHASE}_attempt_${ATTEMPT}.json" <<EOF
 {"status":"PASS","phase_id":"$PHASE","attempt":$ATTEMPT,"timestamp":"2026-05-28T13:02:00Z","adversarial_scorecard":{"criteria_passed":[],"criteria_failed":[],"evidence_paths":["x"],"residual_risks":["none"],"re_verification_conclusion":"ok"}}
 EOF
-if $GATE "$PHASE" > /dev/null 2>&1; then
+if $GATE "$PHASE" --attempt "$ATTEMPT" > /dev/null 2>&1; then
     log_fail "F5: gate should have BLOCKED (empty criteria_passed)"
 else
     log_pass "F5: gate correctly BLOCKED (empty criteria_passed)"
@@ -207,7 +207,7 @@ make_evidence
 cat > ".phase_control/verdicts/${PHASE}_attempt_${ATTEMPT}.json" <<EOF
 {"status":"PASS","phase_id":"$PHASE","attempt":$ATTEMPT,"timestamp":"2026-05-28T13:02:00Z","adversarial_scorecard":{"criteria_passed":[{"criterion":"a","evidence":"x"}],"criteria_failed":[{"criterion":"b","reason":"not done"}],"evidence_paths":["x"],"residual_risks":["none"],"re_verification_conclusion":"ok"}}
 EOF
-if $GATE "$PHASE" > /dev/null 2>&1; then
+if $GATE "$PHASE" --attempt "$ATTEMPT" > /dev/null 2>&1; then
     log_fail "F6: gate should have BLOCKED (PASS with criteria_failed)"
 else
     log_pass "F6: gate correctly BLOCKED (PASS with criteria_failed)"
@@ -271,11 +271,13 @@ cat > ".phase_control/verdicts/${PHASE}_attempt_${ATTEMPT}.json" <<'EOF'
   "attempt": 1,
   "timestamp": "2026-05-28T13:02:00Z",
   "adversarial_scorecard": {
-    "criteria_passed": [{"criterion": "test", "evidence": "x"}],
+    "criteria_passed": [{"criterion": "test", "evidence": "test execution completed and verified through code review"}],
     "criteria_failed": [],
-    "evidence_paths": ["x"],
+    "evidence_paths": [".phase_control/evidence/test_anti_fake_attempt_1.json",".phase_control/logs/test_anti_fake_attempt_1.commands.jsonl","README.md"],
     "residual_risks": ["none"],
-    "re_verification_conclusion": "ok",
+    "verification_method": "code_review",
+    "risk_disposition": [],
+    "re_verification_conclusion": "All acceptance criteria verified independently through code review and command log analysis",
     "independently_verified_files": ["README.md"],
     "command_log_checked": true,
     "diff_checked": true,
@@ -296,7 +298,7 @@ fi
 echo ""
 echo "--- P1: full chain normal ---"
 make_full_chain
-if $GATE "$PHASE" > /dev/null 2>&1; then
+if $GATE "$PHASE" --attempt "$ATTEMPT" > /dev/null 2>&1; then
     log_pass "P1: gate correctly PASSed (full chain)"
 else
     log_fail "P1: gate should have PASSed (full chain)"

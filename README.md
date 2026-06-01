@@ -12,12 +12,19 @@ HTE 将 AI 辅助开发从"单个模型独立完成所有事情"，升级为"多
 - **phase_gate**：检查当前阶段是否满足放行条件。
 - **orchestrator**：管理基于文件协议的阶段流转。
 
-![状态](https://img.shields.io/badge/版本-v1.4.0-green)
+![状态](https://img.shields.io/badge/版本-v1.5.0-green)
 ![定位](https://img.shields.io/badge/定位-多%20Agent%20协作框架-blue)
 ![机制](https://img.shields.io/badge/机制-阶段门禁%20/%20证据链%20/%20最终声明验证-purple)
 
 > 当前状态：Beta
 > 当前重点：统一文件协议、命令日志、阶段门禁、独立审计和核心流程测试。
+>
+> **v1.5 新特性**：
+> - Verifier Cross-Validation：强制 P0 必需字段（verification_method, risk_disposition, re_verification_conclusion）
+> - Amendment Lock Tightening：Hash 标准化、phase 绑定检查、reason 长度验证
+> - Verifier Adversarial Test Suite：12 个对抗性测试用例
+> - Instruction Lint Extension：30 个危险弱化短语检测
+> - Receipt Compatibility：支持新旧 receipt 格式
 
 ## 核心理念
 
@@ -207,11 +214,27 @@ Verifier 输出 JSON verdict：
   "evidence_sha256": "64-character-sha256",
   "command_log_sha256": "64-character-sha256",
   "adversarial_scorecard": {
-    "criteria_passed": [{"criterion": "单元测试通过", "evidence": ".phase_control/logs/phase_a_attempt_1.commands.jsonl"}],
+    "criteria_passed": [
+      {
+        "criterion": "单元测试通过",
+        "evidence": ".phase_control/logs/phase_a_attempt_1.commands.jsonl: npm test exit_code=0"
+      }
+    ],
     "criteria_failed": [],
-    "evidence_paths": [".phase_control/evidence/phase_a_attempt_1.json"],
-    "residual_risks": ["生产配置需要部署时单独确认"],
-    "re_verification_conclusion": "证据支持 PASS",
+    "evidence_paths": [
+      ".phase_control/evidence/phase_a_attempt_1.json",
+      ".phase_control/logs/phase_a_attempt_1.commands.jsonl"
+    ],
+    "verification_method": "cross_check",
+    "risk_disposition": [
+      {
+        "risk": "生产环境 JWT secret 需要单独配置",
+        "disposition": "accepted",
+        "reason": "部署阶段由环境变量注入，不阻塞当前阶段验收"
+      }
+    ],
+    "residual_risks": ["生产环境 JWT secret 需要单独配置"],
+    "re_verification_conclusion": "已复核 evidence、command log 和变更文件，验收标准均有证据支撑。",
     "independently_verified_files": ["src/api/auth.js", "tests/auth.test.js"],
     "command_log_checked": true,
     "diff_checked": true,

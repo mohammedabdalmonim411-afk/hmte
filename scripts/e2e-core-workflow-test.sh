@@ -134,7 +134,7 @@ import json
 ev = {
     'phase_id': 'c3_phase', 'attempt': 1, 'status': 'completed',
     'timestamp': '$(_ts)',
-    'results': {'test': 'PASS'}, 'files_modified': []
+    'results': {'test': 'PASS'}, 'files_modified': [], 'command_log_path': '.phase_control/logs/c3_phase_attempt_1.commands.jsonl'
 }
 with open('.phase_control/evidence/c3_phase_attempt_1.json', 'w') as f:
     json.dump(ev, f, indent=2)
@@ -149,15 +149,17 @@ v = {
     'timestamp': '$(_ts)',
     'verification': {'test': 'PASS'},
     'adversarial_scorecard': {
-        'criteria_passed': ['all checks'],
+        'criteria_passed': [{'criterion': 'test', 'evidence': 'test execution completed successfully'}],
         'criteria_failed': [],
         'evidence_paths': ['.phase_control/evidence/c3_phase_attempt_1.json', '.phase_control/logs/c3_phase_attempt_1.commands.jsonl'],
         'residual_risks': [],
-        're_verification_conclusion': 'PASS',
+        're_verification_conclusion': 'All criteria verified through code review and test execution',
         'independently_verified_files': ['README.md'],
         'command_log_checked': True,
         'diff_checked': True,
-        'evidence_consistency_checked': True
+        'evidence_consistency_checked': True,
+        'verification_method': 'code_review',
+        'risk_disposition': []
     }
 }
 with open('.phase_control/verdicts/c3_phase_attempt_1.json', 'w') as f:
@@ -195,7 +197,7 @@ import json, datetime
 ev = {
     'phase_id': 'c3_phase', 'attempt': 1, 'status': 'completed',
     'timestamp': '$(_ts)',
-    'results': {'c5b': 'PASS'}
+    'results': {'c5b': 'PASS'}, 'command_log_path': '.phase_control/logs/c3_phase_attempt_1.commands.jsonl'
 }
 with open('.phase_control/evidence/c3_phase_attempt_1.json', 'w') as f:
     json.dump(ev, f, indent=2)
@@ -209,15 +211,17 @@ v = {
     'confidence': 'high', 'next_action': 'NEXT_PHASE',
     'timestamp': '$(_ts)',
     'adversarial_scorecard': {
-        'criteria_passed': [{'criterion': 'test', 'evidence': 'ok'}],
+        'criteria_passed': [{'criterion': 'test', 'evidence': 'test execution completed successfully'}],
         'criteria_failed': [],
-        'evidence_paths': ['.phase_control/logs/c3_phase_attempt_1.commands.jsonl'],
+        'evidence_paths': ['.phase_control/evidence/c3_phase_attempt_1.json', '.phase_control/logs/c3_phase_attempt_1.commands.jsonl'],
         'residual_risks': ['none'],
-        're_verification_conclusion': 'verified',
+        're_verification_conclusion': 'All criteria verified through code review and test execution',
         'independently_verified_files': ['README.md'],
         'command_log_checked': True,
         'diff_checked': True,
-        'evidence_consistency_checked': True
+        'evidence_consistency_checked': True,
+        'verification_method': 'code_review',
+        'risk_disposition': []
     }
 }
 with open('.phase_control/verdicts/c3_phase_attempt_1.json', 'w') as f:

@@ -92,9 +92,9 @@ Agent 在输出"完成/PASS/封版/全部通过"声明前必须运行 `bash scri
 
 未运行 final-check 的完成声明视为无效。
 
-## v1.4 P0 加固机制
+## v1.5 P0 加固机制
 
-以下机制从 v1.4 开始强制执行（release 模式下均为 FAIL 级阻断）：
+以下机制从 v1.5 开始强制执行（release 模式下均为 FAIL 级阻断）：
 
 | 机制 | 脚本 | 作用 |
 |------|------|------|
@@ -102,10 +102,43 @@ Agent 在输出"完成/PASS/封版/全部通过"声明前必须运行 `bash scri
 | Goalpost Lock | `hmte-goal-lock.sh` | SHA256 锁定验收标准，检测后续弱化/删除（release 模式缺锁→FAIL） |
 | Instruction Lint | `hmte-lint-instructions.sh` | 检测"只检查格式"类危险弱化语句 |
 | Evidence Claim Verification | `hmte-verify-claims.sh` | 验证每个 claimed file 真实存在 + 在 git diff 中 + 在 command log 中 |
-| Verifier Minimum Audit | `phase_gate.sh` (内嵌) | PASS verdict 必须含 independently_verified_files / command_log_checked / diff_checked / evidence_consistency_checked |
+| Verifier Minimum Audit | `phase_gate.sh` (内嵌) | PASS verdict 必须含 P0 必需字段（详见下方） |
 | Final Check v2 | `hmte-final-check.sh` | 完整链路（7-file 完整性 + 全部 P0 检查 + Leader Jail） |
 
-Leader Jail 详细约束：
+### Verifier Minimum Audit（P0-4）
+
+从 v1.5 开始，所有 PASS verdict 必须包含以下 P0 必需字段：
+
+1. **verification_method**（字符串，非空）
+   - 说明验证方法（如 `cross_check`, `manual_review`, `automated_test`）
+
+2. **risk_disposition**（数组，可为空）
+   - 每个 unresolved_risk 必须有对应的 disposition 条目
+   - 每个条目必须包含：`risk`, `disposition`, `reason`
+   - `reason` 长度 >= 10 字符
+
+3. **re_verification_conclusion**（字符串，>= 20 字符）
+   - 不能是 `ok`, `pass`, `done`, `yes`, `good`, `证据支持 PASS` 等敷衍内容
+   - 必须说明复核了哪些证据、为何支持 PASS
+
+4. **independently_verified_files**（数组，非空）
+   - 必须列出实际验证过的文件
+   - 文件必须真实存在
+
+5. **evidence_paths**（数组，非空）
+   - 必须同时包含 evidence 和 command log 路径
+   - 示例：`[".phase_control/evidence/phase_a_attempt_1.json", ".phase_control/logs/phase_a_attempt_1.commands.jsonl"]`
+
+6. **criteria_passed[].evidence**（字符串，非空）
+   - 不能是 `ok`, `pass`, `done`, `yes`, `good` 等敷衍内容
+   - 必须引用具体证据路径或命令日志条目
+
+7. **command_log_checked / diff_checked / evidence_consistency_checked**（布尔值，必须为 true）
+
+缺少任何 P0 字段或字段值不符合要求，phase_gate 将 FAIL。
+
+### Leader Jail 详细约束
+
 - Leader 只能直接写 control plane: `.phase_control/instructions/`, `delegations/`, `state.json`, `phases.json`, `goal_lock.json`, `amendments/`, `session.json`, `lock.json`
 - Leader 不得直接写 project plane（`src/`, `lib/`, `test/`, `docs/`, `scripts/` 等）
 - 任何 project plane 改动必须满足完整 ownership chain：

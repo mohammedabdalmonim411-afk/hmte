@@ -104,6 +104,24 @@ declare -a FILES=(
     "docs/attack-cases.md"
     "docs/HTE_v1.3_DEVELOPMENT_PLAN.md"
     "docs/HTE_v1.4_PROJECT_HANDOVER.md"
+    "docs/HTE_v1.5_DEVELOPMENT_PLAN_r3.md"
+    "docs/v1.5-baseline.md"
+
+    # === v1.5 新增测试 ===
+    "scripts/e2e-verifier-adversarial-test.sh"
+    "scripts/test-protocol-lint.sh"
+    "scripts/test-phase2-hash-normalization.sh"
+    "scripts/test-phase2-amendment-validation.sh"
+
+    # === v1.5 Red Team 文档 ===
+    "docs/red-team-prompts.md"
+    "docs/red-team-evaluation.md"
+    "docs/red-team-results.md"
+
+    # === v1.5 完成报告 ===
+    "HTE_v1.5_COMPLETION_REPORT.md"
+    "HTE_v1.5_P0_PATCH_REPORT.md"
+    "HTE_v1.5_AUDIT_GUIDE.md"
 )
 
 # ============================================================

@@ -174,7 +174,8 @@ def _check_receipt(
         detail=f"expected={attempt}, got={r_att}",
     ))
 
-    tl = receipt.get("trust_level")
+    # Support both old (trust_level) and new (delegation_trust_level) formats
+    tl = receipt.get("trust_level") or receipt.get("delegation_trust_level")
     checks.append(Check(
         name=f"receipt.{expected_role}.trust_level",
         status="PASS" if tl in VALID_TRUST else "FAIL",

@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
-# hmte-doctor.sh - 检查环境依赖和配置
+# hmte-doctor.sh - HTE 轻量自检（只诊断，不修复）
+#
+# 检查项：
+#   1. git repo 存在
+#   2. bash 可用
+#   3. python3 可用
+#   4. HTE scripts 完整性
+#   5. .phase_control 目录结构
+#
+# 用法：
+#   bash scripts/hmte-doctor.sh
 
 set -euo pipefail
 
@@ -15,216 +25,306 @@ success() { echo -e "${GREEN}✓${NC} $*"; }
 warn() { echo -e "${YELLOW}⚠${NC} $*"; }
 error() { echo -e "${RED}✗${NC} $*"; }
 
+# 统计变量
+TOTAL_CHECKS=0
+PASS_COUNT=0
 FAIL_COUNT=0
 WARN_COUNT=0
 
-check_cmd() {
-    local cmd="$1"
-    local required="${2:-true}"
-    
-    if command -v "$cmd" >/dev/null 2>&1; then
-        success "$cmd found: $(command -v "$cmd")"
+check() {
+    local name="$1"
+    local condition="$2"
+    local detail="${3:-}"
+
+    TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+
+    if eval "$condition"; then
+        PASS_COUNT=$((PASS_COUNT + 1))
+        if [ -n "$detail" ]; then
+            success "$name: $detail"
+        else
+            success "$name"
+        fi
         return 0
     else
-        if [ "$required" = "true" ]; then
-            error "$cmd missing (required)"
-            FAIL_COUNT=$((FAIL_COUNT + 1))
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+        if [ -n "$detail" ]; then
+            error "$name: $detail"
         else
-            warn "$cmd missing (optional)"
-            WARN_COUNT=$((WARN_COUNT + 1))
+            error "$name"
         fi
         return 1
     fi
 }
 
-check_python_module() {
-    local module="$1"
-    local required="${2:-true}"
-    
-    if python3 -c "import $module" 2>/dev/null; then
-        success "Python module '$module' found"
-        return 0
+warn_check() {
+    local name="$1"
+    local condition="$2"
+    local detail="${3:-}"
+
+    TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+
+    if eval "$condition"; then
+        PASS_COUNT=$((PASS_COUNT + 1))
+        success "$name"
     else
-        if [ "$required" = "true" ]; then
-            error "Python module '$module' missing (required)"
-            echo "       Install: pip install $module"
-            FAIL_COUNT=$((FAIL_COUNT + 1))
+        WARN_COUNT=$((WARN_COUNT + 1))
+        if [ -n "$detail" ]; then
+            warn "$name: $detail"
         else
-            warn "Python module '$module' missing (optional)"
-            WARN_COUNT=$((WARN_COUNT + 1))
+            warn "$name"
         fi
-        return 1
     fi
 }
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🔍 HTE Environment Check"
+echo "🔍 HTE Doctor - 轻量自检"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# 1. 检查必需命令
-info "Checking required commands..."
-check_cmd bash true
-check_cmd git true
-check_cmd python3 true
+# ============================================================
+# 1. 检查 git repo
+# ============================================================
+info "检查 git repo..."
+check "git repo 存在" "[ -d .git ]" "$(pwd)/.git"
 
-# 2. 检查可选命令
-echo ""
-info "Checking optional commands..."
-check_cmd jq false
-
-if ! command -v jq >/dev/null 2>&1; then
-    warn "jq not found: status output will be degraded"
-    echo "       Install: brew install jq (macOS) or apt install jq (Linux)"
+if [ -d .git ]; then
+    # 检查 git 状态
+    if git rev-parse --git-dir >/dev/null 2>&1; then
+        success "git repo 有效"
+        PASS_COUNT=$((PASS_COUNT + 1))
+        
+        # 显示当前分支
+        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+        info "  当前分支: $CURRENT_BRANCH"
+        
+        # 显示最近一次提交
+        LAST_COMMIT=$(git log -1 --oneline 2>/dev/null || echo "no commits")
+        info "  最近提交: $LAST_COMMIT"
+    else
+        error "git repo 损坏"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+    TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 fi
-
-
-
-# 3. 检查Python模块
 echo ""
-info "Checking Python modules..."
-check_python_module json true
-check_python_module pathlib true
-check_python_module datetime true
 
-# filelock是可选的（我们会用标准库替代）
-if ! check_python_module filelock false; then
-    info "filelock not found, will use standard library fcntl/msvcrt"
+# ============================================================
+# 2. 检查 bash
+# ============================================================
+info "检查 bash..."
+check "bash 可执行" "command -v bash >/dev/null 2>&1"
+
+if command -v bash >/dev/null 2>&1; then
+    BASH_VERSION_INFO=$(bash --version | head -1)
+    success "bash 版本: $BASH_VERSION_INFO"
+    PASS_COUNT=$((PASS_COUNT + 1))
+    TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 fi
-
-# 4. 检查Git配置
 echo ""
-info "Checking Git configuration..."
-if git config user.name >/dev/null 2>&1; then
-    success "Git user.name: $(git config user.name)"
-else
-    warn "Git user.name not set"
-    echo "       Set: git config --global user.name 'Your Name'"
-    WARN_COUNT=$((WARN_COUNT + 1))
-fi
 
-if git config user.email >/dev/null 2>&1; then
-    success "Git user.email: $(git config user.email)"
-else
-    warn "Git user.email not set"
-    echo "       Set: git config --global user.email 'you@example.com'"
-    WARN_COUNT=$((WARN_COUNT + 1))
-fi
+# ============================================================
+# 3. 检查 python3
+# ============================================================
+info "检查 python3..."
+check "python3 可执行" "command -v python3 >/dev/null 2>&1"
 
-# 5. 检查项目结构
+if command -v python3 >/dev/null 2>&1; then
+    PYTHON_VERSION=$(python3 --version 2>&1)
+    success "python3 版本: $PYTHON_VERSION"
+    PASS_COUNT=$((PASS_COUNT + 1))
+    TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+    
+    # 检查必需的 Python 模块
+    info "  检查 Python 模块..."
+    for module in json sys os pathlib datetime hashlib; do
+        if python3 -c "import $module" 2>/dev/null; then
+            success "    模块 $module 可用"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            error "    模块 $module 不可用"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+        TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+    done
+fi
 echo ""
-info "Checking project structure..."
+
+# ============================================================
+# 4. 检查 HTE scripts 完整性
+# ============================================================
+info "检查 HTE scripts 完整性..."
+
+# 核心脚本列表
+CORE_SCRIPTS=(
+    "hmte-exec.sh"
+    "hmte-init.sh"
+    "hmte-kickoff.sh"
+    "hmte-final-check.sh"
+    "hmte-goal-lock.sh"
+    "hmte-lint-instructions.sh"
+    "hmte-verify-claims.sh"
+    "hmte-leader-jail.sh"
+)
+
+for script in "${CORE_SCRIPTS[@]}"; do
+    check "  $script 存在" "[ -f scripts/$script ]"
+    
+    if [ -f "scripts/$script" ]; then
+        # 检查可执行权限
+        if [ -x "scripts/$script" ]; then
+            success "    $script 可执行"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            warn "    $script 不可执行"
+            WARN_COUNT=$((WARN_COUNT + 1))
+        fi
+        TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+        
+        # 检查语法
+        if bash -n "scripts/$script" 2>/dev/null; then
+            success "    $script 语法正确"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            error "    $script 语法错误"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+        TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+    fi
+done
+
+# 统计所有脚本
+TOTAL_SCRIPTS=$(find scripts -name "*.sh" -type f 2>/dev/null | wc -l | tr -d ' ')
+info "  总计 $TOTAL_SCRIPTS 个脚本文件"
+echo ""
+
+# ============================================================
+# 5. 检查 .phase_control 目录结构
+# ============================================================
+info "检查 .phase_control 目录结构..."
+check ".phase_control 目录存在" "[ -d .phase_control ]"
 
 if [ -d .phase_control ]; then
-    success ".phase_control directory exists"
+    # 检查必需的子目录
+    REQUIRED_DIRS=(
+        "evidence"
+        "verdicts"
+        "logs"
+        "instructions"
+        "delegations"
+        "pids"
+        "traces"
+        "state"
+        "amendments"
+        "errors"
+    )
     
-    # 检查子目录
-    for dir in evidence verdicts logs pids traces; do
-        if [ -d ".phase_control/$dir" ]; then
-            success ".phase_control/$dir exists"
-        else
-            warn ".phase_control/$dir missing"
-            echo "       Run: hmte init"
-            WARN_COUNT=$((WARN_COUNT + 1))
-        fi
+    for dir in "${REQUIRED_DIRS[@]}"; do
+        check "  .phase_control/$dir 存在" "[ -d .phase_control/$dir ]"
     done
     
-    # 检查state.json
-    if [ -f .phase_control/state.json ]; then
-        success ".phase_control/state.json exists"
-        
-        # 验证JSON格式
-        if python3 -c "import json; json.load(open('.phase_control/state.json'))" 2>/dev/null; then
-            success "state.json is valid JSON"
+    # 检查必需的文件
+    info "  检查核心文件..."
+    check "  session.json 存在" "[ -f .phase_control/session.json ]"
+    check "  phases.json 存在" "[ -f .phase_control/phases.json ]"
+    check "  state.json 存在" "[ -f .phase_control/state.json ]"
+    
+    # 检查 JSON 文件格式
+    if [ -f .phase_control/session.json ]; then
+        if python3 -c "import json; json.load(open('.phase_control/session.json'))" 2>/dev/null; then
+            success "  session.json 格式正确"
+            PASS_COUNT=$((PASS_COUNT + 1))
         else
-            error "state.json is corrupted"
-            echo "       Backup: mv .phase_control/state.json .phase_control/state.json.corrupted"
-            echo "       Reinit: hmte init"
+            error "  session.json 格式错误"
             FAIL_COUNT=$((FAIL_COUNT + 1))
         fi
-    else
-        warn ".phase_control/state.json missing"
-        echo "       Run: hmte init"
-        WARN_COUNT=$((WARN_COUNT + 1))
-    fi
-else
-    warn ".phase_control directory not found"
-    echo "       Run: hmte init"
-    WARN_COUNT=$((WARN_COUNT + 1))
-fi
-
-# 6. 检查HTE skill安装
-echo ""
-info "Checking HTE skill installation..."
-
-HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
-HERMES_PROFILE="${HERMES_PROFILE:-default}"
-SKILL_DIR="$HERMES_HOME/profiles/$HERMES_PROFILE/skills/hmte"
-
-if [ -d "$SKILL_DIR" ]; then
-    success "HTE skill found: $SKILL_DIR"
-    
-    # 检查关键文件
-    if [ -f "$SKILL_DIR/SKILL.md" ]; then
-        success "SKILL.md found"
-    else
-        error "SKILL.md missing"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
+        TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
     fi
     
-    if [ -d "$SKILL_DIR/scripts" ]; then
-        success "scripts/ directory found"
-    else
-        error "scripts/ directory missing"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
+    if [ -f .phase_control/phases.json ]; then
+        if python3 -c "import json; json.load(open('.phase_control/phases.json'))" 2>/dev/null; then
+            success "  phases.json 格式正确"
+            PASS_COUNT=$((PASS_COUNT + 1))
+            
+            # 统计 phase 数量
+            PHASE_COUNT=$(python3 -c "import json; data=json.load(open('.phase_control/phases.json')); print(len(data.get('phases', [])))" 2>/dev/null || echo "0")
+            info "    定义了 $PHASE_COUNT 个 phase"
+        else
+            error "  phases.json 格式错误"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+        TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
     fi
-else
-    error "HTE skill not installed"
-    echo "       Install: cd /path/to/hmte && ./install-to-hermes.sh"
-    FAIL_COUNT=$((FAIL_COUNT + 1))
+    
+    if [ -f .phase_control/state.json ]; then
+        if python3 -c "import json; json.load(open('.phase_control/state.json'))" 2>/dev/null; then
+            success "  state.json 格式正确"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            error "  state.json 格式错误"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+        TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+    fi
+    
+    # 检查 goal_lock.json（可选）
+    if [ -f .phase_control/goal_lock.json ]; then
+        if python3 -c "import json; json.load(open('.phase_control/goal_lock.json'))" 2>/dev/null; then
+            success "  goal_lock.json 存在且格式正确"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            warn "  goal_lock.json 格式错误"
+            WARN_COUNT=$((WARN_COUNT + 1))
+        fi
+        TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+    else
+        info "  goal_lock.json 不存在（可选）"
+    fi
+    
+    # 统计文件数量
+    EVIDENCE_COUNT=$(find .phase_control/evidence -name "*.json" -type f 2>/dev/null | wc -l | tr -d ' ')
+    VERDICT_COUNT=$(find .phase_control/verdicts -name "*.json" -type f 2>/dev/null | wc -l | tr -d ' ')
+    LOG_COUNT=$(find .phase_control/logs -name "*.jsonl" -type f 2>/dev/null | wc -l | tr -d ' ')
+    
+    info "  统计: $EVIDENCE_COUNT 个 evidence, $VERDICT_COUNT 个 verdict, $LOG_COUNT 个 log"
 fi
-
-# 7. 检查权限
 echo ""
-info "Checking permissions..."
 
-if [ -w . ]; then
-    success "Current directory is writable"
-else
-    error "Current directory is not writable"
-    FAIL_COUNT=$((FAIL_COUNT + 1))
-fi
-
-if [ -d .phase_control ] && [ -w .phase_control ]; then
-    success ".phase_control is writable"
-elif [ -d .phase_control ]; then
-    error ".phase_control is not writable"
-    FAIL_COUNT=$((FAIL_COUNT + 1))
-fi
-
-# 8. 总结
-echo ""
+# ============================================================
+# 6. 总结
+# ============================================================
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "诊断完成"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "总检查项: $TOTAL_CHECKS"
+echo "通过: $PASS_COUNT"
+echo "失败: $FAIL_COUNT"
+echo "警告: $WARN_COUNT"
+echo ""
 
-if [ $FAIL_COUNT -eq 0 ] && [ $WARN_COUNT -eq 0 ]; then
-    echo -e "${GREEN}✅ All checks passed!${NC}"
+if [ "$FAIL_COUNT" -gt 0 ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    error "发现 $FAIL_COUNT 个错误，HTE 可能无法正常运行"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    echo "HTE environment is ready to use."
-    exit 0
-elif [ $FAIL_COUNT -eq 0 ]; then
-    echo -e "${YELLOW}⚠ ${WARN_COUNT} warning(s) found${NC}"
+    echo "建议修复措施："
+    echo "  - 如果 git repo 不存在: git init"
+    echo "  - 如果 .phase_control 不存在: bash scripts/hmte-init.sh"
+    echo "  - 如果脚本缺失: 检查项目完整性"
     echo ""
-    echo "HTE can run but some features may be degraded."
-    echo "Review warnings above and install optional dependencies if needed."
+    exit 1
+elif [ "$WARN_COUNT" -gt 0 ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    warn "发现 $WARN_COUNT 个警告，HTE 可以运行但可能有功能受限"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
     exit 0
 else
-    echo -e "${RED}✗ ${FAIL_COUNT} error(s) found${NC}"
-    if [ $WARN_COUNT -gt 0 ]; then
-        echo -e "${YELLOW}⚠ ${WARN_COUNT} warning(s) found${NC}"
-    fi
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    success "所有检查通过！HTE 环境健康"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    echo "HTE cannot run until errors are fixed."
-    echo "Review errors above and follow the suggested fixes."
-    exit 1
+    exit 0
 fi

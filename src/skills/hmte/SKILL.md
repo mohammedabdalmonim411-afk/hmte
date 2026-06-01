@@ -74,6 +74,17 @@ delegate_task(
 )
 ```
 
+#### Verifier P0 必需字段
+
+PASS verdict 必须包含以下字段：
+- `verification_method`: 枚举值 (manual_review/automated_test/cross_check/code_review/docs_review/config_review)
+- `risk_disposition`: 数组，每条包含 risk/disposition/reason
+- `re_verification_conclusion`: >= 20 字符
+- `independently_verified_files`: 非空，文件存在
+- `evidence_paths`: 包含 evidence 和 command log
+- `criteria_passed[].evidence`: 不能是占位符
+- `command_log_checked` / `diff_checked` / `evidence_consistency_checked`: true
+
 #### 启动 Verifier（独立于 Worker）
 
 ```
@@ -241,6 +252,14 @@ Verifier 必须输出 JSON 格式的 verdict 文件（不是文本格式）。
     "evidence_paths": [
       ".phase_control/evidence/<phase_id>_attempt_1.json",
       ".phase_control/logs/<phase_id>_attempt_1.commands.jsonl"
+    ],
+    "verification_method": "cross_check",
+    "risk_disposition": [
+      {
+        "risk": "<风险描述>",
+        "disposition": "accepted",
+        "reason": "<处置理由>"
+      }
     ],
     "residual_risks": [
       "<已知风险，无则写 'none'>"

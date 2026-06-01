@@ -91,7 +91,9 @@ for phase in phases:
     criteria = phase.get("acceptance_criteria", [])
 
     # SHA256 of concatenated acceptance criteria strings
-    concatenated = "".join(criteria)
+    # Hash normalization: preserve order + strip + remove empty strings
+    normalized_criteria = [c.strip() for c in criteria if c.strip()]
+    concatenated = "".join(normalized_criteria)
     criteria_hash = hashlib.sha256(concatenated.encode("utf-8")).hexdigest()
 
     locked_phases.append({
