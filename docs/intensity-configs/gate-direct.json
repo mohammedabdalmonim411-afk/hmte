@@ -1,0 +1,37 @@
+{
+  "intensity": "direct",
+  "description": "Minimal checks for typo/comment/non-core docs only",
+  "gate_checks": {
+    "evidence_required": false,
+    "verdict_required": false,
+    "command_log_required": false,
+    "negative_tests_required": false,
+    "min_negative_tests": 0,
+    "protocol_lint_required": false,
+    "eval_harness_required": false,
+    "public_safe_lint_required": false,
+    "plan_coverage_required": false,
+    "plan_lock_required": false,
+    "anomaly_ledger_required": false,
+    "test_disposition_required": false
+  },
+  "allowed_changes": [
+    "Typo fixes in non-core docs",
+    "Comment updates",
+    "README.md formatting",
+    "CONTRIBUTING.md updates",
+    "Non-architecture documentation"
+  ],
+  "forbidden_changes": [
+    "Code logic (any .py / .js / .sh)",
+    "scripts/ directory",
+    "src/ directory",
+    "Schema files",
+    "Gate scripts",
+    "Eval cases",
+    "Release-related files",
+    "Architecture documents"
+  ],
+  "gate_script": "scripts/phase_gate.sh",
+  "gate_mode": "direct"
+}

@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Delegation Intent Receipt",
+  "description": "Leader 声明委派意图的记录。注意：这不等于真实委派证明，仅表示 Leader 的意图。真实委派需要外部可观察的 delegate_task 工具调用记录。",
+  "type": "object",
+  "required": [
+    "phase_id",
+    "attempt",
+    "role",
+    "delegation_trust_level",
+    "delegation_method",
+    "delegated_at",
+    "timestamp"
+  ],
+  "properties": {
+    "phase_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "description": "阶段 ID，必须与 phases.json 中的 id 一致"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "尝试次数，1-indexed"
+    },
+    "role": {
+      "type": "string",
+      "enum": ["worker", "verifier"],
+      "description": "被委派的角色"
+    },
+    "delegated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Leader 声明的委派时间（ISO 8601）"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Receipt 生成时间（ISO 8601）- v1.8 canonical required field"
+    },
+    "delegation_method": {
+      "type": "string",
+      "enum": ["delegate_task", "manual_file_instruction"],
+      "description": "v1.8 canonical required field: 委派方式 - delegate_task (通过 delegate_task 工具) 或 manual_file_instruction (手动文件指令)"
+    },
+    "leader_session_id": {
+      "type": "string",
+      "description": "Leader agent 的 session ID（用于溯源）- optional"
+    },
+    "instruction_path": {
+      "type": "string",
+      "description": "orchestrator 写的 instruction 文件路径 - optional"
+    },
+    "expected_output_path": {
+      "type": "string",
+      "description": "期望子 agent 产出的文件路径（evidence 或 verdict）- optional"
+    },
+    "delegate_task_params": {
+      "type": "object",
+      "description": "delegate_task 调用的关键参数快照（goal 前200字、toolsets）",
+      "properties": {
+        "goal_preview": { "type": "string", "maxLength": 200 },
+        "toolsets": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "delegation_trust_level": {
+      "type": "string",
+      "enum": ["INTENT_ONLY", "OBSERVED"],
+      "description": "v1.8 canonical field: 信任级别。INTENT_ONLY = Leader 自述意图；OBSERVED = 有外部工具调用记录佐证"
+    },
+    "trust_level": {
+      "type": "string",
+      "enum": ["INTENT_ONLY", "OBSERVED"],
+      "description": "Deprecated: use delegation_trust_level. 信任级别。INTENT_ONLY = Leader 自述意图；OBSERVED = 有外部工具调用记录佐证"
+    },
+    "notes": {
+      "type": "string",
+      "description": "可选备注"
+    }
+  }
+}

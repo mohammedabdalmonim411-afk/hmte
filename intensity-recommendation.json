@@ -1,0 +1,16 @@
+{
+  "task_description": "Fix typo in README",
+  "changed_files": "README.md",
+  "rule_mode": {
+    "recommended_intensity": "direct",
+    "reason": "Documentation-only change (non-architecture)",
+    "confidence": "medium"
+  },
+  "ai_advisory_mode": {
+    "enabled": false,
+    "recommendation": "",
+    "confidence": "",
+    "reasoning": ""
+  },
+  "final_recommendation": "direct"
+}

@@ -1,0 +1,10 @@
+{
+  "project_name": "Test Project",
+  "phases": [
+    {
+      "phase_id": "test_phase",
+      "goal": "Test phase",
+      "acceptance_criteria": ["Must have evidence"]
+    }
+  ]
+}

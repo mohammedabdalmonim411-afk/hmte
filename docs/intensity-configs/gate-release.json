@@ -1,0 +1,31 @@
+{
+  "intensity": "release",
+  "description": "Release preparation checks",
+  "gate_checks": {
+    "evidence_required": true,
+    "verdict_required": true,
+    "command_log_required": true,
+    "negative_tests_required": true,
+    "min_negative_tests": 2,
+    "protocol_lint_required": true,
+    "eval_harness_required": true,
+    "public_safe_lint_required": true,
+    "plan_coverage_required": true,
+    "plan_lock_required": true,
+    "anomaly_ledger_required": true,
+    "test_disposition_required": true,
+    "zero_finding_justification_required": true,
+    "release_gate_required": true,
+    "external_audit_receipt_required": true
+  },
+  "mandatory_checks": [
+    "evidence_required",
+    "verdict_required",
+    "command_log_required",
+    "protocol_lint_required",
+    "eval_harness_required",
+    "release_gate_required"
+  ],
+  "gate_script": "scripts/phase_gate.sh",
+  "gate_mode": "release"
+}

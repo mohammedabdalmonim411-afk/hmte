@@ -1,0 +1,163 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TAF Evidence Schema v2.0",
+  "description": "Schema for Worker evidence with Plan-Grounded support",
+  "type": "object",
+  "required": ["phase_id", "attempt", "generated_at", "worker_agent"],
+  "properties": {
+    "phase_id": {
+      "type": "string",
+      "description": "Phase identifier"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Attempt number"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Evidence generation timestamp (ISO 8601)"
+    },
+    "worker_agent": {
+      "type": "string",
+      "description": "Worker agent identifier"
+    },
+    "plan_ref": {
+      "type": "object",
+      "description": "Reference to plan (Plan-Grounded)",
+      "required": ["plan_path", "plan_hash", "plan_item_ids"],
+      "properties": {
+        "plan_path": {
+          "type": "string",
+          "description": "Path to plan markdown file"
+        },
+        "plan_hash": {
+          "type": "string",
+          "description": "SHA256 hash of locked plan"
+        },
+        "plan_item_ids": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Plan item IDs covered by this evidence"
+        },
+        "required_steps": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Required steps from plan"
+        },
+        "required_tests": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Required tests from plan"
+        },
+        "allowed_scope": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Allowed file scope from plan"
+        },
+        "forbidden_scope": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Forbidden file scope from plan"
+        },
+        "non_waivable_requirements": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Non-waivable requirements"
+        }
+      }
+    },
+    "evidence_by_plan_item": {
+      "type": "object",
+      "description": "Evidence anchored to each plan item",
+      "patternProperties": {
+        "^[A-Z]+-[0-9]+$": {
+          "type": "object",
+          "properties": {
+            "changed_files": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "command_logs": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "tests": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "artifacts": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "artifact_hash": {"type": "string"},
+            "verifier_checked": {"type": "boolean"}
+          }
+        }
+      }
+    },
+    "tests_run": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Tests that were run"
+    },
+    "tests_failed": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Tests that failed"
+    },
+    "tests_skipped": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Tests that were skipped"
+    },
+    "tests_timed_out": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Tests that timed out"
+    },
+    "changed_files": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Files changed in this phase"
+    },
+    "command_log_path": {
+      "type": "string",
+      "description": "Path to command log file"
+    },
+    "commands_run": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Commands executed (summary)"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "type"],
+        "properties": {
+          "path": {"type": "string"},
+          "type": {"type": "string"},
+          "hash": {"type": "string"},
+          "size": {"type": "integer"}
+        }
+      },
+      "description": "Generated artifacts"
+    },
+    "unresolved_risks": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Unresolved risks (deprecated, use residual_risks)"
+    },
+    "residual_risks": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Residual risks after mitigation"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Evidence summary"
+    }
+  }
+}

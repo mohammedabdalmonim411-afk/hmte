@@ -1,0 +1,5 @@
+# TriAgentFlow / TAF Dependencies
+
+# Cross-platform file locking for state management
+# Used by: write_state.py
+filelock>=3.0.0

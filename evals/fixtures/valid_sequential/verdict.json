@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "phase_id": "test_phase",
+  "attempt": 1,
+  "timestamp": "2026-06-03T00:00:00Z",
+  "adversarial_scorecard": {
+    "criteria_passed": [
+      {
+        "criterion": "Test criterion met",
+        "evidence": ".phase_control/logs/test_phase_attempt_1.commands.jsonl: echo test exit_code=0"
+      }
+    ],
+    "criteria_failed": [],
+    "evidence_paths": [
+      ".phase_control/evidence/test_phase_attempt_1.json",
+      ".phase_control/logs/test_phase_attempt_1.commands.jsonl"
+    ],
+    "residual_risks": ["none"],
+    "re_verification_conclusion": "Evidence bundle and command log verified. All acceptance criteria have supporting evidence.",
+    "verification_method": "cross_check",
+    "risk_disposition": [
+      {
+        "risk": "none",
+        "disposition": "accepted",
+        "reason": "All acceptance criteria met with evidence"
+      }
+    ],
+    "independently_verified_files": ["test.txt"],
+    "command_log_checked": true,
+    "diff_checked": true,
+    "evidence_consistency_checked": true
+  }
+}

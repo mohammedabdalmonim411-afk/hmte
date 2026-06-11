@@ -1,0 +1,10 @@
+{
+  "project_name": "Test Project",
+  "phases": [
+    {
+      "phase_id": "test_phase",
+      "goal": "Test canonical schema",
+      "acceptance_criteria": ["Valid schema", "All tests pass"]
+    }
+  ]
+}

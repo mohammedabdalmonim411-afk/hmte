@@ -1,0 +1,147 @@
+# ============================================
+# Phase Control Runtime Files
+# ============================================
+# Root-level runtime (complete coverage)
+.phase_control/
+.phase_control_archive/
+
+# Dev and validation artifacts (top-level ignore)
+dev/
+private_validation/
+
+# Dev runtime (legacy rules - covered by top-level dev/)
+dev/.phase_control/
+dev/.phase_control_archive/
+dev/.hmte/
+
+# Dogfood / regression test artifacts (never commit)
+dogfood_regression/
+dogfood_regression_round*/
+dev/dogfood/
+
+# Keep directory structure
+!dev/.phase_control/evidence/.gitkeep
+!dev/.phase_control/verdicts/.gitkeep
+!dev/.phase_control/logs/.gitkeep
+!dev/.phase_control/pids/.gitkeep
+!dev/.phase_control/traces/.gitkeep
+
+# ============================================
+# Internal dev files (not for GitHub)
+# ============================================
+FIX_PLAN*.md
+../hte-dev/
+dev/archive/
+
+# Audit packs and release reports (never commit)
+HTE_v*.md
+TAF_v*.md
+TriAgentFlow_v*.md
+*_AUDIT*.md
+*_RELEASE_CONFIRMED.md
+GITHUB_RELEASE_CONFIRMED.md
+GITHUB_VERIFICATION_REPORT.md
+PUBLIC_SAFE_CLEANUP_PLAN.md
+CLEANUP_REPORT.md
+test_results.log
+
+# Internal planning and pitfalls
+docs/planning/*DEVELOPMENT_PLAN*.md
+docs/planning/*PATCH*.md
+docs/planning/*INTERNAL*.md
+docs/*DEVELOPMENT_PLAN*.md
+docs/hermes-agent-pitfalls.md
+docs/v*-baseline.md
+docs/history/*DEVELOPMENT_PLAN*.md
+docs/history/*HANDOVER*.md
+
+# ============================================
+# OS Files
+# ============================================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ============================================
+# IDE
+# ============================================
+.vscode/
+.idea/
+*.iml
+.claude/
+
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+
+# ============================================
+# Node
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================
+# Logs
+# ============================================
+*.log
+
+# ============================================
+# Build artifacts
+# ============================================
+*.tar.gz
+hmte-full-pack-*.md
+hmte-pack-*
+test-pack.md
+
+# v1.6: Run ledger (runtime generated)
+.phase_control/run_ledger.jsonl
+
+# v1.6: Stage audit packages (runtime generated)
+.phase_control/audit_packages/
+
+# TAF Legacy hmte Runtime Files
+.phase_control/state.json
+.phase_control/run.lock
+.phase_control/current_phase
+.phase_control/state.lock
+.phase_control/state.json.tmp
+.phase_control/state.json.corrupted*
+.phase_control/evidence/*.json
+.phase_control/verdicts/*.txt
+.phase_control/logs/*.jsonl
+.phase_control/pids/*.pid
+.phase_control/traces/*
+
+# Keep directory structure
+!.phase_control/evidence/.gitkeep
+!.phase_control/verdicts/.gitkeep
+!.phase_control/logs/.gitkeep
+!.phase_control/pids/.gitkeep
+!.phase_control/traces/.gitkeep
+
+# Phase reports and status files
+PHASE_*.md
+HTE_v2.0_STATUS_REPORT.md
+HTE_v2.0_DELIVERY_CHECKLIST.md
+HTE_v2.0_DEVELOPMENT_SUMMARY.md
+HTE_v2.0_PHASE_*_PLAN.md
+TAF_v2.0_STATUS_REPORT.md
+TAF_v2.0_DELIVERY_CHECKLIST.md
+TAF_v2.0_DEVELOPMENT_SUMMARY.md
+TAF_v2.0_PHASE_*_PLAN.md
+
+# Backup files
+*.backup*
+*.old
+*.bak

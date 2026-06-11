@@ -1,0 +1,11 @@
+{
+  "evidence_id": "fake-evidence-02",
+  "phase_id": "phase_1",
+  "plan_ref": {
+    "plan_path": "fake_plan.md",
+    "plan_hash": "sha256:fake",
+    "plan_item_ids": ["S-001", "S-002"]
+  },
+  "changed_files": ["src/feature_b.py"],
+  "tests_run": ["test_feature_b_unit"]
+}

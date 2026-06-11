@@ -1,0 +1,21 @@
+{
+  "intensity": "strict",
+  "description": "Strict checks for core protocol/schema/gate files",
+  "gate_checks": {
+    "evidence_required": true,
+    "verdict_required": true,
+    "command_log_required": true,
+    "negative_tests_required": true,
+    "min_negative_tests": 2,
+    "protocol_lint_required": true,
+    "eval_harness_required": false,
+    "public_safe_lint_required": false,
+    "plan_coverage_required": true,
+    "plan_lock_required": true,
+    "anomaly_ledger_required": true,
+    "test_disposition_required": true,
+    "zero_finding_justification_required": true
+  },
+  "gate_script": "scripts/phase_gate.sh",
+  "gate_mode": "strict"
+}

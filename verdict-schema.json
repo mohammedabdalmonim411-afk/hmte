@@ -1,0 +1,186 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TAF Verdict Schema v2.0",
+  "description": "Schema for Verifier verdict with Plan-Grounded Audit support",
+  "type": "object",
+  "required": ["verdict", "phase_id", "attempt", "timestamp", "verifier_agent"],
+  "properties": {
+    "verdict": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "BLOCK", "PENDING"],
+      "description": "Verification result"
+    },
+    "phase_id": {
+      "type": "string",
+      "description": "Phase identifier"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Attempt number"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Verdict timestamp (ISO 8601)"
+    },
+    "verifier_agent": {
+      "type": "string",
+      "description": "Verifier agent identifier"
+    },
+    "audit_plan_ref": {
+      "type": "object",
+      "description": "Reference to audit plan (Plan-Grounded)",
+      "required": ["plan_path", "plan_hash", "plan_item_ids_to_audit"],
+      "properties": {
+        "plan_path": {
+          "type": "string",
+          "description": "Path to plan markdown file"
+        },
+        "plan_hash": {
+          "type": "string",
+          "description": "SHA256 hash of locked plan"
+        },
+        "plan_item_ids_to_audit": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Plan item IDs that Verifier must audit"
+        },
+        "acceptance_criteria_to_check": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Acceptance criteria IDs to check"
+        },
+        "required_tests_to_check": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Required test IDs to check"
+        },
+        "evidence_files_to_read": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Evidence files to read"
+        },
+        "command_logs_to_read": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Command logs to read"
+        },
+        "changed_files_to_review": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Changed files to review"
+        },
+        "risk_items_to_check": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Risk items to check"
+        },
+        "forbidden_shortcuts": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Forbidden audit shortcuts"
+        }
+      }
+    },
+    "plan_item_ids_checked": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Plan item IDs actually checked by Verifier"
+    },
+    "review_trail": {
+      "type": "array",
+      "description": "Detailed review trail for each plan item",
+      "items": {
+        "type": "object",
+        "required": ["plan_item_id", "verifier_finding"],
+        "properties": {
+          "plan_item_id": {"type": "string"},
+          "checked_file": {"type": "string"},
+          "checked_command_log": {"type": "string"},
+          "evidence_ref": {"type": "string"},
+          "verifier_finding": {
+            "type": "string",
+            "enum": ["PASS", "FAIL", "WARN"]
+          },
+          "finding_detail": {"type": "string"}
+        }
+      }
+    },
+    "zero_finding_justification": {
+      "type": "object",
+      "description": "Justification when no issues found (Zero-Finding)",
+      "required": [
+        "checked_plan_items",
+        "checked_files",
+        "checked_command_logs",
+        "checked_tests",
+        "why_no_p0",
+        "why_no_p1"
+      ],
+      "properties": {
+        "checked_plan_items": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Plan items checked"
+        },
+        "checked_files": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Files checked"
+        },
+        "checked_command_logs": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Command logs checked"
+        },
+        "checked_tests": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Tests checked"
+        },
+        "checked_anomalies": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Anomalies checked"
+        },
+        "why_no_p0": {
+          "type": "string",
+          "minLength": 50,
+          "description": "Explanation why no P0 issues found (with evidence refs)"
+        },
+        "why_no_p1": {
+          "type": "string",
+          "minLength": 50,
+          "description": "Explanation why no P1 issues found (with evidence refs)"
+        },
+        "residual_risks": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Residual risks identified"
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "description"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["P0", "P1", "P2", "INFO"]
+          },
+          "description": {"type": "string"},
+          "file": {"type": "string"},
+          "line": {"type": "integer"},
+          "recommendation": {"type": "string"}
+        }
+      }
+    },
+    "summary": {
+      "type": "string",
+      "description": "Verification summary"
+    }
+  }
+}

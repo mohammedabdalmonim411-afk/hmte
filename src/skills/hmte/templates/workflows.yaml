@@ -1,0 +1,89 @@
+1|# TriAgentFlow / TAF Workflow Templates
+2|# Platform: hermes-agent
+3|# Purpose: Reusable workflow templates for common TAF patterns
+4|
+5|workflows:
+6|  - name: three-agent-standard
+7|    description: Standard three-agent workflow (Leader → Worker → Verifier)
+8|    platform: hermes-agent
+9|    phases:
+10|      - phase_id: planning
+11|        role: Leader
+12|        goal: Analyze requirements and create phase plan
+13|        outputs: [phases.json, goal_lock.json]
+14|      - phase_id: implementation
+15|        role: Worker
+16|        goal: Execute implementation tasks
+17|        outputs: [evidence bundle, command log]
+18|      - phase_id: verification
+19|        role: Verifier
+20|        goal: Independent audit of implementation
+21|        outputs: [verdict]
+22|
+23|  - name: release-audit
+24|    description: Release audit workflow with final checks
+25|    platform: hermes-agent
+26|    phases:
+27|      - phase_id: pre_release_check
+28|        role: Worker
+29|        goal: Run all tests and build
+30|        outputs: [test results, build artifacts]
+31|      - phase_id: release_verification
+32|        role: Verifier
+33|        goal: Verify release readiness
+34|        outputs: [verdict with P0 checks]
+35|      - phase_id: final_audit
+36|        role: release_gate
+37|        goal: Final release gate audit
+38|        note: Final Verifier is release_gate, NOT core agent (legacy filename: release-auditor.md)
+39|        outputs: [final audit verdict]
+40|
+41|  - name: verifier-adversarial
+42|    description: Adversarial verification workflow
+43|    platform: hermes-agent
+44|    phases:
+45|      - phase_id: implementation
+46|        role: Worker
+47|        goal: Implement feature with evidence
+48|        outputs: [code changes, evidence bundle]
+49|      - phase_id: adversarial_verification
+50|        role: Verifier
+51|        goal: Strict adversarial audit (assume evidence may be falsified)
+52|        requirements:
+53|          - Replay commands from command log
+54|          - Verify independently_verified_files exist
+55|          - Check evidence consistency with git diff
+56|          - Validate all P0-4 fields
+57|        outputs: [adversarial verdict with full scorecard]
+58|
+59|  - name: parallel-safe-standard
+60|    description: Parallel-safe workflow — multiple Worker Shards with Join Verification
+61|    platform: hermes-agent
+62|    phases:
+63|      - phase_id: planning
+64|        role: Leader
+65|        goal: Analyze requirements, create phase plan with parallel_safe phases
+66|        outputs: [phases.json, goal_lock.json]
+67|      - phase_id: parallel_implementation
+68|        role: Worker (shards)
+69|        execution_mode: parallel_safe
+70|        goal: Execute implementation tasks in parallel shards
+71|        note: Leader delegates each shard via separate delegate_task call. Each shard uses hmte-exec --worker-id.
+72|        outputs: [per-shard evidence bundles, per-shard command logs]
+73|      - phase_id: join_verification
+74|        role: Verifier
+75|        goal: Join Verification — audit ALL shard evidence, check overlap/forbidden_paths
+76|        requirements:
+77|          - Read ALL shard evidence files
+78|          - Read ALL shard command logs
+79|          - Verify each shard independently
+80|          - Check changed_files overlap between shards
+81|          - Check forbidden_paths violations
+82|          - Write verdict with join_verification block
+83|        outputs: [verdict with join_verification, all evidence_paths, all command_log_paths]
+84|      - phase_id: phase_gate_check
+85|        role: phase_gate
+86|        goal: 12-item Join Gate hard check
+87|        note: phase_gate.sh runs automatically. Only this can release the phase.
+88|        outputs: [PASS/FAIL]
+89|

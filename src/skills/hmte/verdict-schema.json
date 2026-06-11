@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Verdict with Adversarial Scorecard",
+  "type": "object",
+  "required": ["status", "phase_id", "attempt", "timestamp", "adversarial_scorecard"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "BLOCK"]
+    },
+    "phase_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "attempt": { "type": "integer", "minimum": 1 },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    },
+    "next_action": {
+      "type": "string",
+      "enum": ["NEXT_PHASE", "RETRY", "BLOCK"]
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "evidence_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Parallel verdict: 所有 worker evidence 文件路径"
+    },
+    "command_log_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Parallel verdict: 所有 worker command log 文件路径"
+    },
+    "join_verification": {
+      "type": "object",
+      "description": "Parallel verdict: join verifier 汇总验证结果"
+    },
+    "evidence_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "evidence 文件的 SHA256 哈希（64位小写十六进制），防审后篡改"
+    },
+    "command_log_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "command log 文件的 SHA256 哈希（64位小写十六进制），防审后篡改"
+    },
+    "adversarial_scorecard": {
+      "type": "object",
+      "required": [
+        "criteria_passed",
+        "criteria_failed",
+        "evidence_paths",
+        "residual_risks",
+        "re_verification_conclusion",
+        "verification_method",
+        "risk_disposition",
+        "independently_verified_files",
+        "command_log_checked",
+        "diff_checked",
+        "evidence_consistency_checked"
+      ],
+      "properties": {
+        "criteria_passed": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["criterion", "evidence"],
+            "properties": {
+              "criterion": { "type": "string" },
+              "evidence": { "type": "string", "description": "具体证据路径或命令输出摘要" }
+            }
+          },
+          "minItems": 1,
+          "description": "通过的验收标准（至少1条）"
+        },
+        "criteria_failed": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["criterion", "reason"],
+            "properties": {
+              "criterion": { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          },
+          "description": "未通过的验收标准。PASS 时必须为空数组；FAIL/BLOCK 时不能为空。"
+        },
+        "blockers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "FAIL/BLOCK 时的阻断原因（与 criteria_failed 二选一必填）"
+        },
+        "evidence_paths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "审计所依据的 evidence 文件路径列表"
+        },
+        "residual_risks": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "已知但未阻断的风险（无则写 ['none']）"
+        },
+        "re_verification_conclusion": {
+          "type": "string",
+          "description": "复验结论：Verifier 独立重新运行验证命令后的结果摘要"
+        },
+        "verification_method": {
+          "type": "string",
+          "enum": ["manual_review", "automated_test", "cross_check", "code_review", "docs_review", "config_review"],
+          "description": "P0-4 Required: 验证方法 - 必须与 HTE_PROTOCOL 枚举值完全一致"
+        },
+        "risk_disposition": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["risk", "disposition", "reason"],
+            "properties": {
+              "risk": {
+                "type": "string",
+                "description": "风险描述"
+              },
+              "disposition": {
+                "type": "string",
+                "enum": ["accepted", "mitigated", "blocked", "deferred"],
+                "description": "处置方式"
+              },
+              "reason": {
+                "type": "string",
+                "description": "处置理由"
+              }
+            }
+          },
+          "description": "P0-4 Required: 风险处置数组，每项包含 risk/disposition/reason"
+        },
+        "independently_verified_files": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Verifier 独立验证过的具体文件路径列表（PASS verdict 必填，Verifier Minimum Audit 要求）"
+        },
+        "command_log_checked": {
+          "type": "boolean",
+          "description": "Verifier 是否实际检查了 command log（PASS verdict 必须为 true）"
+        },
+        "diff_checked": {
+          "type": "boolean",
+          "description": "Verifier 是否检查了 git diff（PASS verdict 必须为 true）"
+        },
+        "evidence_consistency_checked": {
+          "type": "boolean",
+          "description": "Verifier 是否检查了 evidence 与 command log/git diff 的一致性（PASS verdict 必须为 true）"
+        }
+      }
+    }
+  }
+}

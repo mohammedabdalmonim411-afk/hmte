@@ -1,0 +1,20 @@
+{
+  "intensity": "standard",
+  "description": "Default checks for most development tasks",
+  "gate_checks": {
+    "evidence_required": true,
+    "verdict_required": true,
+    "command_log_required": true,
+    "negative_tests_required": false,
+    "min_negative_tests": 0,
+    "protocol_lint_required": false,
+    "eval_harness_required": false,
+    "public_safe_lint_required": false,
+    "plan_coverage_required": true,
+    "plan_lock_required": true,
+    "anomaly_ledger_required": true,
+    "test_disposition_required": true
+  },
+  "gate_script": "scripts/phase_gate.sh",
+  "gate_mode": "standard"
+}

@@ -1,0 +1,18 @@
+{
+  "instruction_id": "fake-instruction-01",
+  "phase_id": "phase_1",
+  "task": "Implement Feature A",
+  "goal": "Complete Feature A implementation",
+  "required_steps": [
+    "Implement Feature A",
+    "Add unit tests",
+    "Add integration tests"
+  ],
+  "allowed_files": [
+    "src/feature_a.py",
+    "tests/test_feature_a.py"
+  ],
+  "forbidden_files": [
+    ".phase_control/"
+  ]
+}

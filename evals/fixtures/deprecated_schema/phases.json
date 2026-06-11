@@ -1,0 +1,10 @@
+{
+  "project_name": "Test Project",
+  "phases": [
+    {
+      "id": "test_phase",
+      "objective": "Old schema test",
+      "acceptance_criteria": ["Test deprecated fields"]
+    }
+  ]
+}

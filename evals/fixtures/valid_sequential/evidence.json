@@ -1,0 +1,19 @@
+{
+  "phase_id": "test_phase",
+  "attempt": 1,
+  "status": "completed",
+  "worker_name": "test-worker",
+  "goal_summary": "Test goal",
+  "planned_output": "Test output",
+  "changed_files": [
+    "test.txt"
+  ],
+  "commands_run": [
+    "echo test"
+  ],
+  "command_exit_codes": [
+    0
+  ],
+  "command_log_path": ".phase_control/logs/test_phase_attempt_1.commands.jsonl",
+  "generated_at": "2026-06-03T00:00:00Z"
+}

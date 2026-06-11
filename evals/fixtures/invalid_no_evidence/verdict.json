@@ -1,0 +1,18 @@
+{
+  "phase_id": "test_phase",
+  "attempt": 1,
+  "status": "PASS",
+  "trust_level": "OBSERVED",
+  "evidence_paths": ["evidence/test_phase_attempt_1.json"],
+  "criteria_passed": ["Must have evidence"],
+  "criteria_failed": [],
+  "verification_method": "automated",
+  "risk_disposition": "low",
+  "re_verification_conclusion": "verified",
+  "independently_verified_files": ["evidence/test_phase_attempt_1.json"],
+  "command_log_checked": true,
+  "diff_checked": true,
+  "evidence_consistency_checked": true,
+  "worker_id": "worker_1",
+  "timestamp": "2026-06-06T00:00:00Z"
+}
